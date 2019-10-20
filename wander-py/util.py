@@ -1,6 +1,7 @@
 from exception import CommandException
 
 from subprocess import Popen, PIPE, STDOUT
+from yaml import safe_load as load, YAMLError
 
 
 class Output:
@@ -43,6 +44,27 @@ class YAMLObject:
         ''' The init method. This creates a new YAML object.'''
         # Create the preamble list
         self.preamble = list()
+
+
+    def load(self, filename):
+        ''' The system that loads the object yaml file.'''
+        # Load the YAML file
+        with open(filename, 'r') as stream:
+
+            # Read from the stream
+            try:
+
+                # Store the file contents
+                elements = load(stream)
+
+                # Sort out the preamble
+                preamble = elements['preamble']['commands']
+                for element in preamble:
+                    self.preamble.append(element)
+
+            # If the syntac is improper, indicate as such
+            except YAMLError as error:
+                print(error)
 
 
     def prepare(self):

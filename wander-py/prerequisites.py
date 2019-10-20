@@ -2,7 +2,6 @@ from exception import CommandException
 from util import Output, YAMLObject
 
 from subprocess import call
-from yaml import safe_load as load, FullLoader, YAMLError
 
 
 class Prerequisites(YAMLObject):
@@ -28,28 +27,6 @@ class Prerequisites(YAMLObject):
 
         # Load the prerequisites list
         self.load('../prerequisites.yaml')
-
-
-    def load(self, filename):
-        ''' The system that loads the prerequisites yaml file and creates the
-            checking system.'''
-        # Load the YAML file
-        with open(filename, 'r') as stream:
-
-            # Read from the stream
-            try:
-                # Store the file contents
-                elements = load(stream)
-
-                # Sort out the preamble
-                preamble = elements['preamble']['commands']
-                for element in preamble:
-                    self.preamble.append(element)
-
-            # If the syntac is improper, indicate as such
-            except YAMLError as error:
-                print(error)
-
 
 
     def verify(self):
