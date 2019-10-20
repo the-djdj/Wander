@@ -1,11 +1,11 @@
 from exception import CommandException
-from util import Output
+from util import Output, YAMLObject
 
 from subprocess import call
 from yaml import safe_load as load, FullLoader, YAMLError
 
 
-class Prerequisites:
+class Prerequisites(YAMLObject):
     ''' The class responsible for ensuring that a host meets the minimum
         requirements for building wander. It holds a list of requirement
         objects and checks each one.'''
@@ -14,14 +14,14 @@ class Prerequisites:
     def __init__(self, output, commands):
         ''' The constructor. This creates the new system for checking that a
             host meets the necessary requirements for building wander.'''
+        # Create the parent object
+        YAMLObject.__init__(self);
+
         # Store the output system
         self.output = output
 
         # Store the command system
         self.commands = commands
-
-        # Create the list of preamble commands
-        self.preamble = list()
 
         # Populate the prerequisites list
         self.prerequisites = list()
@@ -50,27 +50,6 @@ class Prerequisites:
             except YAMLError as error:
                 print(error)
 
-
-    def prepare(self):
-        ''' The preamble method, used for ensuring a clean environment for
-            checking prerequisites.'''
-        # Create a list for the result of the commands
-        result = list()
-
-        # Iterate through each of the commands in the preamble.
-        for element in self.preamble:
-            # Get the response of the command
-            command = self.commands.call(element)
-
-            # Check if there were any errors
-            if command[1] is not None:
-                raise CommandException(command[1])
-
-            # And append the output
-            result.append(command[0])
-
-        # And return the output
-        return result
 
 
     def verify(self):

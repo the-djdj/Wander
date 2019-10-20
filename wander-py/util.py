@@ -1,3 +1,5 @@
+from exception import CommandException
+
 from subprocess import Popen, PIPE, STDOUT
 
 
@@ -10,6 +12,7 @@ class Output:
         ''' The constructor. This assigns the default values used in the\
             object.'''
         pass
+
 
 
 class Commands:
@@ -28,3 +31,37 @@ class Commands:
 
         # Return the results of the command
         return stdout, stderr
+
+
+
+class YAMLObject:
+    ''' The YAMLObject class. This is the object which is loaded from a YAML
+        file.'''
+
+
+    def __init__(self):
+        ''' The init method. This creates a new YAML object.'''
+        # Create the preamble list
+        self.preamble = list()
+
+
+    def prepare(self):
+        ''' The preamble method, used for ensuring a clean environment for
+            running the object.'''
+        # Create a list for the result of the commands
+        result = list()
+
+        # Iterate through each of the commands in the preamble.
+        for element in self.preamble:
+            # Get the response of the command
+            command = self.commands.call(element)
+
+            # Check if there were any errors
+            if command[1] is not None:
+                raise CommandException(command[1])
+
+            # And append the output
+            result.append(command[0])
+
+        # And return the output
+        return result
