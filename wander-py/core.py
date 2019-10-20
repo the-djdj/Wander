@@ -1,5 +1,5 @@
 from prerequisites import Prerequisites
-from util import Output
+from util import Output, Commands
 
 class Main:
     ''' The main class. This holds all of the methods used in building the
@@ -12,8 +12,11 @@ class Main:
         # Create the output system
         self.output = Output()
 
+        # Create the command system
+        self.commands = Commands()
+
         # Create the prerequisites system
-        self.prerequisites = Prerequisites(self.output)
+        self.prerequisites = Prerequisites(self.output, self.commands)
 
 
     def begin(self):
