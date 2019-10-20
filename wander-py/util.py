@@ -40,10 +40,13 @@ class YAMLObject:
         file.'''
 
 
-    def __init__(self):
+    def __init__(self, commands):
         ''' The init method. This creates a new YAML object.'''
-        # Create the preamble list
+        # Create all of the lists for the application
         self.preamble = list()
+
+        # Create the command system
+        self.commands = commands
 
 
     def load(self, filename):
@@ -58,7 +61,7 @@ class YAMLObject:
                 elements = load(stream)
 
                 # Sort out the preamble
-                preamble = elements['preamble']['commands']
+                preamble = elements['preamble']
                 for element in preamble:
                     self.preamble.append(element)
 

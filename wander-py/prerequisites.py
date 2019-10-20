@@ -14,7 +14,7 @@ class Prerequisites(YAMLObject):
         ''' The constructor. This creates the new system for checking that a
             host meets the necessary requirements for building wander.'''
         # Create the parent object
-        YAMLObject.__init__(self);
+        YAMLObject.__init__(self, commands);
 
         # Store the output system
         self.output = output
