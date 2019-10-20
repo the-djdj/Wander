@@ -1,3 +1,4 @@
+from prerequisites import Prerequisites
 from util import Output
 
 class Main:
@@ -11,6 +12,16 @@ class Main:
         # Create the output system
         self.output = Output()
 
+        # Create the prerequisites system
+        self.prerequisites = Prerequisites(self.output)
+
+
+    def begin(self):
+        ''' The begin method. This starts the build of the new wander
+            system.'''
+        # Check the prerequisites
+        self.prerequisites.verify()
+
 
 
 if __name__ == '__main__':
@@ -18,3 +29,4 @@ if __name__ == '__main__':
         process, so that things can run smoothly.'''
     # Create the build environment
     main = Main()
+    main.begin()
