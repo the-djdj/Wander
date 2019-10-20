@@ -61,8 +61,7 @@ class YAMLObject:
                 elements = load(stream)
 
                 # Sort out the preamble
-                preamble = elements['preamble']
-                for element in preamble:
+                for element in elements['preamble']:
                     self.preamble.append(element)
 
             # If the syntac is improper, indicate as such
@@ -70,14 +69,14 @@ class YAMLObject:
                 print(error)
 
 
-    def prepare(self):
+    def run(self, elements):
         ''' The preamble method, used for ensuring a clean environment for
             running the object.'''
         # Create a list for the result of the commands
         result = list()
 
         # Iterate through each of the commands in the preamble.
-        for element in self.preamble:
+        for element in elements:
             # Get the response of the command
             command = self.commands.call(element)
 
