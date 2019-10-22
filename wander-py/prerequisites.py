@@ -22,9 +22,6 @@ class Prerequisites(YAMLObject):
         # Store the command system
         self.commands = commands
 
-        # Populate the prerequisites list
-        self.prerequisites = list()
-
         # Load the prerequisites list
         self.load('../prerequisites.yaml')
 
@@ -37,8 +34,8 @@ class Prerequisites(YAMLObject):
         print(self.run(self.preamble['commands']))
 
         # Iterate through each of the prerequisites, and verify them
-        for prerequisite in self.prerequisites:
-            prerequisite.verify()
+        for element in self.elements:
+            element.verify()
 
 
 

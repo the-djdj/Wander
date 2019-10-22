@@ -43,7 +43,8 @@ class YAMLObject:
     def __init__(self, commands):
         ''' The init method. This creates a new YAML object.'''
         # Create all of the lists for the application
-        self.preamble = list()
+        self.preamble = dict()
+        self.elements = dict()
 
         # Create the command system
         self.commands = commands
@@ -61,12 +62,10 @@ class YAMLObject:
                 elements = load(stream)
 
                 # Sort out the preamble
-                for element in elements['preamble']:
-                    self.preamble.append(element)
+                self.preamble = elements['preamble']
 
                 # Sort out the elements
-                for element in elements['elements']:
-                    self.elements.append(element)
+                self.elements = elements['elements']
 
             # If the syntac is improper, indicate as such
             except YAMLError as error:
