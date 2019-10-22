@@ -30,12 +30,11 @@ class Prerequisites(YAMLObject):
         ''' A simple method which checks that each of the requirements has been
             met.'''
         # Execute the preamble
-        print(self.preamble)
-        print(self.run(self.preamble['commands']))
+        self.run(self.preamble['commands'])
 
         # Iterate through each of the prerequisites, and verify them
         for element in self.elements:
-            element.verify()
+            Prerequisite(element).verify()
 
 
 
@@ -44,7 +43,7 @@ class Prerequisite:
         prerequisite.'''
 
 
-    def __init__(self):
+    def __init__(self, prerequisite):
         pass
 
 
