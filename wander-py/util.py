@@ -64,14 +64,18 @@ class YAMLObject:
                 for element in elements['preamble']:
                     self.preamble.append(element)
 
+                # Sort out the elements
+                for element in elements['elements']:
+                    self.elements.append(element)
+
             # If the syntac is improper, indicate as such
             except YAMLError as error:
                 print(error)
 
 
     def run(self, elements):
-        ''' The preamble method, used for ensuring a clean environment for
-            running the object.'''
+        ''' The run method, which runs a list of commands, and returns the
+            results.'''
         # Create a list for the result of the commands
         result = list()
 
