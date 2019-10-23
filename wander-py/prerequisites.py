@@ -29,9 +29,6 @@ class Prerequisites(YAMLObject):
     def verify(self):
         ''' A simple method which checks that each of the requirements has been
             met.'''
-        # Execute the preamble
-        self.run(self.preamble['commands'])
-
         # Iterate through each of the prerequisites, and verify them
         for element in self.elements:
             Prerequisite(element).verify()

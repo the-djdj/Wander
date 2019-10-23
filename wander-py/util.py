@@ -1,5 +1,6 @@
 from exception import CommandException
 
+import os
 from subprocess import Popen, PIPE, STDOUT
 from yaml import safe_load as load, YAMLError
 
@@ -10,7 +11,7 @@ class Output:
 
 
     def __init__(self):
-        ''' The constructor. This assigns the default values used in the\
+        ''' The constructor. This assigns the default values used in the
             object.'''
         pass
 
@@ -21,14 +22,16 @@ class Commands:
         and for the results of that command to be stored.'''
 
 
-    def call(self, command):
+    def call(self, command, environment):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store the raw output of the command
-        raw = Popen(command, shell=True, stdout=PIPE, stderr=STDOUT)
+        raw = Popen(command, shell=True, env=environment,
+                        stdout=PIPE,
+                        stderr=STDOUT)
 
         # Get the stdout and stderr from the command
-        stdout, stderr = raw.communicate()
+        stdout, stderr = raw.communicate(command)
 
         # Return the results of the command
         return stdout, stderr
@@ -62,7 +65,7 @@ class YAMLObject:
                 elements = load(stream)
 
                 # Sort out the preamble
-                self.preamble = elements['preamble']
+                preamble = elements['preamble']
 
                 # Sort out the elements
                 self.elements = elements['elements']
@@ -70,6 +73,19 @@ class YAMLObject:
             # If the syntac is improper, indicate as such
             except YAMLError as error:
                 print(error)
+
+        # Process the preamble into a usable environment
+        self.environment = os.environ.copy()
+
+        # Iterate through each preamble element
+        for element in preamble:
+
+            # Add the key-value pair to the environment
+            if self.environment.get(element) is None:
+                self.environment[element] = preamble[element]
+
+            else:
+                self.environment[element] += ':' + preamble[element]
 
 
     def run(self, elements):
@@ -81,7 +97,7 @@ class YAMLObject:
         # Iterate through each of the commands in the preamble.
         for element in elements:
             # Get the response of the command
-            command = self.commands.call(element)
+            command = self.commands.call(element, self.environment)
 
             # Check if there were any errors
             if command[1] is not None:
