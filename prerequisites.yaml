@@ -5,13 +5,32 @@ preamble:
 elements:
     bash:
         description: Bash
-        type: version
         version: 3.2
         commands:
-            - bash --version | head -n1 | cut -d" " -f4 | cut -d"(" -f1
+            - bash --version | head -n 1 | cut -d " " -f4 | cut -d "(" -f 1
     bash-symlink:
         description: Bash (/bin/sh -> /bin/bash)
-        type: link
+        endpoint: bash
         commands:
-            - readlink -f /bin/sh | cut -d"/" -f3
+            - readlink -f /bin/sh | cut -d "/" -f 3
+    binutils:
+        description: Binutils
+        version: 2.25
+        commands:
+            - ls --version | head -n 1 | cut -d " " -f 4
+    bison:
+        description: Bison
+        version: 2.7
+        commands:
+            - bison --version | head -n 1 | cut -d " " -f 4
+    bison-symlink:
+        description: Bison (/usr/bin/yacc -> /usr/bin/bison.yacc)
+        endpoint: bison
+        commands:
+            - readlink -f /usr/bin/yacc | cut -d "/" -f 4 | cut -d "." -f 1
+    bzip2:
+        description: Bzip2
+        version: 1.0.4
+        commands:
+            - bzip2 --version 2>&1 < /dev/null | head -n1 | cut -d " " -f 8 | cut -d "," -f 1
 ...

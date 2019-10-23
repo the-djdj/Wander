@@ -39,11 +39,21 @@ class Output:
     PASSED    = B_GREEN + "Passed"
     FAILED    = B_RED   + "Failed"
 
+    # Some lower case alternatives
+    L_PASSED  = B_GREEN + "passed"
+    L_FAILED  = B_RED   + "failed" 
+
 
     def header(data):
         ''' The start section. This starts a new output section and prints the
             header.'''
         print(Output.RESET + Output.BOLD + data)
+
+
+    def footer(status, data):
+        '''The end section. This ends an output section and prints the
+            result.'''
+        print(Output.RESET + data + " " + status + Output.RESET + ".")
 
 
     def log(status, data):

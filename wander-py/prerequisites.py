@@ -29,14 +29,26 @@ class Prerequisites(YAMLObject):
         # Tell the user what's happening
         Output.header('Checking host prerequisites...')
 
+        # Store whether or not the prerequisites are valid
+        result = True
+
         # Iterate through each of the prerequisites, and verify them
         for element in self.elements:
 
             # Verify that the prerequisite is met
-            Prerequisite(self.elements[element], self).verify()
+            result &= Prerequisite(self.elements[element], self).verify()
 
             # Add the final line of output
             print('')
+
+        # Return whether or not we were successful
+        status = Output.L_PASSED if result else Output.L_FAILED
+
+        # Inform the user of the status
+        Output.footer(status, "Checking host prerequisites")
+
+        # And return the result
+        return result
 
 
 
