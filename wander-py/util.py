@@ -10,11 +10,54 @@ class Output:
         and provides an array of useful methods for console output.'''
 
 
-    def __init__(self):
-        ''' The constructor. This assigns the default values used in the
-            object.'''
-        pass
+    # The status colours in the application
+    D_BLACK   = '\u001b[30m'
+    D_RED     = '\u001b[31m'
+    D_GREEN   = '\u001b[32m'
+    D_YELLOW  = '\u001b[33m'
+    D_BLUE    = '\u001b[34m'
+    D_MAGENTA = '\u001b[35m'
+    D_CYAN    = '\u001b[36m'
+    D_WHITE   = '\u001b[37m'
+    B_BLACK   = '\u001b[30;1m'
+    B_RED     = '\u001b[31;1m'
+    B_GREEN   = '\u001b[32;1m'
+    B_YELLOW  = '\u001b[33;1m'
+    B_BLUE    = '\u001b[34;1m'
+    B_MAGENTA = '\u001b[35;1m'
+    B_CYAN    = '\u001b[36;1m'
+    B_WHITE   = '\u001b[37;1m'
+    BOLD      = '\u001b[1m'
+    UNDERLINE = '\u001b[4m'
+    REVERSED  = '\u001b[7m'
+    CLEAR     = '\u001b[2K'
+    RESET     = '\u001b[0m'
 
+    # The status that an output has
+    PENDING   = B_BLACK + "Pending"
+    TESTING   = B_BLUE  + "Testing"
+    PASSED    = B_GREEN + "Passed"
+    FAILED    = B_RED   + "Failed"
+
+
+    def header(data):
+        ''' The start section. This starts a new output section and prints the
+            header.'''
+        print(Output.RESET + Output.BOLD + data)
+
+
+    def log(status, data):
+        ''' The method which logs an item to the output. This adds the item
+            with a designated status.'''
+        print('\r' + Output.RESET + ' * [' + status + Output.RESET + '] '
+                + Output.B_BLACK + data, end='')
+
+
+    def clear():
+        ''' A method which clears the last line printed, so that the output can
+            be updated.'''
+        print(Output.CLEAR, end='')
+        
 
 
 class Commands:
@@ -104,7 +147,7 @@ class YAMLObject:
                 raise CommandException(command[1])
 
             # And append the output
-            result.append(command[0])
+            result.append(str(command[0])[2:-3])
 
         # And return the output
         return result
