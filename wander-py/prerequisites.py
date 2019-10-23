@@ -31,7 +31,12 @@ class Prerequisites(YAMLObject):
 
         # Iterate through each of the prerequisites, and verify them
         for element in self.elements:
+
+            # Verify that the prerequisite is met
             Prerequisite(self.elements[element], self).verify()
+
+            # Add the final line of output
+            print('')
 
 
 
@@ -44,13 +49,25 @@ class Prerequisite:
         ''' The init method, used to create a new prerequisite object which can
             be tested on the host system.'''
         # Store information about the prerequisite
-        self.version     = str(element.get('version'))
-        self.description = element.get('description') + " " + self.version
+        self.version     = element.get('version')
+        self.description = element.get('description')
+        self.type        = element.get('type')
         self.link        = element.get('link')
+        self.endpoint    = element.get('endpoint')
         self.commands    = element.get('commands')
 
-        # Extract the version information
-        self.major, self.minor, self.revision = self.extrapolate(self.version)
+        # Add the version to the title, if applicable
+        if self.version is not None:
+
+            # Convert the version to a string
+            self.version = str(self.version)
+
+            # Update the description
+            self.description += " " + self.version
+
+            # Extract the version information
+            self.major, self.minor, self.revision = \
+                        self.extrapolate(self.version)
 
         # Store the system for running commands
         self.parent = parent
@@ -66,37 +83,59 @@ class Prerequisite:
         Output.clear()
         Output.log(Output.TESTING, self.description)
 
-        # Execute the test code
-        version = self.parent.run(self.commands)[0]
+        # Check the type of test
+        if self.type == 'version':
 
-        # Extrapolate the version information
-        major, minor, revision = self.extrapolate(version)
+            # Execute the test code
+            version = self.parent.run(self.commands)[0]
 
-        if major > self.major:
-            # If the major is greater, we obviously have a newer version
-            Output.clear()
-            Output.log(Output.PASSED, self.description)
+            # Extrapolate the version information
+            major, minor, revision = self.extrapolate(version)
 
-            # And return our result
-            return True
+            if major > self.major:
+                
+                # If the major is greater, we obviously have a newer version
+                Output.clear()
+                Output.log(Output.PASSED, self.description)
 
-        elif minor > self.minor:
-            # If the minor is greater, we still have a newer version
-            Output.clear()
-            Output.log(Output.PASSED, self.description)
+                # And return our result
+                return True
 
-            # And return our result
-            return True
+            elif minor > self.minor:
+                
+                # If the minor is greater, we still have a newer version
+                Output.clear()
+                Output.log(Output.PASSED, self.description)
 
-        elif revision >= self.revision:
-            # If the revision is greater or equal, we must have a newer version
-            Output.clear()
-            Output.log(Output.PASSED, self.description)
+                # And return our result
+                return True
 
-            # And return our result
-            return True  
+            elif revision >= self.revision:
+                
+                # If the revision is greater or equal, we must have a newer
+                # version
+                Output.clear()
+                Output.log(Output.PASSED, self.description)
 
-        # At this point, we obviously don't have the correct version
+                # And return our result
+                return True
+
+        elif self.type == "link":
+
+            # Execute the test code
+            endpoint = self.parent.run(self.commands)[0]
+
+            # Check that the endpoint is correct
+            if endpoint == self.endpoint:
+                
+                # If the endpoints are the same, things are good
+                Output.clear()
+                Output.log(Output.PASSED, self.description)
+
+                # And return our result
+                return True 
+
+        # At this point, we obviously don't have the correct requirement
         Output.clear()
         Output.log(Output.FAILED, self.description)
 
