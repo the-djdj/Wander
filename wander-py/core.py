@@ -9,14 +9,11 @@ class Main:
     def __init__(self):
         ''' The constructor. This creates the main object, and sets all of the
             default variables.'''
-        # Create the output system
-        self.output = Output()
-
         # Create the command system
         self.commands = Commands()
 
         # Create the prerequisites system
-        self.prerequisites = Prerequisites(self.output, self.commands)
+        self.prerequisites = Prerequisites(self.commands)
 
 
     def begin(self):
@@ -24,6 +21,7 @@ class Main:
             system.'''
         # Check the prerequisites
         self.prerequisites.verify()
+        print('')
 
 
 
