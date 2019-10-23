@@ -49,9 +49,8 @@ class Prerequisite:
         ''' The init method, used to create a new prerequisite object which can
             be tested on the host system.'''
         # Store information about the prerequisite
-        self.version     = element.get('version')
         self.description = element.get('description')
-        self.type        = element.get('type')
+        self.version     = element.get('version')
         self.link        = element.get('link')
         self.endpoint    = element.get('endpoint')
         self.commands    = element.get('commands')
@@ -84,14 +83,15 @@ class Prerequisite:
         Output.log(Output.TESTING, self.description)
 
         # Check the type of test
-        if self.type == 'version':
+        if self.version is not None:
 
             # Execute the test code
             version = self.parent.run(self.commands)[0]
 
             # Extrapolate the version information
             major, minor, revision = self.extrapolate(version)
-
+ 
+            # Start checking the versions
             if major > self.major:
                 
                 # If the major is greater, we obviously have a newer version
@@ -120,7 +120,7 @@ class Prerequisite:
                 # And return our result
                 return True
 
-        elif self.type == "link":
+        elif self.endpoint is not None:
 
             # Execute the test code
             endpoint = self.parent.run(self.commands)[0]
