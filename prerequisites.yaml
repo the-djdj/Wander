@@ -7,7 +7,7 @@ elements:
         description: Bash
         version: 3.2
         commands:
-            - bash --version | head -n 1 | cut -d " " -f4 | cut -d "(" -f 1
+            - bash --version | head -n 1 | cut -d " " -f 4 | cut -d "(" -f 1
     bash-symlink:
         description: Bash (/bin/sh -> /bin/bash)
         endpoint: bash
@@ -16,6 +16,7 @@ elements:
     binutils:
         description: Binutils
         version: 2.25
+        maximum: 2.32
         commands:
             - ls --version | head -n 1 | cut -d " " -f 4
     bison:
@@ -32,5 +33,115 @@ elements:
         description: Bzip2
         version: 1.0.4
         commands:
-            - bzip2 --version 2>&1 < /dev/null | head -n1 | cut -d " " -f 8 | cut -d "," -f 1
+            - bzip2 --version 2>&1 < /dev/null | head -n 1 | cut -d " " -f 8 | cut -d "," -f 1
+    coreutils:
+        description: Coreutils
+        version: 6.9
+        commands:
+            - chown --version | head -n 1 | cut -d " " -f 4
+    diffutils:
+        description: Diffutils
+        version: 2.8.1
+        commands:
+            - diff --version | head -n 1 | cut -d " " -f 4
+    findutils:
+        description: Findutils
+        version: 4.2.31
+        commands:
+            - find --version | head -n 1 | cut -d " " -f 4 | cut -d "-" -f 1
+    gawk:
+        description: Gawk
+        version: 4.0.1
+        commands:
+            - gawk --version | head -n1 | cut -d " " -f 3 | cut -d "," -f 1
+    gawk-symlink:
+        description: Gawk (/usr/bin/awk -> /usr/bin/gawk)
+        endpoint: gawk
+        commands:
+            - readlink -f /usr/bin/awk | cut -d "/" -f 4
+    gcc:
+        description: GCC
+        version: 6.2
+        maximum: 9.2.0
+        commands:
+            - gcc --version | head -n 1 | cut -d " " -f 4
+    g++:
+        description: G++
+        version: 6.2
+        maximum: 9.2.0
+        commands:
+            - g++ --version | head -n 1 | cut -d " " -f 4
+    glibc:
+        description: Glibc
+        version: 2.11
+        maximum: 2.30
+        commands:
+            - ldd --version | head -n 1 | cut -d " " -f 5
+    grep:
+        description: Grep
+        version: 2.5.1
+        commands:
+            - grep --version | head -n 1 | cut -d " " -f 4
+    gzip:
+        description: Gzip
+        version: 1.3.12
+        commands:
+            - gzip --version | head -n 1 | cut -d " " -f 2
+    linux:
+        description: Linux Kernel
+        version: 3.2
+        commands:
+            - cat /proc/version | cut -d " " -f 3 | cut -d "-" -f 1
+    m4:
+        description: M4
+        version: 1.4.10
+        commands:
+            - m4 --version | head -n 1 | cut -d " " -f 4
+    make:
+        description: Make
+        version: 4.0
+        commands:
+            - make --version | head -n 1 | cut -d " " -f 3
+    patch:
+        description: Patch
+        version: 2.5.4
+        commands:
+            - patch --version | head -n 1 | cut -d " " -f 3
+    perl:
+        description: Perl
+        version: 5.8.8
+        commands:
+            - perl -V:version | cut -d "'" -f 2
+    python3:
+        description: Python
+        version: 3.4
+        commands:
+            - python3 --version | cut -d " " -f 2
+    sed:
+        description: Sed
+        version: 4.1.5
+        commands:
+            - sed --version | head -n1 | cut -d " " -f 4
+    tar:
+        description: Tar
+        version: 1.22
+        commands:
+            - tar --version | head -n1 | cut -d " " -f 4
+    texinfo:
+        description: Texinfo
+        version: 4.7
+        commands:
+            - makeinfo --version | head -n1 | cut -d " " -f 4
+    xz:
+        description: Xz
+        version: 5.0.0
+        commands:
+            - xz --version | head -n 1 | cut -d " " -f 4
+    g++-compilation:
+        description: G++ compilation
+        test: 1
+        commands:
+            - 'echo "int main(){}" > dummy.c && g++ -o dummy dummy.c'
+            - '[ -x dummy ] && echo True || echo False'
+            - rm -f dummy.c dummy
 ...
