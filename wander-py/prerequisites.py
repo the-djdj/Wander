@@ -63,8 +63,8 @@ class Prerequisite:
         # Store information about the prerequisite
         self.description = element.get('description')
         self.version     = element.get('version')
-        self.link        = element.get('link')
         self.endpoint    = element.get('endpoint')
+        self.test        = element.get('test')
         self.commands    = element.get('commands')
 
         # Add the version to the title, if applicable
@@ -145,7 +145,31 @@ class Prerequisite:
                 Output.log(Output.PASSED, self.description)
 
                 # And return our result
-                return True 
+                return True
+
+        elif self.test is not None:
+
+            # Iterate up to the test
+            for element in range(self.test + 1):
+
+                # Execute the commands
+                result = self.parent.run([self.commands[element]])[0]
+
+            # And execute the rest of the commands
+            for element in range(self.test + 1, len(self.commands)):
+
+                # Execute the final commands
+                self.parent.run([self.commands[element]])
+
+            # Check that the output is correct
+            if result == "True":
+
+                # If the endpoints are the same, things are good
+                Output.clear()
+                Output.log(Output.PASSED, self.description)
+
+                # And return our result
+                return True
 
         # At this point, we obviously don't have the correct requirement
         Output.clear()
@@ -180,4 +204,4 @@ class Prerequisite:
             revision = 0
 
         # And return our versions
-        return major, minor, revision
+        return int(major), int(minor), int(revision)
