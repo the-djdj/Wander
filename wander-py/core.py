@@ -19,6 +19,9 @@ class Main:
     def begin(self):
         ''' The begin method. This starts the build of the new wander
             system.'''
+        # Send a friendly message to the user
+        Output.header('Welcome to Wander!\n')
+
         # Check the prerequisites
         self.prerequisites.verify()
         print('')
