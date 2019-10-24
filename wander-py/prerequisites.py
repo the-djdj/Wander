@@ -41,11 +41,8 @@ class Prerequisites(YAMLObject):
             # Add the final line of output
             print('')
 
-        # Return whether or not we were successful
-        status = Output.L_PASSED if result else Output.L_FAILED
-
         # Inform the user of the status
-        Output.footer(status, "Checking host prerequisites")
+        Output.footer(result, "Checking host prerequisites")
 
         # And return the result
         return result

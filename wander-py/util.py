@@ -53,7 +53,18 @@ class Output:
     def footer(status, data):
         '''The end section. This ends an output section and prints the
             result.'''
-        print(Output.RESET + data + " " + status + Output.RESET + ".")
+        # Print the start of the message
+        print(Output.RESET + data + " ", end = '')
+
+        # Check the status
+        if status:
+            # Print the success message
+            print(Output.L_PASSED + Output.RESET + '.')
+
+        else:
+            # Print the error message, and conform if the user is okay
+            print(Output.L_FAILED + Output.RESET
+                        + '. Do you want to continue anyway? [Yn]')
 
 
     def log(status, data):
