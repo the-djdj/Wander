@@ -71,7 +71,7 @@ class Output:
         ''' The method which logs an item to the output. This adds the item
             with a designated status.'''
         print('\r' + Output.RESET + ' * [' + status + Output.RESET + '] '
-                + Output.B_BLACK + data, end='')
+                + Output.D_WHITE + data, end='')
 
 
     def clear():
