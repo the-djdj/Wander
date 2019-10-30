@@ -1,7 +1,7 @@
 from util import Output
 
 import parted
-from _ped import IOException
+from _ped import DeviceException, IOException
 from re import search
 
 
@@ -23,13 +23,39 @@ class Partitions:
         Output.header('Checking partition system...')
 
         # Create the disk variable
+        disk, device = self.getPath()
+
+        # Store the partition to use
+        partition = self.getPartition(
+                self.printPartitions(disk, device), device)
+
+        # Store the partition that we're using
+        self.path = device.path + str(partition)
+
+        # Ask the user if they wish to format the disk
+        Output.text('Do you want to format ' + self.path + ' to ext4? [Yn]',
+                False)
+        if input().lower() == 'y':
+            # Do the formatting
+            pass
+        else:
+            pass
+
+        return True
+
+
+    def getPath(self):
+        ''' A method which gets the path of the device on which to build the
+            system.'''
+        # Create the disk variable
         disk = None
 
-        # Get the partition which we are going to use
+        # Get the disk which we are going to use
         while disk is None:
 
             # Prompt the user to give some input
-            Output.text('Enter the disk on which to build Wander (/dev/sdX):')
+            Output.text('Enter the disk on which to build Wander (/dev/sdX):',
+                False)
 
             # See if we can use the disk
             try:
@@ -37,18 +63,69 @@ class Partitions:
                 # And store the input
                 disk, device = self.getDevice(self.getDisk(input()))
 
-            except IOException:
+            except (DeviceException, IOException):
 
                 # If we catch an exception, the disk is not available
                 disk = None
 
-        return True
+        # And return what we have
+        return disk, device
+
+
+    def printPartitions(self, disk, device):
+        ''' The method which prints all of the partitions on a device, and
+            creates a list of the partitions to reference later.'''
+        # Create a variable to store the list of partitions
+        partitions = list()
+
+        # Print a list of partitions on the disk
+        Output.text(f'The device {device.path} contains the following '
+                + 'partitions:')
+        for partition in disk.partitions:
+
+            # Store the partition in a list
+            partitions.append(partition.number)
+
+            # Get the partition filesystem information
+            filesystem = partition.fileSystem
+            filesystem = filesystem.type if filesystem else 'unknown'
+
+            Output.text(f'Partition {partition.number} ({partition.path})\n'
+                + f'    size: {round(partition.getSize() / 1024, 2)} GiB\n'
+                + f'    type: {filesystem}')
+
+        # And return what we have
+        return partitions
+
+
+    def getPartition(self, partitions, device):
+        ''' A method which returns the partition of the device on which to build
+            the system.'''
+        # Create the partition variable
+        partition = None
+
+        # Get the partition which we are going to use
+        while partition is None:
+
+            # Prompt the user to give some input
+            Output.text(f'Enter the partition of {device.path} on which to'
+                    + ' build Wander:', False)
+
+            # Get the partition input
+            partition = int(input())
+
+            # And check if the partition is valid
+            if partition not in partitions:
+                partition = None
+
+        # And return what we have
+        return partition
 
 
     def getDisk(self, input):
         ''' A method which ensures that disk text correctly formatted.'''
         # Check if the disk is a fullname
-        if search('^.*[a-z]$', input) is not None:
+        if search('^.*[a-z]$', input.lower()) is not None:
 
             # We have a very nice match
             return '/dev/sd' + input[-1]

@@ -74,9 +74,14 @@ class Output:
                 + Output.D_WHITE + data, end='')
 
 
-    def text(data):
+    def text(data, newline = True):
         ''' The method which prints text, with no decorations.'''
+        # Print the output
         print(Output.RESET + data + ' ', end = '')
+
+        # And if we need to print a newline, do that
+        if newline:
+            print()
 
 
     def clear():
