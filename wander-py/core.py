@@ -1,5 +1,5 @@
-from partitions import Partitions
-from prerequisites import Prerequisites
+from stages.partitions import Partitions
+from stages.prerequisites import Prerequisites
 from util import Output, Commands
 
 class Main:
