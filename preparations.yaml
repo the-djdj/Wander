@@ -27,4 +27,14 @@ elements:
         test: 0
         commands:
             - ln -sv $WANDER/tools /
+    sourcesDir:
+        description: Creating sources directory
+        test: 0
+        commands:
+            - mkdir -v $WANDER/sources
+    sourcesSticky:
+        description: Making the sources directory sticky
+        test: 0
+        commands:
+            - chmod -v a+wt $WANDER/sources
 ...
