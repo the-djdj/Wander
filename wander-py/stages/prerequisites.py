@@ -10,7 +10,7 @@ class Prerequisites(YAMLObject):
         objects and checks each one.'''
 
 
-    def __init__(self, commands):
+    def __init__(self, commands, path):
         ''' The constructor. This creates the new system for checking that a
             host meets the necessary requirements for building wander.'''
         # Create the parent object
@@ -20,7 +20,7 @@ class Prerequisites(YAMLObject):
         self.commands = commands
 
         # Load the prerequisites list
-        self.load('../prerequisites.yaml')
+        self.load(path + '/prerequisites.yaml')
 
 
     def verify(self):
@@ -109,10 +109,10 @@ class Prerequisite:
 
             # Extrapolate the version information
             major, minor, revision = self.extrapolate(version)
- 
+
             # Start checking the versions
             if major > self.major:
-                
+
                 # If the major is greater, we obviously have a newer version
                 Output.clear()
                 Output.log(Output.PASSED, self.description)
@@ -121,7 +121,7 @@ class Prerequisite:
                 return True
 
             elif minor > self.minor:
-                
+
                 # If the minor is greater, we still have a newer version
                 Output.clear()
                 Output.log(Output.PASSED, self.description)
@@ -130,7 +130,7 @@ class Prerequisite:
                 return True
 
             elif revision >= self.revision:
-                
+
                 # If the revision is greater or equal, we must have a newer
                 # version
                 Output.clear()
@@ -146,7 +146,7 @@ class Prerequisite:
 
             # Check that the endpoint is correct
             if endpoint == self.endpoint:
-                
+
                 # If the endpoints are the same, things are good
                 Output.clear()
                 Output.log(Output.PASSED, self.description)
@@ -192,7 +192,7 @@ class Prerequisite:
         # Try to extract the major version
         try:
             major = version.rsplit('.', 3)[0]
-       
+
         except IndexError:
             major = 0
 

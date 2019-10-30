@@ -11,6 +11,9 @@ class Main:
     ERROR_PREREQUISITE = 1
     ERROR_PARTITIONS   = 2
 
+    # The path at which the YAML files can be found
+    PATH = '..'
+
 
     def __init__(self):
         ''' The constructor. This creates the main object, and sets all of the
@@ -19,7 +22,7 @@ class Main:
         self.commands = Commands()
 
         # Create the prerequisites system
-        self.prerequisites = Prerequisites(self.commands)
+        self.prerequisites = Prerequisites(self.commands, Main.PATH)
 
         # Create the partitioning system
         self.partitions = Partitions()
