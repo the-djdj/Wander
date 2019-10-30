@@ -32,16 +32,42 @@ class Partitions:
         # Store the partition that we're using
         self.path = device.path + str(partition)
 
-        # Ask the user if they wish to format the disk
-        Output.text('Do you want to format ' + self.path + ' to ext4? [Yn]',
-                False)
-        if input().lower() == 'y':
-            # Do the formatting
-            pass
-        else:
-            pass
+        # Let the user know exactly what the path is
+        Output.text('Wander will be built on ' + self.path + '.')
 
-        return True
+        # Log the filesystem
+        Output.log(Output.TESTING, 'Checking that the filesystem of '
+                + self.path + ' is ext4.')
+
+        # Store the unknown filesystem
+        filesystem = None
+
+        # Check the file system
+        for partition in disk.partitions:
+
+            # Check that the paths match
+            if partition.path == self.path:
+
+                # Store the file system information
+                filesystem = partition.fileSystem
+                filesystem = filesystem.type if filesystem else None
+
+                # And close
+                break
+
+        # Get our result
+        result = filesystem == 'ext4'
+
+        # Log the filesystem
+        Output.log(Output.PASSED if result else Output.FAILED, 'Checking that'
+                + ' the filesystem of ' + self.path + ' is ext4.')
+        print()
+
+        # Inform the user of the status
+        Output.footer(result, "Checking partition system")
+
+        # And return the result
+        return result
 
 
     def getPath(self):
