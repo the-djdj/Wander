@@ -1,3 +1,4 @@
+from partitions import Partitions
 from prerequisites import Prerequisites
 from util import Output, Commands
 
@@ -8,6 +9,7 @@ class Main:
     # The application errors for if something goes wrong
     ERROR_NONE         = 0
     ERROR_PREREQUISITE = 1
+    ERROR_PARTITIONS   = 2
 
 
     def __init__(self):
@@ -19,6 +21,9 @@ class Main:
         # Create the prerequisites system
         self.prerequisites = Prerequisites(self.commands)
 
+        # Create the partitioning system
+        self.partitions = Partitions()
+
 
     def begin(self):
         ''' The begin method. This starts the build of the new wander
@@ -26,14 +31,27 @@ class Main:
         # Send a friendly message to the user
         Output.header('Welcome to Wander!\n')
 
-        # Check the prerequisites
-        if not self.prerequisites.verify():
-            
-            # Get the user input
-            if not input().lower() == 'y':
-                
-                # Close the application
-                self.end(Main.ERROR_PREREQUISITE)
+        # Create a list of modules needed to build the system
+        modules = [(self.prerequisites, Main.ERROR_PREREQUISITE),
+                   (self.partitions,    Main.ERROR_PARTITIONS)]
+
+        # Iterate through each of the modules, and ensure that they succeed
+        for module, error in modules:
+
+            # Check the prerequisites
+            if not module.verify():
+
+                # Get the user input
+                if not input().lower() == 'y':
+
+                    # Close the application
+                    self.end(error)
+
+                else:
+
+                    # Add some nice spacing
+                    print()
+
 
         # And exit gracefully
         self.end(Main.ERROR_NONE)
