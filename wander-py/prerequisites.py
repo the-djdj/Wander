@@ -97,6 +97,16 @@ class Prerequisite:
             # Execute the test code
             version = self.parent.run(self.commands)[0]
 
+            # Check that the command was found
+            if 'not found' in version:
+
+                # We don't have the program installed
+                Output.clear()
+                Output.log(Output.FAILED, self.description)
+
+                # And return our result
+                return False
+
             # Extrapolate the version information
             major, minor, revision = self.extrapolate(version)
  
