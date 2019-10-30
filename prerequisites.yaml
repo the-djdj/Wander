@@ -1,7 +1,8 @@
 ---
-# The bash prerequisite
+# A list of variables that must be set for all elements
 preamble:
     LC_ALL: C
+# The elements, each representing one unit to execute
 elements:
     bash:
         description: Bash
