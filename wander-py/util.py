@@ -41,7 +41,7 @@ class Output:
 
     # Some lower case alternatives
     L_PASSED  = B_GREEN + "passed"
-    L_FAILED  = B_RED   + "failed" 
+    L_FAILED  = B_RED   + "failed"
 
 
     def header(data):
@@ -64,7 +64,7 @@ class Output:
         else:
             # Print the error message, and conform if the user is okay
             print(Output.L_FAILED + Output.RESET
-                        + '. Do you want to continue anyway? [Yn]')
+                        + '. Do you want to continue anyway? [Yn] ', end = '')
 
 
     def log(status, data):
@@ -74,11 +74,16 @@ class Output:
                 + Output.D_WHITE + data, end='')
 
 
+    def text(data):
+        ''' The method which prints text, with no decorations.'''
+        print(Output.RESET + data + ' ', end = '')
+
+
     def clear():
         ''' A method which clears the last line printed, so that the output can
             be updated.'''
         print(Output.CLEAR, end='')
-        
+
 
 
 class Commands:
