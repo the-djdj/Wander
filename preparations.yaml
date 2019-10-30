@@ -1,0 +1,30 @@
+---
+# A list of variables that must be set for all elements
+preamble:
+    LC_ALL: POSIX
+    WANDER: /mnt/wander
+    WANDER_TGT: $(uname -m)-wander-linux-gnu
+    PATH: /tools/bin:/bin:/usr/bin
+# The elements, each representing one unit to execute
+elements:
+    baseDir:
+        description: Creating base directory
+        test: 0
+        commands:
+            - mkdir -pv $WANDER
+    mountfs:
+        description: Mounting base partition
+        test: 0
+        commands:
+            - mount -v -t ext4 /dev/xxx $WANDER
+    toolsDir:
+        description: Creating tools directory
+        test: 0
+        commands:
+            - mkdir -v $WANDER/tools
+    toolsLink:
+        description: Setting /tools symlink
+        test: 0
+        commands:
+            - ln -sv $WANDER/tools /
+...
