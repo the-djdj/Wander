@@ -136,7 +136,7 @@ elements:
         description: Xz
         version: 5.0.0
         commands:
-            - xz --version | head -n 1 | cut -d " " -f 4
+            - xz --version | head -n 1 | cut -d " " -f 4 | cut -d "a" -f 1
     g++-compilation:
         description: G++ compilation
         test: 1
