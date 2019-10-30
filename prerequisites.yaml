@@ -46,7 +46,12 @@ elements:
         commands:
             - diff --version | head -n 1 | cut -d " " -f 4
     findutils:
-        description: Findutils
+        description: Findutils# Add the folder location
+        if self.environment.get('LOCATION') is None:
+            self.environment['LOCATION'] = partitions.path
+
+        else:
+            self.environment['LOCATION'] += ':' + partitions.path
         version: 4.2.31
         commands:
             - find --version | head -n 1 | cut -d " " -f 4 | cut -d "-" -f 1
@@ -143,6 +148,6 @@ elements:
         test: 1
         commands:
             - 'echo "int main(){}" > dummy.c && g++ -o dummy dummy.c'
-            - '[ -x dummy ] && echo True || echo False'
+            - 'test -x dummy'
             - rm -f dummy.c dummy
 ...

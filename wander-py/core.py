@@ -1,4 +1,5 @@
 from stages.partitions import Partitions
+from stages.preparations import Preparations
 from stages.prerequisites import Prerequisites
 from util import Output, Commands
 
@@ -10,9 +11,10 @@ class Main:
     ERROR_NONE         = 0
     ERROR_PREREQUISITE = 1
     ERROR_PARTITIONS   = 2
+    ERROR_PREPARATIONS = 3
 
     # The path at which the YAML files can be found
-    PATH = '..'
+    PATH = '../'
 
 
     def __init__(self):
@@ -27,6 +29,9 @@ class Main:
         # Create the partitioning system
         self.partitions = Partitions()
 
+        # Create the preparations system
+        self.preparations = Preparations(self.commands, Main.PATH, self.partitions)
+
 
     def begin(self):
         ''' The begin method. This starts the build of the new wander
@@ -36,7 +41,8 @@ class Main:
 
         # Create a list of modules needed to build the system
         modules = [(self.prerequisites, Main.ERROR_PREREQUISITE),
-                   (self.partitions,    Main.ERROR_PARTITIONS)]
+                   (self.partitions,    Main.ERROR_PARTITIONS),
+                   (self.preparations,  Main.ERROR_PREPARATIONS)]
 
         # Iterate through each of the modules, and ensure that they succeed
         for module, error in modules:
@@ -50,10 +56,8 @@ class Main:
                     # Close the application
                     self.end(error)
 
-                else:
-
-                    # Add some nice spacing
-                    print()
+            # Add some nice spacing
+            print()
 
 
         # And exit gracefully

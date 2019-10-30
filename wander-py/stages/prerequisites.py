@@ -20,7 +20,7 @@ class Prerequisites(YAMLObject):
         self.commands = commands
 
         # Load the prerequisites list
-        self.load(path + '/prerequisites.yaml')
+        self.load(path + 'prerequisites.yaml')
 
 
     def verify(self):
@@ -95,7 +95,7 @@ class Prerequisite:
         if self.version is not None:
 
             # Execute the test code
-            version = self.parent.run(self.commands)[0]
+            version = self.parent.run(self.commands)[-1]
 
             # Check that the command was found
             if 'not found' in version:
@@ -142,10 +142,10 @@ class Prerequisite:
         elif self.endpoint is not None:
 
             # Execute the test code
-            endpoint = self.parent.run(self.commands)[0]
+            endpoint = self.parent.run(self.commands)[-1]
 
             # Check that the endpoint is correct
-            if endpoint == self.endpoint:
+            if endpoint.endswith(self.endpoint):
 
                 # If the endpoints are the same, things are good
                 Output.clear()
@@ -160,7 +160,7 @@ class Prerequisite:
             for element in range(self.test + 1):
 
                 # Execute the commands
-                result = self.parent.run([self.commands[element]])[0]
+                result = self.parent.run([self.commands[element]], True)[-1]
 
             # And execute the rest of the commands
             for element in range(self.test + 1, len(self.commands)):
@@ -169,7 +169,7 @@ class Prerequisite:
                 self.parent.run([self.commands[element]])
 
             # Check that the output is correct
-            if result == "True":
+            if result.endswith("True"):
 
                 # If the endpoints are the same, things are good
                 Output.clear()

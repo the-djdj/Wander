@@ -36,6 +36,7 @@ class Output:
     # The status that an output has
     PENDING   = B_BLACK + "Pending"
     TESTING   = B_BLUE  + "Testing"
+    EXECUTING = B_BLUE  + "Executing"
     PASSED    = B_GREEN + "Passed"
     FAILED    = B_RED   + "Failed"
 
@@ -162,7 +163,7 @@ class YAMLObject:
                 self.environment[element] += ':' + preamble[element]
 
 
-    def run(self, elements):
+    def run(self, elements, test = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -170,8 +171,14 @@ class YAMLObject:
 
         # Iterate through each of the commands in the preamble.
         for element in elements:
-            # Get the response of the command
-            command = self.commands.call(element, self.environment)
+            # If we are in test mode, add something to the command
+            if test:
+                command = self.commands.call(element
+                        + '&& echo True || echo False', self.environment)
+
+            # Otherwise, Get the response of the command
+            else:
+                command = self.commands.call(element, self.environment)
 
             # Check if there were any errors
             if command[1] is not None:

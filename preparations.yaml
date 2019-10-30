@@ -16,7 +16,7 @@ elements:
         description: Mounting base partition
         test: 0
         commands:
-            - mount -v -t ext4 /dev/xxx $WANDER
+            - mount -v -t ext4 $LOCATION $WANDER
     toolsDir:
         description: Creating tools directory
         test: 0
