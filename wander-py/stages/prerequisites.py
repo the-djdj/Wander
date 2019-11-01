@@ -1,8 +1,6 @@
 from exception import CommandException
 from util import Output, YAMLObject
 
-from subprocess import call
-
 
 class Prerequisites(YAMLObject):
     ''' The class responsible for ensuring that a host meets the minimum
