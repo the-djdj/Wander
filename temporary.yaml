@@ -56,4 +56,15 @@ elements:
                 - make
             installation:
                 - make install
+    linux:
+        description: Linux API Headers
+        version: 5.2.8
+        url: http://www.kernel.org/pub/linux/kernel/v5.x/linux-5.2.8.tar.xz
+        md5: 602dd0ecb8646e539fefb2beb6eb6fe0
+        commands:
+            preparation:
+                - make mrproper
+            installation:
+                - make INSTALL_HDR_PATH=dest headers_install
+                - cp -rv dest/include/* /tools/include
 ...
