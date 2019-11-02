@@ -201,19 +201,19 @@ class Module:
         with tarfile.open(self.target) as file:
 
             # Create the directory for the extraction
-            mkdir(self.target + '.raw/')
+            mkdir(self.source + '.raw/')
 
             # Extract the archive contents
-            file.extractall(self.target + '.raw/')
+            file.extractall(self.source + '.raw/')
 
             # Get a list of folders that we've just extracted
-            folder = self.target + '.raw/' + listdir(self.target + '.raw/')[0]
+            folder = self.source + '.raw/' + listdir(self.source + '.raw/')[0]
 
             # Move the contents one directory up
             copytree(folder, self.target + '.d/')
 
             # And delete the unneeded files
-            rmtree(self.target + '.raw/')
+            rmtree(self.source + '.raw/')
 
         # And return if the directory exists
         return path.isdir(self.target + '.d/')
@@ -344,6 +344,7 @@ class Module:
             build system.'''
         # Cleanup the build system
         rmtree(self.target + '.d/')
+        rmtree(self.source + '.d/')
 
         # And return that things went okay
         return True
