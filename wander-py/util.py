@@ -34,11 +34,20 @@ class Output:
     RESET     = '\u001b[0m'
 
     # The status that an output has
-    PENDING   = B_BLACK + "Pending"
-    TESTING   = B_BLUE  + "Testing"
-    EXECUTING = B_BLUE  + "Executing"
-    PASSED    = B_GREEN + "Passed"
-    FAILED    = B_RED   + "Failed"
+    PENDING     = B_BLACK + 'Pending'
+    DOWNLOADING = B_BLUE  + 'Downloading'
+    VERIFYING   = B_BLUE  + 'Verifying'
+    COPYING     = B_BLUE  + 'Copying'
+    EXTRACTING  = B_BLUE  + 'Extracting'
+    PREPARING   = B_BLUE  + 'Preparing'
+    COMPILING   = B_BLUE  + 'Compiling'
+    CONFIGURING = B_BLUE  + 'Configuring'
+    TESTING     = B_BLUE  + 'Testing'
+    INSTALLING  = B_BLUE  + 'Installing'
+    CLEANING    = B_BLUE  + 'Cleaning'
+    EXECUTING   = B_BLUE  + 'Executing'
+    PASSED      = B_GREEN + 'Passed'
+    FAILED      = B_RED   + 'Failed'
 
     # Some lower case alternatives
     L_PASSED  = B_GREEN + "passed"
@@ -97,11 +106,18 @@ class Commands:
         and for the results of that command to be stored.'''
 
 
-    def call(self, command, environment):
+    def call(self, command, environment, directory=None):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store the raw output of the command
-        raw = Popen(command, shell=True, env=environment,
+        if directory is not None:
+            raw = Popen(command, shell=True, env=environment,
+                        stdout=PIPE,
+                        stderr=STDOUT,
+                        cwd=directory)
+
+        else:
+            raw = Popen(command, shell=True, env=environment,
                         stdout=PIPE,
                         stderr=STDOUT)
 
@@ -163,7 +179,7 @@ class YAMLObject:
                 self.environment[element] += ':' + preamble[element]
 
 
-    def run(self, elements, test = False):
+    def run(self, elements, test = False, directory = None):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -176,7 +192,12 @@ class YAMLObject:
                 command = self.commands.call(element
                         + '&& echo True || echo False', self.environment)
 
-            # Otherwise, Get the response of the command
+            # If we have a directory set, run there
+            elif directory is not None:
+                command = self.commands.call(element, self.environment,
+                        directory = directory)
+
+            # Otherwise, get the response of the command
             else:
                 command = self.commands.call(element, self.environment)
 

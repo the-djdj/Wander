@@ -1,0 +1,25 @@
+---
+# A list of variables that must be set for all elements
+preamble:
+    LC_ALL: POSIX
+    WANDER: /mnt/wander
+    WANDER_TGT: x86_64-wander-linux-gnu
+    PATH: /tools/bin:/bin:/usr/bin
+# The elements, each representing one unit to execute
+elements:
+    binutils:
+        description: Binutils (Pass 1)
+        version: 2.32
+        url: http://ftp.gnu.org/gnu/binutils/binutils-2.32.tar.xz
+        md5: 0d174cdaf85721c5723bf52355be41e6
+        folder: build
+        commands:
+            preparation:
+                - ../configure --prefix=/tools --with-sysroot=$WANDER --with-lib-path=/tools/lib --target=$WANDER_TGT --disable-nls --disable-werror
+            compilation:
+                - make
+            configuration:
+                - mkdir -v /tools/lib && ln -sv lib /tools/lib64
+            installation:
+                - make install
+...

@@ -3,7 +3,7 @@
 preamble:
     LC_ALL: POSIX
     WANDER: /mnt/wander
-    WANDER_TGT: $(uname -m)-wander-linux-gnu
+    WANDER_TGT: x86_64-wander-linux-gnu-wander-linux-gnu
     PATH: /tools/bin:/bin:/usr/bin
 # The elements, each representing one unit to execute
 elements:

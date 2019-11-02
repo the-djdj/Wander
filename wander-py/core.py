@@ -1,3 +1,4 @@
+from stages.build import BuildSystem
 from stages.partitions import Partitions
 from stages.preparations import Preparations
 from stages.prerequisites import Prerequisites
@@ -8,13 +9,14 @@ class Main:
         wander system.'''
 
     # The application errors for if something goes wrong
-    ERROR_NONE         = 0
-    ERROR_PREREQUISITE = 1
-    ERROR_PARTITIONS   = 2
-    ERROR_PREPARATIONS = 3
+    ERROR_NONE             = 0
+    ERROR_PREREQUISITE     = 1
+    ERROR_PARTITIONS       = 2
+    ERROR_PREPARATIONS     = 3
+    ERROR_TEMPORARY_SYSTEM = 4
 
     # The path at which the YAML files can be found
-    PATH = '../'
+    PATH = './'
 
 
     def __init__(self):
@@ -23,14 +25,11 @@ class Main:
         # Create the command system
         self.commands = Commands()
 
-        # Create the prerequisites system
+        # Create the different systems used in the build
         self.prerequisites = Prerequisites(self.commands, Main.PATH)
-
-        # Create the partitioning system
-        self.partitions = Partitions()
-
-        # Create the preparations system
-        self.preparations = Preparations(self.commands, Main.PATH, self.partitions)
+        self.partitions    = Partitions()
+        self.preparations  = Preparations(self.commands, Main.PATH, self.partitions)
+        self.temporary     = BuildSystem(self.commands, Main.PATH, BuildSystem.TEMPORARY_SYSTEM)
 
 
     def begin(self):
@@ -42,7 +41,8 @@ class Main:
         # Create a list of modules needed to build the system
         modules = [(self.prerequisites, Main.ERROR_PREREQUISITE),
                    (self.partitions,    Main.ERROR_PARTITIONS),
-                   (self.preparations,  Main.ERROR_PREPARATIONS)]
+                   (self.preparations,  Main.ERROR_PREPARATIONS),
+                   (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM)]
 
         # Iterate through each of the modules, and ensure that they succeed
         for module, error in modules:
