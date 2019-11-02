@@ -100,7 +100,7 @@ class Module:
         if self.prerequisites is None:
 
             # And make it an empty list
-            self.prerequisites = list()
+            self.prerequisites = dict()
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
