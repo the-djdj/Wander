@@ -81,19 +81,26 @@ class Module:
         ''' The init method, used to create a new module object which can be
             built on the host system.'''
         # Store information about the prerequisite
-        self.description = element.get('description')
-        self.version     = element.get('version')
-        self.url         = element.get('url')
-        self.md5         = element.get('md5')
-        self.folder      = element.get('folder')
-        self.commands    = element.get('commands')
+        self.description   = element.get('description')
+        self.version       = element.get('version')
+        self.url           = element.get('url')
+        self.md5           = element.get('md5')
+        self.prerequisites = element.get('prerequisites')
+        self.folder        = element.get('folder')
+        self.commands      = element.get('commands')
 
         # Store the system for running commands
-        self.parent      = parent
+        self.parent        = parent
 
         # Store the root file name
-        self.source      = 'sources/' + self.md5
-        self.target      = self.parent.environment['WANDER'] + '/' + self.source
+        self.source        = 'sources/' + self.md5
+        self.target        = self.parent.environment['WANDER'] + '/' + self.source
+
+        # Check if there are prerequisites
+        if self.prerequisites is None:
+
+            # And make it an empty list
+            self.prerequisites = list()
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
@@ -154,14 +161,34 @@ class Module:
             # Download the file
             get(self.url, self.source)
 
+        # Store the result of the prerequisite downloads
+        result = True
+
+        # Do the same for all of the prerequisites
+        for key, value in self.prerequisites.items():
+
+            # Store some variables about the prerequisite
+            source = 'sources/' + value.get('md5')
+            target = self.parent.environment['WANDER'] + '/' + source
+
+            # Check that the prerequisite doesn't exist
+            if not path.isfile(source):
+
+                # Download the file
+                get(value.get('url'), source)
+
+                # Check if the file downloaded
+                result &= path.isfile(source)
+
+
         # And return if the file exists
-        return path.isfile(self.source)
+        return path.isfile(self.source) and result
 
 
     def checksum(self):
         ''' A simple method which checks if the downloaded file has the correct
             checksum and was not tampered with on the download.'''
-        # And open the file to verify it
+        # Open the file to verify it
         with open(self.source, 'rb') as file:
 
             # Generate the MD5 has
@@ -180,8 +207,40 @@ class Module:
                 # And update our hash
                 hash.update(data)
 
+        # Store the result of the prerequisite verification
+        result = True
+
+        # Do the same for all of the prerequisites
+        for key, value in self.prerequisites.items():
+
+            # Store some variables about the prerequisite
+            source = 'sources/' + value.get('md5')
+
+            # Open the file to verify it
+            with open(source, 'rb') as file:
+
+                # Generate the MD5 has
+                subhash = md5()
+
+                # Read the data in a loop
+                while True:
+
+                    # Read in a chunk of data
+                    data = file.read(8192)
+
+                    # Check that that chunk is not empty
+                    if not data:
+                        break
+
+                    # And update our hash
+                    subhash.update(data)
+
+            # Update our result
+            result &= subhash.hexdigest() == value.get('md5')
+
+
         # And return if our file matches
-        return hash.hexdigest() == self.md5
+        return hash.hexdigest() == self.md5 and result
 
 
     def copy(self):
@@ -190,15 +249,32 @@ class Module:
         # Copy the file over
         copyfile(self.source, self.target)
 
+        # Store the result of the prerequisites
+        result = True
+
+        # Copy over each of the prerequisites
+        for key, value in self.prerequisites.items():
+
+            # Store some variables about the prerequisite
+            source = 'sources/' + value.get('md5')
+            target = self.parent.environment['WANDER'] + '/' + source
+
+            # Copy them each in turn
+            copyfile(source, target)
+
+            # And update our prerequisite variable
+            result &= path.isfile(target)
+
+
         # And return if the file exists
-        return path.isfile(self.target)
+        return path.isfile(self.target) and result
 
 
     def extract(self):
         ''' A simple method which extracts the downloaded tarball so that it can
             be used.'''
         # Open the archive
-        with tarfile.open(self.target) as file:
+        with tarfile.open(self.source) as file:
 
             # Create the directory for the extraction
             mkdir(self.source + '.raw/')
@@ -215,13 +291,52 @@ class Module:
             # And delete the unneeded files
             rmtree(self.source + '.raw/')
 
+        # Store the result of the extraction of the prerequisites
+        result = True
+
+        # And do the same for all of the prerequisites
+        for key, value in self.prerequisites.items():
+
+            # Store some variables about the prerequisite
+            source = 'sources/' + value.get('md5')
+            target = self.parent.environment['WANDER'] + '/' + source
+
+            # Open the archive
+            with tarfile.open(source) as file:
+
+                # Create the directory for the extraction
+                mkdir(source + '.raw/')
+
+                # Extract the archive contents
+                file.extractall(source + '.raw/')
+
+                # Get a list of folders that we've just extracted
+                folder = source + '.raw/' + listdir(source + '.raw/')[0]
+
+                # Move the contents one directory up
+                copytree(folder, self.target + '.d/' + value.get('folder'))
+
+                # Delete the unneeded files
+                rmtree(source + '.raw/')
+
+                # And update the results variable
+                result &= path.isdir(self.target + '.d/' + value.get('folder'))
+
+
         # And return if the directory exists
-        return path.isdir(self.target + '.d/')
+        return path.isdir(self.target + '.d/') and result
 
 
     def prepare(self):
         ''' A simple method which ensures that the build environment is fully
             prepared for compilation.'''
+        # Check that there is a preparation for this module
+        if self.commands.get('preparation') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
         # Check if the folder variable is set
         if self.folder and not path.isdir(self.target + '.d/' + self.folder):
 
@@ -252,6 +367,13 @@ class Module:
     def compile(self):
         ''' A simple method which ensures that the build environment compiles
             properly and without any issues.'''
+        # Check that there is a set of compilation instructions for this module
+        if self.commands.get('compilation') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
         # Check if the folder variable is set
         if self.folder and not path.isdir(self.target + '.d/' + self.folder):
 
@@ -282,6 +404,13 @@ class Module:
     def configure(self):
         ''' A simple method which ensures that the build environment is fully
             configured without any issues.'''
+        # Check that there is a set of configuration instructions
+        if self.commands.get('configuration') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
         # Check if the folder variable is set
         if self.folder and not path.isdir(self.target + '.d/' + self.folder):
 
@@ -297,7 +426,7 @@ class Module:
         try:
 
             # Run the commands
-            self.parent.run(self.commands.get('compilation'),
+            self.parent.run(self.commands.get('configuration'),
                     directory = self.target + '.d/' + self.folder)
 
             # And return if there are no errors
@@ -312,6 +441,13 @@ class Module:
     def install(self):
         ''' A simple method installs a compiled package so that it can be used
             by the host system.'''
+        # Check that there is a set of installation instructions for this module
+        if self.commands.get('installation') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
         # Check if the folder variable is set
         if self.folder and not path.isdir(self.target + '.d/' + self.folder):
 
@@ -344,7 +480,6 @@ class Module:
             build system.'''
         # Cleanup the build system
         rmtree(self.target + '.d/')
-        rmtree(self.source + '.d/')
 
         # And return that things went okay
         return True
