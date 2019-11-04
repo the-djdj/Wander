@@ -13,6 +13,7 @@ elements:
         url: http://ftp.gnu.org/gnu/binutils/binutils-2.32.tar.xz
         md5: 0d174cdaf85721c5723bf52355be41e6
         folder: build
+        skip: false
         commands:
             preparation:
                 - ../configure --prefix=/tools --with-sysroot=$WANDER --with-lib-path=/tools/lib --target=$WANDER_TGT --disable-nls --disable-werror
@@ -47,6 +48,7 @@ elements:
                 md5: 4125404e41e482ec68282a2e687f6c73
                 folder: mpc
         folder: build
+        skip: false
         commands:
             preparation:
                 - for file in gcc/config/{linux,i386/linux{,64}}.h; do (cp -uv $file{,.orig}; sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' -e 's@/usr@/tools@g' $file.orig > $file; printf '#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib"\n#define STANDARD_STARTFILE_PREFIX_2 ""\n' >> $file; touch $file.orig)

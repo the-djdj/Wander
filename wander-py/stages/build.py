@@ -88,6 +88,7 @@ class Module:
         self.prerequisites = element.get('prerequisites')
         self.folder        = element.get('folder')
         self.commands      = element.get('commands')
+        self.skip          = element.get('skip')
 
         # Store the system for running commands
         self.parent        = parent
@@ -109,6 +110,16 @@ class Module:
     def verify(self):
         ''' The verify method, which checks that a module built correctly, and
             prints that to the console.'''
+        # Check if this module should be skipped
+        if self.skip:
+
+            # We're now finished with this prerequisite
+            Output.clear()
+            Output.log(Output.SKIPPED, self.description)
+
+            # And return our result
+            return True
+
         # Collect each of the elements which needs to be built
         elements = [(self.download,  Output.DOWNLOADING),
                     (self.checksum,  Output.VERIFYING),
