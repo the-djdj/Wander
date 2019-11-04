@@ -517,8 +517,30 @@ class Module:
     def cleanup(self):
         ''' A simple method which cleans up any source files which remain on the
             build system.'''
+        # Check if there is any specific cleanup
+        if self.commands.get('cleanup') is not None:
+
+            # Attempt to run all of the commands
+            try:
+
+                # Check that the folder variable is set
+                if self.folder is not None:
+
+                    # And clear it for use later on
+                    self.folder = ''
+
+                # Run the commands
+                self.parent.run(self.commands.get('cleanup'),
+                        directory = self.target + '.d/' + self.folder)
+
+            except CommandException:
+
+                # Ignore errors here, they aren't a train smash
+                pass
+
+
         # Cleanup the build system
         rmtree(self.target + '.d/')
 
         # And return that things went okay
-        return True
+        return not path.isdir(self.target + '.d/')
