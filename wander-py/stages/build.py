@@ -89,6 +89,7 @@ class Module:
         self.folder        = element.get('folder')
         self.commands      = element.get('commands')
         self.skip          = element.get('skip')
+        self.result        = element.get('test')
 
         # Store the system for running commands
         self.parent        = parent
@@ -129,6 +130,7 @@ class Module:
                     (self.compile,   Output.COMPILING),
                     (self.configure, Output.CONFIGURING),
                     (self.install,   Output.INSTALLING),
+                    (self.test,      Output.TESTING),
                     (self.cleanup,   Output.CLEANING)]
 
         # Store the result of the build
@@ -479,6 +481,32 @@ class Module:
 
             # And return if there are no errors
             return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
+
+
+    def test(self):
+        ''' A simple method for ensuring that a compiled package works properly,
+            by comparing the result of test code to an expected result.'''
+        # Check that there is a set of testing instructions for this module
+        if self.commands.get('testing') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
+        # Attempt to run all of the commands
+        try:
+
+            # Run the commands
+            result = self.parent.run(self.commands.get('testing'),
+                            directory = self.target + '.d/' + self.folder)
+
+            # And return if the output matches
+            return self.result == result
 
         except CommandException:
 
