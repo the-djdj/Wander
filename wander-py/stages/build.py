@@ -301,6 +301,17 @@ class Module:
             # Move the contents one directory up
             copytree(folder, self.target + '.d/')
 
+            # Check if the folder variable is set
+            if self.folder is not None and not path.isdir(self.target + '.d/' + self.folder):
+
+                # Create the build directory
+                mkdir(self.target + '.d/' + self.folder)
+
+            elif self.folder is None:
+
+                # Empty the folder variable
+                self.folder = ''
+
             # And delete the unneeded files
             rmtree(self.source + '.raw/')
 
@@ -350,17 +361,6 @@ class Module:
             return True
 
 
-        # Check if the folder variable is set
-        if self.folder and not path.isdir(self.target + '.d/' + self.folder):
-
-            # Create the build directory
-            mkdir(self.target + '.d/' + self.folder)
-
-        elif not self.folder:
-
-            # Empty the folder variable
-            self.folder = ''
-
         # Attempt to run all of the commands
         try:
 
@@ -386,17 +386,6 @@ class Module:
             # If there's nothing to do, return
             return True
 
-
-        # Check if the folder variable is set
-        if self.folder and not path.isdir(self.target + '.d/' + self.folder):
-
-            # Create the build directory
-            mkdir(self.target + '.d/' + self.folder)
-
-        elif not self.folder:
-
-            # Empty the folder variable
-            self.folder = ''
 
         # Attempt to run all of the commands
         try:
@@ -424,17 +413,6 @@ class Module:
             return True
 
 
-        # Check if the folder variable is set
-        if self.folder and not path.isdir(self.target + '.d/' + self.folder):
-
-            # Create the build directory
-            mkdir(self.target + '.d/' + self.folder)
-
-        elif not self.folder:
-
-            # Empty the folder variable
-            self.folder = ''
-
         # Attempt to run all of the commands
         try:
 
@@ -460,17 +438,6 @@ class Module:
             # If there's nothing to do, return
             return True
 
-
-        # Check if the folder variable is set
-        if self.folder and not path.isdir(self.target + '.d/' + self.folder):
-
-            # Create the build directory
-            mkdir(self.target + '.d/' + self.folder)
-
-        elif not self.folder:
-
-            # Empty the folder variable
-            self.folder = ''
 
         # Attempt to run all of the commands
         try:
