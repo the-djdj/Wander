@@ -63,10 +63,32 @@ elements:
         version: 5.2.8
         url: http://www.kernel.org/pub/linux/kernel/v5.x/linux-5.2.8.tar.xz
         md5: 602dd0ecb8646e539fefb2beb6eb6fe0
+        skip: false
         commands:
             preparation:
                 - make mrproper
             installation:
                 - make INSTALL_HDR_PATH=dest headers_install
                 - cp -rv dest/include/* /tools/include
+    glibc:
+        description: Glibc
+        version: 2.30
+        url: http://ftp.gnu.org/gnu/glibc/glibc-2.30.tar.xz
+        md5: 2b1dbdf27b28620752956c061d62f60c
+        folder: build
+        skip: false
+        commands:
+            preparation:
+                - ../configure --prefix=/tools --host=$WANDER_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=/tools/include
+            compilation:
+                - make
+            installation:
+                - make install
+            testing:
+                - echo 'int main(){}' > dummy.c
+                - $WANDER_TGT-gcc dummy.c
+                - "readelf -l a.out | grep ': /tools'"
+            cleanup:
+                - rm -v dummy.c a.out
+        test: "[Requesting program interpreter: /tools/lib64/ld-linux-x86_64.so.2]"
 ...
