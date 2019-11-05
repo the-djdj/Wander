@@ -1,5 +1,5 @@
 from exception import CommandException
-from util import Output, YAMLObject
+from util import Logger, Output, YAMLObject
 
 from hashlib import md5
 from urllib.request import urlretrieve as get
@@ -14,7 +14,7 @@ class BuildSystem(YAMLObject):
         it.'''
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('temporary.yaml', 'Building temporary system...')
+    TEMPORARY_SYSTEM = ('temporary.yaml', 'Building temporary system...', 'temp')
 
 
     def __init__(self, commands, location, stage):
@@ -103,6 +103,9 @@ class Module:
 
             # And make it an empty list
             self.prerequisites = dict()
+
+        # Initialise the logger
+        self.logger = Logger(self.parent.stage[2], self.file)
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
@@ -366,7 +369,8 @@ class Module:
 
             # Run the commands
             self.parent.run(self.commands.get('preparation'),
-                    directory = self.target + '.d/' + self.folder)
+                    directory = path.join(self.target, self.folder),
+                    logger = self.logger, phase = 'preparation')
 
             # And return if there are no errors
             return True
@@ -392,7 +396,8 @@ class Module:
 
             # Run the commands
             self.parent.run(self.commands.get('compilation'),
-                    directory = self.target + '.d/' + self.folder)
+                    directory = path.join(self.target, self.folder),
+                    logger = self.logger, phase = 'compilation')
 
             # And return if there are no errors
             return True
@@ -418,7 +423,8 @@ class Module:
 
             # Run the commands
             self.parent.run(self.commands.get('configuration'),
-                    directory = self.target + '.d/' + self.folder)
+                    directory = path.join(self.target, self.folder),
+                    logger = self.logger, phase = 'configuration')
 
             # And return if there are no errors
             return True
@@ -444,7 +450,8 @@ class Module:
 
             # Run the commands
             self.parent.run(self.commands.get('installation'),
-                    directory = self.target + '.d/' + self.folder)
+                    directory = path.join(self.target, self.folder),
+                    logger = self.logger, phase = 'installation')
 
             # And return if there are no errors
             return True
@@ -470,7 +477,8 @@ class Module:
 
             # Run the commands
             result = self.parent.run(self.commands.get('testing'),
-                            directory = self.target + '.d/' + self.folder)
+                            directory = path.join(self.target, self.folder),
+                            logger = self.logger, phase = 'testing')
 
             # And return if the output matches
             return self.result == result
@@ -498,7 +506,8 @@ class Module:
 
                 # Run the commands
                 self.parent.run(self.commands.get('cleanup'),
-                        directory = self.target + '.d/' + self.folder)
+                        directory = path.join(self.target, self.folder),
+                        logger = self.logger, phase = 'cleanup')
 
             except CommandException:
 

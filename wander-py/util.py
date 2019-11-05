@@ -1,6 +1,7 @@
 from exception import CommandException
 
-import os
+from datetime import datetime as time
+from os import environ, path, makedirs as mkdirs
 from subprocess import Popen, PIPE, STDOUT
 from yaml import safe_load as load, YAMLError
 
@@ -167,7 +168,7 @@ class YAMLObject:
                 print(error)
 
         # Process the preamble into a usable environment
-        self.environment = os.environ.copy()
+        self.environment = environ.copy()
 
         # Iterate through each preamble element
         for element in preamble:
@@ -180,7 +181,7 @@ class YAMLObject:
                 self.environment[element] += ':' + preamble[element]
 
 
-    def run(self, elements, test = False, directory = None):
+    def run(self, elements, test = False, directory = None, logger = None, phase = None):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -202,6 +203,12 @@ class YAMLObject:
             else:
                 command = self.commands.call(element, self.environment)
 
+            # Check if there is an attached logger
+            if logger is not None:
+
+                # And write the output to the logger
+                logger.log(phase, element, command)
+
             # Check if there were any errors
             if command[1] is not None:
                 raise CommandException(command[1])
@@ -211,3 +218,47 @@ class YAMLObject:
 
         # And return the output
         return result
+
+
+class Logger:
+    ''' The logging system used in wander, which writes the output of a command
+        to a specific file.'''
+
+
+    def __init__(self, stage, name):
+        ''' The default constructor. This creates a new logging system with a
+            specified stage, used to delineate the logs into different folders,
+            and the name of the module, which decides the name of the log
+            file.'''
+        # Store the filename and folder to write
+        self.folder = path.join('logs', stage, name)
+
+        # Check that the folder to write the logs in exists
+        if not path.isdir(self.folder):
+
+            # And create the file
+            mkdirs(self.folder)
+
+
+    def log(self, phase, command, result):
+        ''' The method which actually logs information to a file.'''
+        # Open the file to write it
+        with open(path.join(self.folder, phase), 'a') as file:
+
+            # First, print the time that the command was issued
+            file.write(str(time.now()) + '\n')
+
+            # Then, print the command that was used
+            file.write('$ ' + command + '\n\n')
+
+            # Print the actual output
+            file.write('stdout:\n' + str(result[0]))
+
+            # Check if there are any errors
+            if not result[1]:
+
+                # And print them
+                file.write('\nstderr:\n' + str(result[1]))
+
+            # And note that we've finished this output
+            file.write('\n\n   ***   \n')
