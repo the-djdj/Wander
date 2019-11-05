@@ -338,17 +338,17 @@ class Module:
                 # Extract the archive contents
                 file.extractall(target)
 
-                # Get a list of folders that we've just extracted
-                folders = target + '/' + listdir(source + '.raw/')
+            # Get a list of folders that we've just extracted
+            folders = target + '/' + listdir(source)
 
-                # Iterate through each of these folders
-                for folder in folders:
+            # Iterate through each of these folders
+            for folder in folders:
 
-                    # Move the contents one directory up
-                    copytree(folder, path.join(self.target, value.get('folder')))
+                # Move the contents one directory up
+                copytree(folder, path.join(self.target, value.get('folder')))
 
-                # And update the results variable
-                result &= path.isdir(path.join(self.target, value.get('folder')))
+            # And update the results variable
+            result &= path.isdir(path.join(self.target, value.get('folder')))
 
 
         # And return if the directory exists
