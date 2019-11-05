@@ -249,16 +249,16 @@ class Logger:
             file.write(str(time.now()) + '\n')
 
             # Then, print the command that was used
-            file.write('$ ' + command + '\n\n')
+            file.write('$ ' + command + '\n')
 
             # Print the actual output
-            file.write('stdout:\n' + str(result[0]))
+            file.write('stdout:\t' + str(result[0]) _ '\n')
 
             # Check if there are any errors
             if not result[1]:
 
                 # And print them
-                file.write('\nstderr:\n' + str(result[1]))
+                file.write('stderr:\t' + str(result[1]) + \n)
 
             # And note that we've finished this output
-            file.write('\n\n   ***   \n')
+            file.write('\n   *****   \n')
