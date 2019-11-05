@@ -104,4 +104,5 @@ venv.bak/
 .mypy_cache/
 
 # Wander sources directory
+logs
 sources
