@@ -258,7 +258,7 @@ class Logger:
             if not result[1]:
 
                 # And print them
-                file.write('stderr:\t' + str(result[1]) + \n)
+                file.write('stderr:\t' + str(result[1]) + '\n')
 
             # And note that we've finished this output
             file.write('\n   *****   \n')
