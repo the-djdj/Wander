@@ -252,7 +252,7 @@ class Logger:
             file.write('$ ' + command + '\n')
 
             # Print the actual output
-            file.write('stdout:\t' + str(result[0]) _ '\n')
+            file.write('stdout:\t' + str(result[0]) + '\n')
 
             # Check if there are any errors
             if not result[1]:
