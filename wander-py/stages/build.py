@@ -83,7 +83,9 @@ class Module:
         # Store information about the prerequisite
         self.description   = element.get('description')
         self.version       = element.get('version')
-        self.url           = element.get('url')
+        self.file          = element.get('file').replace('{version}', str(self.version))
+        self.extension     = element.get('extension')
+        self.url           = path.join(element.get('url'), self.file + self.extension)
         self.md5           = element.get('md5')
         self.prerequisites = element.get('prerequisites')
         self.folder        = element.get('folder')
@@ -95,8 +97,8 @@ class Module:
         self.parent        = parent
 
         # Store the root file name
-        self.source        = 'sources/' + self.md5
-        self.target        = self.parent.environment['WANDER'] + '/' + self.source
+        self.source        = path.join('sources', self.file)
+        self.target        = path.join(self.parent.environment['WANDER'], self.source)
 
         # Check if there are prerequisites
         if self.prerequisites is None:
@@ -172,10 +174,10 @@ class Module:
             sources directory, and if not, downloads it from the specified
             address.'''
         # Check that the file doesn't exist
-        if not path.isfile(self.source):
+        if not path.isfile(self.source + self.extension):
 
             # Download the file
-            get(self.url, self.source)
+            get(self.url, self.source + self.extension)
 
         # Store the result of the prerequisite downloads
         result = True
@@ -184,28 +186,30 @@ class Module:
         for key, value in self.prerequisites.items():
 
             # Store some variables about the prerequisite
-            source = 'sources/' + value.get('md5')
-            target = self.parent.environment['WANDER'] + '/' + source
+            file      = value.get('file').replace('{version}', value.get('version'))
+            source    = path.join('sources', file)
+            target    = path.join(self.parent.environment['WANDER'], source)
+            extension = value.get('extension')
 
             # Check that the prerequisite doesn't exist
-            if not path.isfile(source):
+            if not path.isfile(source + extension):
 
                 # Download the file
-                get(value.get('url'), source)
+                get(path.join(value.get('url'), file + extension), source + extension)
 
                 # Check if the file downloaded
-                result &= path.isfile(source)
+                result &= path.isfile(source + extension)
 
 
         # And return if the file exists
-        return path.isfile(self.source) and result
+        return path.isfile(self.source + self.extension) and result
 
 
     def checksum(self):
         ''' A simple method which checks if the downloaded file has the correct
             checksum and was not tampered with on the download.'''
         # Open the file to verify it
-        with open(self.source, 'rb') as file:
+        with open(self.source + self.extension, 'rb') as file:
 
             # Generate the MD5 has
             hash = md5()
@@ -230,10 +234,12 @@ class Module:
         for key, value in self.prerequisites.items():
 
             # Store some variables about the prerequisite
-            source = 'sources/' + value.get('md5')
+            file      = value.get('file').replace('{version}', value.get('version'))
+            source    = path.join('sources', file)
+            extension = value.get('extension')
 
             # Open the file to verify it
-            with open(source, 'rb') as file:
+            with open(source + extension, 'rb') as file:
 
                 # Generate the MD5 has
                 subhash = md5()
@@ -263,7 +269,7 @@ class Module:
         ''' A simple method which copies our downloaded archive into the build
             systems' sources directory.'''
         # Copy the file over
-        copyfile(self.source, self.target)
+        copyfile(self.source + self.extension, self.target + self.extension)
 
         # Store the result of the prerequisites
         result = True
@@ -272,51 +278,44 @@ class Module:
         for key, value in self.prerequisites.items():
 
             # Store some variables about the prerequisite
-            source = 'sources/' + value.get('md5')
-            target = self.parent.environment['WANDER'] + '/' + source
+            file      = value.get('file').replace('{version}', value.get('version'))
+            source    = path.join('sources', file)
+            target    = self.parent.environment['WANDER'] + '/' + source
+            extension = value.get('extension')
 
             # Copy them each in turn
-            copyfile(source, target)
+            copyfile(source + extension, target + extension)
 
             # And update our prerequisite variable
-            result &= path.isfile(target)
+            result &= path.isfile(target + extension)
 
 
         # And return if the file exists
-        return path.isfile(self.target) and result
+        return path.isfile(self.target + self.extension) and result
 
 
     def extract(self):
         ''' A simple method which extracts the downloaded tarball so that it can
             be used.'''
         # Open the archive
-        with tarfile.open(self.source) as file:
+        with tarfile.open(self.target + self.extension) as file:
 
             # Create the directory for the extraction
-            mkdir(self.source + '.raw/')
+            mkdir(self.target)
 
             # Extract the archive contents
-            file.extractall(self.source + '.raw/')
-
-            # Get a list of folders that we've just extracted
-            folder = self.source + '.raw/' + listdir(self.source + '.raw/')[0]
-
-            # Move the contents one directory up
-            copytree(folder, self.target + '.d/')
+            file.extractall(self.target)
 
             # Check if the folder variable is set
-            if self.folder is not None and not path.isdir(self.target + '.d/' + self.folder):
+            if self.folder is not None and not path.isdir(path.join(self.target, self.folder)):
 
                 # Create the build directory
-                mkdir(self.target + '.d/' + self.folder)
+                mkdir(path.join(self.target, self.folder))
 
             elif self.folder is None:
 
                 # Empty the folder variable
                 self.folder = ''
-
-            # And delete the unneeded files
-            rmtree(self.source + '.raw/')
 
         # Store the result of the extraction of the prerequisites
         result = True
@@ -325,33 +324,35 @@ class Module:
         for key, value in self.prerequisites.items():
 
             # Store some variables about the prerequisite
-            source = 'sources/' + value.get('md5')
-            target = self.parent.environment['WANDER'] + '/' + source
+            file      = value.get('file').replace('{version}', value.get('version'))
+            source    = path.join('sources/', file)
+            target    = path.join(self.parent.environment['WANDER'], source)
+            extension = value.get('extension')
 
             # Open the archive
-            with tarfile.open(source) as file:
+            with tarfile.open(source + extension) as file:
 
                 # Create the directory for the extraction
-                mkdir(source + '.raw/')
+                mkdir(target)
 
                 # Extract the archive contents
-                file.extractall(source + '.raw/')
+                file.extractall(target)
 
                 # Get a list of folders that we've just extracted
-                folder = source + '.raw/' + listdir(source + '.raw/')[0]
+                folders = target + '/' + listdir(source + '.raw/')
 
-                # Move the contents one directory up
-                copytree(folder, self.target + '.d/' + value.get('folder'))
+                # Iterate through each of these folders
+                for folder in folders:
 
-                # Delete the unneeded files
-                rmtree(source + '.raw/')
+                    # Move the contents one directory up
+                    copytree(folder, path.join(self.target, value.get('folder')))
 
                 # And update the results variable
-                result &= path.isdir(self.target + '.d/' + value.get('folder'))
+                result &= path.isdir(path.join(self.target, value.get('folder')))
 
 
         # And return if the directory exists
-        return path.isdir(self.target + '.d/') and result
+        return path.isdir(self.target) and result
 
 
     def prepare(self):
@@ -516,7 +517,7 @@ class Module:
 
 
         # Cleanup the build system
-        rmtree(self.target + '.d/')
+        rmtree(self.target)
 
         # And return that things went okay
-        return not path.isdir(self.target + '.d/')
+        return not path.isdir(self.target)
