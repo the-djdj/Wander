@@ -306,6 +306,15 @@ class Module:
             # Extract the archive contents
             file.extractall(self.target)
 
+        # Get a list of folders that we've just extracted
+        folders = self.target + '/' + listdir(path.join(self.target, self.file))
+
+        # Iterate through each of these folders
+        for folder in folders:
+
+            # Move the contents one directory up
+            copytree(folder, self.target)
+
         # Check if the folder variable is set
         if self.folder is not None and not path.isdir(path.join(self.target, self.folder)):
 
@@ -339,7 +348,7 @@ class Module:
                 file.extractall(target)
 
             # Get a list of folders that we've just extracted
-            folders = target + '/' + listdir(source)
+            folders = target + '/' + listdir(target)
 
             # Iterate through each of these folders
             for folder in folders:
