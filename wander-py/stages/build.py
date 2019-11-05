@@ -499,12 +499,6 @@ class Module:
             # Attempt to run all of the commands
             try:
 
-                # Check that the folder variable is set
-                if self.folder is not None:
-
-                    # And clear it for use later on
-                    self.folder = ''
-
                 # Run the commands
                 self.parent.run(self.commands.get('cleanup'),
                         directory = path.join(self.target, self.folder),
