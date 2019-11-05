@@ -306,16 +306,16 @@ class Module:
             # Extract the archive contents
             file.extractall(self.target)
 
-            # Check if the folder variable is set
-            if self.folder is not None and not path.isdir(path.join(self.target, self.folder)):
+        # Check if the folder variable is set
+        if self.folder is not None and not path.isdir(path.join(self.target, self.folder)):
 
-                # Create the build directory
-                mkdir(path.join(self.target, self.folder))
+            # Create the build directory
+            mkdir(path.join(self.target, self.folder))
 
-            elif self.folder is None:
+        elif self.folder is None:
 
-                # Empty the folder variable
-                self.folder = ''
+            # Empty the folder variable
+            self.folder = ''
 
         # Store the result of the extraction of the prerequisites
         result = True
