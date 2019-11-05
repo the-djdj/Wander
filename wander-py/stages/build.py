@@ -2,10 +2,10 @@ from exception import CommandException
 from util import Logger, Output, YAMLObject
 
 from hashlib import md5
-from urllib.request import urlretrieve as get
 from os import listdir, mkdir, path
-from shutil import copyfile, copytree, rmtree
+from shutil import copyfile, move, rmtree
 import tarfile
+from urllib.request import urlretrieve as get
 
 
 class BuildSystem(YAMLObject):
@@ -307,10 +307,10 @@ class Module:
             file.extractall(self.target)
 
         # Iterate through each of the folders we've just extracted
-        for folder in listdir(path.join(self.target, self.file)):
+        for item in listdir(path.join(self.target, self.file)):
 
             # Move the contents one directory up
-            copytree(path.join(self.target, folder), self.target)
+            move(path.join(self.target, self.file, item), self.target)
 
         # Check if the folder variable is set
         if self.folder is not None and not path.isdir(path.join(self.target, self.folder)):
@@ -344,11 +344,11 @@ class Module:
                 # Extract the archive contents
                 file.extractall(target)
 
-            # Iterate through each of these folders
-            for folder in listdir(target):
+            # Iterate through each of the folders we've just extracted
+            for item in listdir(path.join(target, file)):
 
                 # Move the contents one directory up
-                copytree(path.join(target, folder), path.join(self.target, value.get('folder')))
+                move(path.join(target, file, item), target)
 
             # And update the results variable
             result &= path.isdir(path.join(self.target, value.get('folder')))
