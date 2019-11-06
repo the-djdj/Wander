@@ -81,17 +81,17 @@ class Module:
         ''' The init method, used to create a new module object which can be
             built on the host system.'''
         # Store information about the prerequisite
-        self.description   = element.get('description')
-        self.version       = element.get('version')
-        self.file          = element.get('file').replace('{version}', str(self.version))
-        self.extension     = element.get('extension')
-        self.url           = path.join(element.get('url'), self.file + self.extension)
-        self.md5           = element.get('md5')
-        self.prerequisites = element.get('prerequisites')
-        self.folder        = element.get('folder')
-        self.commands      = element.get('commands')
-        self.skip          = element.get('skip')
-        self.result        = element.get('test')
+        self.description  = element.get('description')
+        self.version      = element.get('version')
+        self.file         = element.get('file').replace('{version}', str(self.version))
+        self.extension    = element.get('extension')
+        self.url          = path.join(element.get('url').replace('{version}', str(self.version)), self.file + self.extension)
+        self.md5          = element.get('md5')
+        self.modules      = element.get('modules')
+        self.folder       = element.get('folder')
+        self.commands     = element.get('commands')
+        self.skip         = element.get('skip')
+        self.result       = element.get('test')
 
         # Store the system for running commands
         self.parent        = parent
@@ -101,10 +101,10 @@ class Module:
         self.target        = path.join(self.parent.environment['WANDER'], self.source)
 
         # Check if there are prerequisites
-        if self.prerequisites is None:
+        if self.modules is None:
 
             # And make it an empty list
-            self.prerequisites = dict()
+            self.modules = dict()
 
         # Initialise the logger
         self.logger = Logger(self.parent.stage[2], self.file)
@@ -183,7 +183,7 @@ class Module:
         result = True
 
         # Do the same for all of the prerequisites
-        for key, value in self.prerequisites.items():
+        for key, value in self.modules.items():
 
             # Store some variables about the prerequisite
             file      = value.get('file').replace('{version}', value.get('version'))
@@ -195,7 +195,7 @@ class Module:
             if not path.isfile(source + extension):
 
                 # Download the file
-                get(path.join(value.get('url'), file + extension), source + extension)
+                get(path.join(value.get('url').replace('{version}', value.get('version')), file + extension), source + extension)
 
                 # Check if the file downloaded
                 result &= path.isfile(source + extension)
@@ -231,7 +231,7 @@ class Module:
         result = True
 
         # Do the same for all of the prerequisites
-        for key, value in self.prerequisites.items():
+        for key, value in self.modules.items():
 
             # Store some variables about the prerequisite
             file      = value.get('file').replace('{version}', value.get('version'))
@@ -275,7 +275,7 @@ class Module:
         result = True
 
         # Copy over each of the prerequisites
-        for key, value in self.prerequisites.items():
+        for key, value in self.modules.items():
 
             # Store some variables about the prerequisite
             file      = value.get('file').replace('{version}', value.get('version'))
@@ -298,13 +298,13 @@ class Module:
         ''' A simple method which extracts the downloaded tarball so that it can
             be used.'''
         # Open the archive
-        with tarfile.open(self.target + self.extension) as file:
+        with tarfile.open(self.target + self.extension) as archive:
 
             # Create the directory for the extraction
             mkdir(self.target)
 
             # Extract the archive contents
-            file.extractall(self.target)
+            archive.extractall(self.target)
 
         # Iterate through each of the folders we've just extracted
         for item in listdir(path.join(self.target, self.file)):
@@ -327,28 +327,27 @@ class Module:
         result = True
 
         # And do the same for all of the prerequisites
-        for key, value in self.prerequisites.items():
+        for key, value in self.modules.items():
 
             # Store some variables about the prerequisite
             file      = value.get('file').replace('{version}', value.get('version'))
-            source    = path.join('sources/', file)
-            target    = path.join(self.parent.environment['WANDER'], source)
+            folder    = value.get('folder')
+            source    = path.join('sources', file)
+            target    = path.join(self.parent.environment['WANDER'], 'sources', file)
+            location  = path.join(self.parent.environment['WANDER'], 'sources', self.file)
             extension = value.get('extension')
 
             # Open the archive
-            with tarfile.open(source + extension) as file:
-
-                # Create the directory for the extraction
-                mkdir(target)
+            with tarfile.open(target + extension) as archive:
 
                 # Extract the archive contents
-                file.extractall(target)
+                archive.extractall(path = location)
 
             # Iterate through each of the folders we've just extracted
-            for item in listdir(path.join(target, file)):
+            #for item in listdir(path.join(location, file)):
 
                 # Move the contents one directory up
-                move(path.join(target, file, item), target)
+            move(path.join(location, file), path.join(location, folder))
 
             # And update the results variable
             result &= path.isdir(path.join(self.target, value.get('folder')))
