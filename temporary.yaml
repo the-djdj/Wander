@@ -38,7 +38,7 @@ elements:
                 version: 4.0.2
                 file: mpfr-{version}
                 extension: .tar.xz
-                url: http://www.mpfr.org/
+                url: http://www.mpfr.org/mpfr-{version}
                 md5: 320fbc4463d4c8cb1e566929d8adc4f8
                 folder: mpfr
             gmp:
