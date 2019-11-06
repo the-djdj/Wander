@@ -84,7 +84,7 @@ elements:
                 - cp -rv dest/include/* /tools/include
     glibc:
         description: Glibc
-        version: 2.30
+        version: '2.30'
         file: glibc-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/glibc/
