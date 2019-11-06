@@ -4,7 +4,7 @@ preamble:
     LC_ALL: POSIX
     WANDER: /mnt/wander
     WANDER_TGT: x86_64-wander-linux-gnu
-    PATH: /tools/bin:/bin:/usr/bin:/tools/x86_64-wander-linux-gnu/lib:/tools/lib:/tools/lib64:/tools/x86_64-wander-linux-gnu/lib
+    PATH: /tools/bin:/bin:/usr/bin
 # The elements, each representing one unit to execute
 elements:
     binutils:
