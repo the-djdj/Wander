@@ -252,13 +252,13 @@ class Logger:
             file.write('$ ' + command + '\n')
 
             # Print the actual output
-            file.write('stdout:\t' + str(result[0]) + '\n')
+            file.write('stdout:\t' + str(result[0], 'utf-8') + '\n')
 
             # Check if there are any errors
-            if not result[1]:
+            if result[1] is not None:
 
                 # And print them
-                file.write('stderr:\t' + str(result[1]) + '\n')
+                file.write('stderr:\t' + str(result[1], 'utf-8') + '\n')
 
             # And note that we've finished this output
             file.write('\n   *****   \n')
