@@ -1,7 +1,9 @@
 from exception import CommandException
 
 from datetime import datetime as time
+from getpass import getuser
 from os import environ, path, makedirs as mkdirs
+from pwd import getpwnam
 from subprocess import Popen, PIPE, STDOUT
 from yaml import safe_load as load, YAMLError
 
@@ -106,6 +108,11 @@ class Output:
 class Commands:
     ''' The commands class. This allows for commands to be run as a subprocess
         and for the results of that command to be stored.'''
+
+    # The different user environments that can run commands
+    USER_SUPER   = getpwnam('root')
+    USER_WANDER  = getpwnam('wander')
+    USER_DEFAULT = getpwnam(getuser())
 
 
     def call(self, command, environment, directory=None):
