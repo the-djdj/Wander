@@ -2,6 +2,8 @@
 # A list of variables that must be set for all elements
 preamble:
     LC_ALL: C
+# The user that must run this section
+user: default
 # The elements, each representing one unit to execute
 elements:
     bash:

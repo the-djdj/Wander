@@ -107,7 +107,7 @@ class Commands:
 
     # The different user environments that can run commands
     USERS = {'root'   : getpwnam('root'),
-             #'wander' : getpwnam('wander'),
+             'wander' : getpwnam('wander'),
              'default': getpwnam(getuser())}
 
 
@@ -198,6 +198,9 @@ class YAMLObject:
                 # Sort out the preamble
                 preamble = elements['preamble']
 
+                # Get the username of this section
+                self.user = elements['user']
+
                 # Sort out the elements
                 self.elements = elements['elements']
 
@@ -230,16 +233,18 @@ class YAMLObject:
             # If we are in test mode, add something to the command
             if test:
                 command = self.commands.call(element
-                        + '&& echo True || echo False', self.environment)
+                        + '&& echo True || echo False', self.environment,
+                        user = self.user)
 
             # If we have a directory set, run there
             elif directory is not None:
                 command = self.commands.call(element, self.environment,
-                        directory = directory)
+                        directory = directory, user = self.user)
 
             # Otherwise, get the response of the command
             else:
-                command = self.commands.call(element, self.environment)
+                command = self.commands.call(element, self.environment,
+                        user = self.user)
 
             # Check if there is an attached logger
             if logger is not None:
