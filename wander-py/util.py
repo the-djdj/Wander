@@ -105,12 +105,12 @@ class Commands:
         and for the results of that command to be stored.'''
 
     # The different user environments that can run commands
-    USER_SUPER   = getpwnam('root')
-    USER_WANDER  = getpwnam('wander')
-    USER_DEFAULT = getpwnam(getuser())
+    USERS = {'root'   : getpwnam('root'),
+             'wander' : getpwnam('wander'),
+             'default': getpwnam(getuser())}
 
 
-    def call(self, command, environment, directory=None):
+    def call(self, command, environment, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store the raw output of the command
