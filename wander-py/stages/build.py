@@ -1,11 +1,4 @@
-from exception import CommandException
-from util import Logger, Output, YAMLObject
-
-from hashlib import md5
-from os import listdir, mkdir, path
-from shutil import copyfile, move, rmtree
-import tarfile
-from urllib.request import urlretrieve as get
+from util import Output, YAMLObject
 
 
 class BuildSystem(YAMLObject):
@@ -70,6 +63,16 @@ class BuildSystem(YAMLObject):
         # And return the result
         return result
 
+
+
+from exception import CommandException
+from util import Logger
+
+from hashlib import md5
+from os import listdir, mkdir, path
+from shutil import copyfile, move, rmtree
+import tarfile
+from urllib.request import urlretrieve as get
 
 
 class Module:

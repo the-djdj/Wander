@@ -1,4 +1,3 @@
-from exception import CommandException
 from util import Output, YAMLObject
 
 

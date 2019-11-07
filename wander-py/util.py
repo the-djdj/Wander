@@ -1,13 +1,3 @@
-from exception import CommandException
-
-from datetime import datetime as time
-from getpass import getuser
-from os import environ, path, makedirs as mkdirs
-from pwd import getpwnam
-from subprocess import Popen, PIPE, STDOUT
-from yaml import safe_load as load, YAMLError
-
-
 class Output:
     ''' The output class. This creates a new object for managing the output,
         and provides an array of useful methods for console output.'''
@@ -105,6 +95,11 @@ class Output:
 
 
 
+from getpass import getuser
+from pwd import getpwnam
+from subprocess import Popen, PIPE, STDOUT
+
+
 class Commands:
     ''' The commands class. This allows for commands to be run as a subprocess
         and for the results of that command to be stored.'''
@@ -136,6 +131,11 @@ class Commands:
         # Return the results of the command
         return stdout, stderr
 
+
+
+from exception import CommandException
+from os import environ
+from yaml import safe_load as load, YAMLError
 
 
 class YAMLObject:
@@ -225,6 +225,11 @@ class YAMLObject:
 
         # And return the output
         return result
+
+
+
+from datetime import datetime as time
+from os import path, makedirs as mkdirs
 
 
 class Logger:
