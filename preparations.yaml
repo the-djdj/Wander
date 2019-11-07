@@ -3,7 +3,7 @@
 preamble:
     LC_ALL: POSIX
     WANDER: /mnt/wander
-    WANDER_TGT: x86_64-wander-linux-gnu-wander-linux-gnu
+    WANDER_TGT: x86_64-wander-linux-gnu
     PATH: /tools/bin:/bin:/usr/bin
 # The user that must run this section
 user: root
@@ -39,4 +39,36 @@ elements:
         test: 0
         commands:
             - chmod -v a+wt $WANDER/sources
+    groupadd:
+        description: Creating the user group
+        test: 0
+        commands:
+            - groupadd wander
+    useradd:
+        description: Adding the user for building packages
+        test: 0
+        commands:
+            - useradd -s /bin/bash -g wander -m -k /dev/null wander
+    toolsPermission:
+        description: Setting tools directory permissions
+        test: 0
+        commands:
+            - chown -v wander $WANDER/tools
+    sourcesPermission:
+        description: Setting sources directory permissions
+        test: 0
+        commands:
+            - chown -v wander $WANDER/sources
+    cleanProfile:
+        description: Cleaning previous build environment
+        test: 0
+        commands:
+            - rm /home/wander/.bash_profile
+            - rm /home/wander/.bashrc
+    bashProfile:
+        description: Creating build environment
+        test: 0
+        commands:
+            - printf "exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash" >> /home/wander/.bash_profile
+            - printf "set +h\numask 022\nWANDER=/mnt/wander\nLC_ALL=POSIX\nWANDER_TGT=$(uname -m)-wander-linux-gnu\nPATH=/tools/bin:/bin:/usr/bin\nexport WANDER LC_ALL WANDER_TARGET PATH" >> /home/wander/.bashrc
 ...
