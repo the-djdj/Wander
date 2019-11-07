@@ -96,6 +96,7 @@ class Output:
 
 
 from getpass import getuser
+from os import setgid, setuid
 from pwd import getpwnam
 from subprocess import Popen, PIPE, STDOUT
 
@@ -106,30 +107,60 @@ class Commands:
 
     # The different user environments that can run commands
     USERS = {'root'   : getpwnam('root'),
-             'wander' : getpwnam('wander'),
+             #'wander' : getpwnam('wander'),
              'default': getpwnam(getuser())}
 
 
     def call(self, command, environment, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
+        # Store information about the user that we'll be running commands as
+        user = Commands.USERS.get(user)
+
+        # Do some work on the environment
+        environment['HOME']    = user.pw_dir
+        environment['LOGNAME'] = user.pw_name
+        environment['USER']    = user.pw_name
+
         # Store the raw output of the command
         if directory is not None:
-            raw = Popen(command, shell=True, env=environment,
-                        stdout=PIPE,
-                        stderr=STDOUT,
-                        cwd=directory)
+            # Set the last environment variable
+            environment['PWD']  = directory
+
+            # And prepare the subprocess system
+            process = Popen(command, shell=True, env=environment,
+                            preexec_fn=self.demote(user.pw_uid, user.pw_gid),
+                            stdout=PIPE,
+                            stderr=STDOUT,
+                            cwd=directory)
 
         else:
-            raw = Popen(command, shell=True, env=environment,
-                        stdout=PIPE,
-                        stderr=STDOUT)
+            # Prepare the subprocess system
+            process = Popen(command, shell=True, env=environment,
+                            preexec_fn=self.demote(user.pw_uid, user.pw_gid),
+                            stdout=PIPE,
+                            stderr=STDOUT)
 
         # Get the stdout and stderr from the command
-        stdout, stderr = raw.communicate(command)
+        stdout, stderr = process.communicate(command)
 
         # Return the results of the command
         return stdout, stderr
+
+
+    def demote(self, uid, gid):
+        ''' A method which 'demotes' the system to a specified user, so that
+            commands can be run properly as that user.'''
+
+        def result():
+            ''' The result method, which actually updates the uid and gid of the
+                system.'''
+            # Update the values using methods from the os package
+            setgid(gid)
+            setuid(uid)
+
+        # And return the method which changes the user
+        return result
 
 
 
