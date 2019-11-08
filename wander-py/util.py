@@ -215,11 +215,7 @@ class YAMLObject:
         for element in preamble:
 
             # Add the key-value pair to the environment
-            if self.environment.get(element) is None:
-                self.environment[element] = preamble[element]
-
-            else:
-                self.environment[element] += ':' + preamble[element]
+            self.environment[element] = preamble[element]
 
 
     def run(self, elements, test = False, directory = None, logger = None, phase = None, root = False):
