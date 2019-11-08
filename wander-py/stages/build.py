@@ -356,6 +356,19 @@ class Module:
             result &= path.isdir(path.join(self.target, value.get('folder')))
 
 
+        # Finally, ensure that the extracted files have the correct permissions
+        try:
+
+            # Run the commands
+            self.parent.run(['chown -v -R wander ' + self.target],
+                directory = path.join(self.target, self.folder),
+                logger = self.logger, phase = 'unpacking', root = True)
+
+        except CommandException:
+
+            # And return how we did
+            return False
+
         # And return if the directory exists
         return path.isdir(self.target) and result
 

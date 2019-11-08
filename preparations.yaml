@@ -53,12 +53,12 @@ elements:
         description: Setting tools directory permissions
         test: 0
         commands:
-            - chown -v wander $WANDER/tools
+            - chown -v -R wander $WANDER/tools
     sourcesPermission:
         description: Setting sources directory permissions
         test: 0
         commands:
-            - chown -v wander $WANDER/sources
+            - chown -v -R wander $WANDER/sources
     cleanProfile:
         description: Cleaning previous build environment
         test: 0

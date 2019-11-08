@@ -222,11 +222,14 @@ class YAMLObject:
                 self.environment[element] += ':' + preamble[element]
 
 
-    def run(self, elements, test = False, directory = None, logger = None, phase = None):
+    def run(self, elements, test = False, directory = None, logger = None, phase = None, root = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
         result = list()
+
+        # Get the user for the commands
+        user = self.user if not root else 'root'
 
         # Iterate through each of the commands in the preamble.
         for element in elements:
@@ -234,20 +237,20 @@ class YAMLObject:
             if test:
                 command = self.commands.call(element
                         + '&& echo True || echo False', self.environment,
-                        user = self.user)
+                        user = user)
 
             # If we have a directory set, run there
             elif directory is not None:
                 command = self.commands.call(element, self.environment,
-                        directory = directory, user = self.user)
+                        directory = directory, user = user)
 
             # Otherwise, get the response of the command
             else:
                 command = self.commands.call(element, self.environment,
-                        user = self.user)
+                        user = user)
 
             # Check if there is an attached logger
-            if logger is not None:
+            if logger is not None and phase is not 'unpacking':
 
                 # And write the output to the logger
                 logger.log(phase, element, command)
