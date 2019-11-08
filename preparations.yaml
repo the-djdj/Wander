@@ -70,5 +70,5 @@ elements:
         test: 0
         commands:
             - printf "exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash" >> /home/wander/.bash_profile
-            - printf "set +h\numask 022\nWANDER=/mnt/wander\nLC_ALL=POSIX\nWANDER_TGT=$(uname -m)-wander-linux-gnu\nPATH=/tools/bin:/bin:/usr/bin\nexport WANDER LC_ALL WANDER_TARGET PATH" >> /home/wander/.bashrc
+            - printf "set +h\numask 022\nWANDER=$WANDER\nLC_ALL=$LC_ALL\nWANDER_TGT=$WANDER_TGT\nPATH=$PATH\nexport WANDER LC_ALL WANDER_TARGET PATH" >> /home/wander/.bashrc
 ...
