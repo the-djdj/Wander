@@ -196,20 +196,23 @@ class YAMLObject:
                 elements = load(stream)
 
                 # Sort out the preamble
-                preamble = elements['preamble']
+                preamble = elements.get('preamble')
 
                 # Get the username of this section
-                self.user = elements['user']
+                self.user = elements.get('user')
 
                 # Sort out the elements
-                self.elements = elements['elements']
+                self.elements = elements.get('elements')
 
-            # If the syntac is improper, indicate as such
+            # If the syntax is improper, indicate as such
             except YAMLError as error:
                 print(error)
 
         # Process the preamble into a usable environment
         self.environment = environ.copy()
+
+        # Check that a preamble exists
+        preamble = preamble if preamble is not None else dict()
 
         # Iterate through each preamble element
         for element in preamble:
