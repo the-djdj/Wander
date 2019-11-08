@@ -33,6 +33,7 @@ class Output:
     VERIFYING   = B_BLUE    + 'Verifying'
     COPYING     = B_BLUE    + 'Copying'
     EXTRACTING  = B_BLUE    + 'Extracting'
+    SETUP       = B_BLUE    + 'Setting up'
     PREPARING   = B_BLUE    + 'Preparing'
     COMPILING   = B_BLUE    + 'Compiling'
     CONFIGURING = B_BLUE    + 'Configuring'

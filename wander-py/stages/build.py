@@ -134,6 +134,7 @@ class Module:
                     (self.checksum,  Output.VERIFYING),
                     (self.copy,      Output.COPYING),
                     (self.extract,   Output.EXTRACTING),
+                    (self.setup,     Output.SETUP),
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
                     (self.configure, Output.CONFIGURING),
@@ -371,6 +372,33 @@ class Module:
 
         # And return if the directory exists
         return path.isdir(self.target) and result
+
+
+    def setup(self):
+        ''' A simple method which ensures that the build environment is fully
+            set up for compilation.'''
+        # Check that there is a preparation for this module
+        if self.commands.get('setup') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
+        # Attempt to run all of the commands
+        try:
+
+            # Run the commands
+            self.parent.run(self.commands.get('setup'),
+                    directory = self.target,
+                    logger = self.logger, phase = 'setup')
+
+            # And return if there are no errors
+            return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
 
 
     def prepare(self):
