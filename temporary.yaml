@@ -1,6 +1,10 @@
 ---
 # A list of variables that must be set for all elements
-# preamble:
+preamble:
+    LC_ALL: POSIX
+    WANDER: /mnt/wander
+    WANDER_TGT: x86_64-wander-linux-gnu
+    PATH: /tools/bin:/bin:/usr/bin
 #     LDFLAGS = --sysroot=$WANDER
 # The user that must run this section
 user: wander
