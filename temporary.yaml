@@ -25,7 +25,8 @@ elements:
             compilation:
                 - make
             configuration:
-                - mkdir -v /tools/lib && ln -sv lib /tools/lib64
+                - mkdir -v /tools/lib/
+                - ln -sv lib /tools/lib64/
             installation:
                 - make install
     gcc:
