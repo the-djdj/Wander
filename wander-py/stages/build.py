@@ -347,10 +347,7 @@ class Module:
                 # Extract the archive contents
                 archive.extractall(path = location)
 
-            # Iterate through each of the folders we've just extracted
-            #for item in listdir(path.join(location, file)):
-
-                # Move the contents one directory up
+            # Move the contents one directory up
             move(path.join(location, file), path.join(location, folder))
 
             # And update the results variable
