@@ -167,6 +167,7 @@ class Commands:
 
 from exception import CommandException
 from os import environ
+from platform import machine
 from yaml import safe_load as load, YAMLError
 
 
@@ -217,6 +218,12 @@ class YAMLObject:
 
         # Iterate through each preamble element
         for element in preamble:
+
+            # Make sure that the architecture of the system is defined
+            if '{arch}' in preamble[element]:
+
+                # Update the variable
+                preamble[element] = preamble[element].replace('{arch}', machine())
 
             # Add the key-value pair to the environment
             self.environment[element] = preamble[element]
