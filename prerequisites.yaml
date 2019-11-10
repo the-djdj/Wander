@@ -48,12 +48,7 @@ elements:
         commands:
             - diff --version | head -n 1 | cut -d " " -f 4
     findutils:
-        description: Findutils# Add the folder location
-        if self.environment.get('LOCATION') is None:
-            self.environment['LOCATION'] = partitions.path
-
-        else:
-            self.environment['LOCATION'] += ':' + partitions.path
+        description: Findutils
         version: 4.2.31
         commands:
             - find --version | head -n 1 | cut -d " " -f 4 | cut -d "-" -f 1
@@ -66,25 +61,25 @@ elements:
         description: Gawk (/usr/bin/awk -> /usr/bin/gawk)
         endpoint: gawk
         commands:
-            - readlink -f /usr/bin/awk | cut -d "/" -f 4
+            - readlink /usr/bin/awk | cut -d "/" -f 4
     gcc:
         description: GCC
         version: 6.2
         maximum: 9.2.0
         commands:
-            - gcc --version | head -n 1 | cut -d " " -f 4
+            - gcc --version | head -n 1 | cut -d ")" -f 2 | cut -d " " -f 2
     g++:
         description: G++
         version: 6.2
         maximum: 9.2.0
         commands:
-            - g++ --version | head -n 1 | cut -d " " -f 4
+            - g++ --version | head -n 1 | cut -d ")" -f 2 | cut -d " " -f 2
     glibc:
         description: Glibc
         version: 2.11
         maximum: 2.30
         commands:
-            - ldd --version | head -n 1 | cut -d " " -f 5
+            - ldd --version | head -n 1 | cut -d ")" -f 2 | cut -d " " -f 2
     grep:
         description: Grep
         version: 2.5.1
