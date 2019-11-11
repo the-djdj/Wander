@@ -61,7 +61,7 @@ elements:
         description: Gawk (/usr/bin/awk -> /usr/bin/gawk)
         endpoint: gawk
         commands:
-            - readlink /usr/bin/awk | cut -d "/" -f 4
+            - readlink -f /usr/bin/awk | cut -d "/" -f 4
     gcc:
         description: GCC
         version: 6.2
