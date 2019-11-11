@@ -111,4 +111,20 @@ elements:
         test:
             - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
+    libstdc++:
+        description: Libstdc++ (from GCC)
+        version: 9.2.0
+        file: gcc-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
+        md5: 3818ad8600447f05349098232c2ddc78
+        folder: build
+        skip: false
+        commands:
+            preparation:
+                - ../libstdc++-v3/configure --host=$WANDER_TGT --prefix=/tools --disable-multilib --disable-nls --disable-libstdcxx-threads --disable-libstdcxx-pch --with-gxx-include-dir=/tools/$WANDER_TGT/include/c++/9.2.0
+            compilation:
+                - make
+            installation:
+                - make install
 ...
