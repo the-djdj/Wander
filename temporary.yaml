@@ -10,7 +10,7 @@ preamble:
 user: wander
 # The elements, each representing one unit to execute
 elements:
-    binutils:
+    binutils_1:
         description: Binutils (Pass 1)
         version: 2.32
         file: binutils-{version}
@@ -127,4 +127,24 @@ elements:
                 - make
             installation:
                 - make install
+    binutils_2:
+        description: Binutils (Pass 2)
+        version: 2.32
+        file: binutils-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/binutils/
+        md5: 0d174cdaf85721c5723bf52355be41e6
+        folder: build
+        skip: false
+        commands:
+            preparation:
+                - CC=$WANDER_TGT-gcc AR=$WANDER_TGT-ar RANLIB=$WANDER_TGT-ranlib ../configure --prefix=/tools --disable-nls --disable-werror --with-lib-path=/tools/lib --with-sysroot
+            compilation:
+                - make
+            installation:
+                - make install
+            cleanup:
+                - make -C ld clean
+                - "make -C ld LIB_PATH=/usr/lib:/lib"
+                - cp -v ld/ld-new /tools/bin
 ...
