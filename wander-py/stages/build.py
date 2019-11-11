@@ -524,8 +524,16 @@ class Module:
                             directory = path.join(self.target, self.folder),
                             logger = self.logger, phase = 'testing')
 
-            # And return if the output matches
-            return self.result == result
+            # Iterate through each of the acceptable results
+            for possibility in self.result:
+
+                # And return if the output matches
+                if result in possibility:
+
+                    return True
+
+            # If we don't have a match, return false
+            return False
 
         except CommandException:
 

@@ -108,5 +108,7 @@ elements:
                 - "readelf -l a.out | grep ': /tools'"
             cleanup:
                 - rm -v dummy.c a.out
-        test: "[Requesting program interpreter: /tools/lib64/ld-linux-x86_64.so.2]"
+        test:
+            - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
+            - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
 ...
