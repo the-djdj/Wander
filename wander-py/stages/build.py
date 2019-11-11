@@ -528,7 +528,7 @@ class Module:
             for possibility in self.result:
 
                 # And return if the output matches
-                if result in possibility:
+                if result[-1].strip() in possibility:
 
                     return True
 
