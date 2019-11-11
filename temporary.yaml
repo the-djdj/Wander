@@ -28,12 +28,12 @@ elements:
                 - case $(uname -m) in x86_64) mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;; esac
             installation:
                 - make install
-    gcc:
+    gcc_1:
         description: GCC (Pass 1)
         version: 9.2.0
         file: gcc-{version}
         extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gcc/gcc-9.2.0/
+        url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
         md5: 3818ad8600447f05349098232c2ddc78
         modules:
             mpfr:
