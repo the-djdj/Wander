@@ -147,4 +147,59 @@ elements:
                 - make -C ld clean
                 - "make -C ld LIB_PATH=/usr/lib:/lib"
                 - cp -v ld/ld-new /tools/bin
+    gcc_2:
+        description: GCC (Pass 2)
+        version: 9.2.0
+        file: gcc-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
+        md5: 3818ad8600447f05349098232c2ddc78
+        modules:
+            mpfr:
+                description: MPFR
+                version: 4.0.2
+                file: mpfr-{version}
+                extension: .tar.xz
+                url: http://www.mpfr.org/mpfr-{version}
+                md5: 320fbc4463d4c8cb1e566929d8adc4f8
+                folder: mpfr
+            gmp:
+                description: GMP
+                version: 6.1.2
+                file: gmp-{version}
+                extension: .tar.xz
+                url: http://ftp.gnu.org/gnu/gmp/
+                md5: f58fa8001d60c4c77595fbbb62b63c1d
+                folder: gmp
+            mpc:
+                description: MPC
+                version: 1.1.0
+                file: mpc-{version}
+                extension: .tar.gz
+                url: http://ftp.gnu.org/gnu/mpc/
+                md5: 4125404e41e482ec68282a2e687f6c73
+                folder: mpc
+        folder: build
+        skip: false
+        commands:
+            setup:
+                - cat gcc/limitx.h gcc/glimits.h gcc/limity.h > `dirname $($WANDER_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
+                - for file in gcc/config/{linux,i386/linux{,64}}.h; do (cp -uv $file{,.orig}; sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' -e 's@/usr@/tools@g' $file.orig > $file; printf '#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"\n#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file; touch $file.orig); done
+                - case $(uname -m) in x86_64) sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64 ;; esac
+            preparation:
+                - CC=$WANDER_TGT-gcc CXX=$WANDER_TGT-g++ AR=$WANDER_TGT-ar RANLIB=$WANDER_TGT-ranlib ../configure --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp
+            compilation:
+                - make
+            installation:
+                - make install
+                - ln -sv gcc /tools/bin/cc
+            testing:
+                - echo 'int main(){}' > dummy.c
+                - cc dummy.c
+                - "readelf -l a.out | grep ': /tools'"
+            cleanup:
+                - rm -v dummy.c a.out
+        test:
+            - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
+            - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
 ...
