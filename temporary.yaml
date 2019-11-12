@@ -18,14 +18,20 @@ elements:
         url: http://ftp.gnu.org/gnu/binutils/
         md5: 0d174cdaf85721c5723bf52355be41e6
         folder: build
-        skip: false
         commands:
             preparation:
-                - ../configure --prefix=/tools --with-sysroot=$WANDER --with-lib-path=/tools/lib --target=$WANDER_TGT --disable-nls --disable-werror
+                - ../configure --prefix=/tools
+                               --with-sysroot=$WANDER
+                               --with-lib-path=/tools/lib
+                               --target=$WANDER_TGT
+                               --disable-nls
+                               --disable-werror
             compilation:
                 - make
             configuration:
-                - case $(uname -m) in x86_64) mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;; esac
+                - case $(uname -m) in
+                    x86_64) mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;;
+                  esac
             installation:
                 - make install
     gcc_1:
@@ -61,13 +67,42 @@ elements:
                 md5: 4125404e41e482ec68282a2e687f6c73
                 folder: mpc
         folder: build
-        skip: false
         commands:
             setup:
-                - for file in gcc/config/{linux,i386/linux{,64}}.h; do (cp -uv $file{,.orig}; sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' -e 's@/usr@/tools@g' $file.orig > $file; printf '#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"\n#define STANDARD_STARTFILE_PREFIX_2 ""\n' >> $file; touch $file.orig); done
-                - case $(uname -m) in x86_64) sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64 ;; esac
+                - for file in gcc/config/{linux,i386/linux{,64}}.h;
+                  do (
+                    cp -uv $file{,.orig};
+                    sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g'
+                        -e 's@/usr@/tools@g' $file.orig > $file;
+                    printf '#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"\n#define STANDARD_STARTFILE_PREFIX_2 ""\n' >> $file;
+                    touch $file.orig);
+                  done
+                - case $(uname -m) in
+                    x86_64) sed -e '/m64=/s/lib64/lib/'
+                                -i.orig gcc/config/i386/t-linux64
+                    ;;
+                  esac
             preparation:
-                - ../configure --target=$WANDER_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$WANDER --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+                - ../configure --target=$WANDER_TGT
+                               --prefix=/tools
+                               --with-glibc-version=2.11
+                               --with-sysroot=$WANDER
+                               --with-newlib
+                               --without-headers
+                               --with-local-prefix=/tools
+                               --with-native-system-header-dir=/tools/include
+                               --disable-nls
+                               --disable-shared
+                               --disable-multilib
+                               --disable-decimal-float
+                               --disable-threads
+                               --disable-libatomic
+                               --disable-libgomp
+                               --disable-libquadmath
+                               --disable-libssp
+                               --disable-libvtv
+                               --disable-libstdcxx
+                               --enable-languages=c,c++
             compilation:
                 - make
             installation:
@@ -79,7 +114,6 @@ elements:
         extension: .tar.xz
         url: http://www.kernel.org/pub/linux/kernel/v5.x/
         md5: 602dd0ecb8646e539fefb2beb6eb6fe0
-        skip: false
         commands:
             preparation:
                 - make mrproper
@@ -94,21 +128,24 @@ elements:
         url: http://ftp.gnu.org/gnu/glibc/
         md5: 2b1dbdf27b28620752956c061d62f60c
         folder: build
-        skip: false
         commands:
             preparation:
-                - ../configure --prefix=/tools --host=$WANDER_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=/tools/include
+                - ../configure --prefix=/tools
+                               --host=$WANDER_TGT
+                               --build=$(../scripts/config.guess)
+                               --enable-kernel=3.2
+                               --with-headers=/tools/include
             compilation:
                 - make
             installation:
                 - make install
-            testing:
+            validation:
                 - echo 'int main(){}' > dummy.c
                 - $WANDER_TGT-gcc dummy.c
                 - "readelf -l a.out | grep ': /tools'"
             cleanup:
                 - rm -v dummy.c a.out
-        test:
+        result:
             - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
     libstdc++:
@@ -119,10 +156,15 @@ elements:
         url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
         md5: 3818ad8600447f05349098232c2ddc78
         folder: build
-        skip: false
         commands:
             preparation:
-                - ../libstdc++-v3/configure --host=$WANDER_TGT --prefix=/tools --disable-multilib --disable-nls --disable-libstdcxx-threads --disable-libstdcxx-pch --with-gxx-include-dir=/tools/$WANDER_TGT/include/c++/9.2.0
+                - ../libstdc++-v3/configure --host=$WANDER_TGT
+                                            --prefix=/tools
+                                            --disable-multilib
+                                            --disable-nls
+                                            --disable-libstdcxx-threads
+                                            --disable-libstdcxx-pch
+                                            --with-gxx-include-dir=/tools/$WANDER_TGT/include/c++/9.2.0
             compilation:
                 - make
             installation:
@@ -135,10 +177,16 @@ elements:
         url: http://ftp.gnu.org/gnu/binutils/
         md5: 0d174cdaf85721c5723bf52355be41e6
         folder: build
-        skip: false
         commands:
             preparation:
-                - CC=$WANDER_TGT-gcc AR=$WANDER_TGT-ar RANLIB=$WANDER_TGT-ranlib ../configure --prefix=/tools --disable-nls --disable-werror --with-lib-path=/tools/lib --with-sysroot
+                - CC=$WANDER_TGT-gcc
+                  AR=$WANDER_TGT-ar
+                  RANLIB=$WANDER_TGT-ranlib
+                  ../configure --prefix=/tools
+                               --disable-nls
+                               --disable-werror
+                               --with-lib-path=/tools/lib
+                               --with-sysroot
             compilation:
                 - make
             installation:
@@ -180,14 +228,36 @@ elements:
                 md5: 4125404e41e482ec68282a2e687f6c73
                 folder: mpc
         folder: build
-        skip: false
         commands:
             setup:
-                - cat gcc/limitx.h gcc/glimits.h gcc/limity.h > `dirname $($WANDER_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
-                - for file in gcc/config/{linux,i386/linux{,64}}.h; do (cp -uv $file{,.orig}; sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' -e 's@/usr@/tools@g' $file.orig > $file; printf '#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"\n#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file; touch $file.orig); done
-                - case $(uname -m) in x86_64) sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64 ;; esac
+                - cat gcc/limitx.h gcc/glimits.h gcc/limity.h >
+                    `dirname $($WANDER_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
+                - for file in gcc/config/{linux,i386/linux{,64}}.h;
+                  do (
+                    cp -uv $file{,.orig};
+                    sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g'
+                        -e 's@/usr@/tools@g' $file.orig > $file;
+                    printf '#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"\n#define STANDARD_STARTFILE_PREFIX_2 ""' >> $file;
+                    touch $file.orig);
+                  done
+                - case $(uname -m) in
+                    x86_64) sed -e '/m64=/s/lib64/lib/'
+                                -i.orig gcc/config/i386/t-linux64
+                    ;;
+                  esac
             preparation:
-                - CC=$WANDER_TGT-gcc CXX=$WANDER_TGT-g++ AR=$WANDER_TGT-ar RANLIB=$WANDER_TGT-ranlib ../configure --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp
+                - CC=$WANDER_TGT-gcc
+                  CXX=$WANDER_TGT-g++
+                  AR=$WANDER_TGT-ar
+                  RANLIB=$WANDER_TGT-ranlib
+                  ../configure --prefix=/tools
+                               --with-local-prefix=/tools
+                               --with-native-system-header-dir=/tools/include
+                               --enable-languages=c,c++
+                               --disable-libstdcxx-pch
+                               --disable-multilib
+                               --disable-bootstrap
+                               --disable-libgomp
             compilation:
                 - make
             installation:
@@ -210,7 +280,6 @@ elements:
         url: https://downloads.sourceforge.net/tcl/
         md5: aa0a121d95a0e7b73a036f26028538d4
         folder: unix
-        skip: false
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -231,7 +300,6 @@ elements:
         extension: .tar.gz
         url: https://prdownloads.sourceforge.net/expect/
         md5: 00fce8de158422f5ccd2666512329bd2
-        skip: false
         commands:
             preparation:
                 - cp -v configure{,.orig}
