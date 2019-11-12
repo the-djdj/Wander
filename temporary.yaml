@@ -594,4 +594,103 @@ elements:
                 - cp -v perl cpan/podlators/scripts/pod2man /tools/bin
                 - mkdir -pv /tools/lib/perl5/5.30.0
                 - cp -Rv lib/* /tools/lib/perl5/5.30.0
+    python:
+        description: Python
+        version: 3.7.2
+        file: Python-{version}
+        extension: .tar.xz
+        url: https://www.python.org/ftp/python/{version}/
+        md5: df6ec36011808205beda239c72f947cb
+        commands:
+            preparation:
+                - sed -i '/def add_multiarch_paths/a \        return' setup.py
+                - ./configure --prefix=/tools
+                              --without-ensurepip
+            compilation:
+                - make
+            installation:
+                - make install
+    sed:
+        description: Sed
+        version: 4.7
+        file: sed-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/sed/
+        md5: 777ddfd9d71dd06711fe91f0925e1573
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+            compilation:
+                - make
+            testing:
+                - make check
+            installation:
+                - make install
+    tar:
+        description: Tar
+        version: 1.32
+        file: tar-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/tar/
+        md5: 83e38700a80a26e30b2df054e69956e5
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+            compilation:
+                - make
+            testing:
+                - make check
+            installation:
+                - make install
+    texinfo:
+        description: Texinfo
+        version: 6.6
+        file: texinfo-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/texinfo/
+        md5: 5231da3e6aa106cd0532b8609e5b3702
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+            compilation:
+                - make
+            testing:
+                - make check
+            installation:
+                - make install
+    util-linux:
+        description: Util-linux
+        version: 2.34
+        file: util-linux-{version}
+        extension: .tar.xz
+        url: https://www.kernel.org/pub/linux/utils/util-linux/v{version}/
+        md5: a78cbeaed9c39094b96a48ba8f891d50
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+                              --without-python
+                              --disable-makeinstall-chown
+                              --without-systemdsystemunitdir
+                              --without-ncurses
+                              PKG_CONFIG=""
+            compilation:
+                - make
+            installation:
+                - make install
+    xz:
+        description: Xz
+        version: 5.2.4
+        file: xz-{version}
+        extension: .tar.xz
+        url: https://tukaani.org/xz/
+        md5: 003e4d0b1b1899fc6e3000b24feddf7c
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+            compilation:
+                - make
+            testing:
+                - make check
+            installation:
+                - make install
 ...
