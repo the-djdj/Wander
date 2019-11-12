@@ -39,6 +39,7 @@ class Output:
     CONFIGURING = B_BLUE    + 'Configuring'
     TESTING     = B_BLUE    + 'Testing'
     INSTALLING  = B_BLUE    + 'Installing'
+    VALIDATING  = B_BLUE    + 'Validating'
     CLEANING    = B_BLUE    + 'Cleaning'
     EXECUTING   = B_BLUE    + 'Executing'
     PASSED      = B_GREEN   + 'Passed'

@@ -94,7 +94,7 @@ class Module:
         self.folder       = element.get('folder')
         self.commands     = element.get('commands')
         self.skip         = element.get('skip')
-        self.result       = element.get('test')
+        self.result       = element.get('result')
 
         # Store the system for running commands
         self.parent        = parent
@@ -138,8 +138,9 @@ class Module:
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
                     (self.configure, Output.CONFIGURING),
+                    (self.test,      Output.TESTING)
                     (self.install,   Output.INSTALLING),
-                    (self.test,      Output.TESTING),
+                    (self.validate,  Output.VALIDATING),
                     (self.cleanup,   Output.CLEANING)]
 
         # Store the result of the build
@@ -479,6 +480,33 @@ class Module:
             return False
 
 
+    def test(self):
+        ''' A simple method for ensuring that a compiled package works properly,
+            by testing whether or not any exceptions occur.'''
+        # Check that there is a set of testing instructions for this module
+        if self.commands.get('testing') is None:
+
+            # If there's nothing to do, return
+            return True
+
+
+        # Attempt to run all of the commands
+        try:
+
+            # Run the commands
+            result = self.parent.run(self.commands.get('testing'),
+                            directory = path.join(self.target, self.folder),
+                            logger = self.logger, phase = 'testing')
+
+            # If nothing went wrong, return True
+            return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
+
+
     def install(self):
         ''' A simple method installs a compiled package so that it can be used
             by the host system.'''
@@ -506,11 +534,12 @@ class Module:
             return False
 
 
-    def test(self):
-        ''' A simple method for ensuring that a compiled package works properly,
-            by comparing the result of test code to an expected result.'''
-        # Check that there is a set of testing instructions for this module
-        if self.commands.get('testing') is None:
+    def validate(self):
+        ''' A simple method for ensuring that an installed package works
+            properly by comparing the result of test code to an expected
+            result.'''
+        # Check that there is a set of validation instructions for this module
+        if self.commands.get('validation') is None:
 
             # If there's nothing to do, return
             return True
@@ -520,9 +549,9 @@ class Module:
         try:
 
             # Run the commands
-            result = self.parent.run(self.commands.get('testing'),
+            result = self.parent.run(self.commands.get('validation'),
                             directory = path.join(self.target, self.folder),
-                            logger = self.logger, phase = 'testing')
+                            logger = self.logger, phase = 'validation')
 
             # Iterate through each of the acceptable results
             for possibility in self.result:

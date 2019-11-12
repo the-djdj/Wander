@@ -193,13 +193,13 @@ elements:
             installation:
                 - make install
                 - ln -sv gcc /tools/bin/cc
-            testing:
+            validation:
                 - echo 'int main(){}' > dummy.c
                 - cc dummy.c
                 - "readelf -l a.out | grep ': /tools'"
             cleanup:
                 - rm -v dummy.c a.out
-        test:
+        result:
             - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
 ...
