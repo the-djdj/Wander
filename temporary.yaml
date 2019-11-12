@@ -313,4 +313,18 @@ elements:
                 - make test
             installation:
                 - make SCRIPTS="" install
+    dejagnu:
+        description: DejaGNU
+        version: 1.6.2
+        file: dejagnu-{version}
+        extension: .tar.gz
+        url: http://ftp.gnu.org/gnu/dejagnu/
+        md5: e1b07516533f351b3aba3423fafeffd6
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+            installation:
+                - make install
+            validation:
+                - make check
 ...
