@@ -311,6 +311,9 @@ class Module:
             # Extract the archive contents
             archive.extractall(self.target)
 
+        # Now that the archive has been extracted, sanitise the file name
+        self.file = self.file.replace('-src', '')
+
         # Iterate through each of the folders we've just extracted
         for item in listdir(path.join(self.target, self.file)):
 
