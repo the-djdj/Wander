@@ -364,4 +364,22 @@ elements:
             installation:
                 - make install
                 - ln -s libncursesw.so /tools/lib/libncurses.so
+    bash:
+        description: Bash
+        version: 5.0
+        file: bash-{version}
+        extension: .tar.gz
+        url: http://ftp.gnu.org/gnu/bash/
+        md5: 2b44b47b905be16f45709648f671820b
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+                              --without-bash-malloc
+            compilation:
+                - make
+            testing:
+                - make tests
+            installation:
+                - make install
+                - ln -sv bash /tools/bin/sh
 ...
