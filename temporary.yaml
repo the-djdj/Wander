@@ -526,7 +526,7 @@ elements:
                 - make install
     gzip:
         description: Gzip
-        version: 1.10
+        version: '1.10'
         file: gzip-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/gzip/
