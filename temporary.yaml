@@ -224,4 +224,25 @@ elements:
                 - chmod -v u+w /tools/lib/libtcl8.6.so
                 - make install-private-headers
                 - ln -sv tclsh8.6 /tools/bin/tclsh
+    expect:
+        description: Expect
+        version: 5.45.4
+        file: expect{version}
+        extension: .tar.gz
+        url: https://prdownloads.sourceforge.net/expect/
+        md5: 00fce8de158422f5ccd2666512329bd2
+        skip: false
+        commands:
+            preparation:
+                - cp -v configure{,.orig}
+                - sed 's:/usr/local/bin:/bin:' configure.orig > configure
+                - ./configure --prefix=/tools
+                              --with-tcl=/tools/lib
+                              --with-tclinclude=/tools/include
+            compilation:
+                - make
+            testing:
+                - make test
+            installation:
+                - make SCRIPTS="" install
 ...
