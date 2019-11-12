@@ -182,6 +182,7 @@ class YAMLObject:
         # Create all of the lists for the application
         self.preamble = dict()
         self.elements = dict()
+        self.cleanup  = list()
 
         # Create the command system
         self.commands = commands
@@ -206,6 +207,9 @@ class YAMLObject:
 
                 # Sort out the elements
                 self.elements = elements.get('elements')
+
+                # And get any cleanup which needs to be done
+                self.cleanup = elements.get('cleanup')
 
             # If the syntax is improper, indicate as such
             except YAMLError as error:

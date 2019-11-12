@@ -1,4 +1,5 @@
-from util import Output, YAMLObject
+from exception import CommandException
+from util import Logger, Output, YAMLObject
 
 
 class BuildSystem(YAMLObject):
@@ -57,6 +58,9 @@ class BuildSystem(YAMLObject):
             # Add the final line of output
             print('')
 
+        # Cleanup the stage
+        result &= self.clean()
+
         # Inform the user of the status
         Output.footer(result, self.stage[1][0:-3])
 
@@ -64,9 +68,33 @@ class BuildSystem(YAMLObject):
         return result
 
 
+    def clean(self):
+        ''' A method which cleans up the system after the current stage has
+            finished.'''
+        # First check that there is cleanup to do
+        if self.cleanup is None:
 
-from exception import CommandException
-from util import Logger
+            # And escape
+            return True
+
+        # And try to clean up the system
+        try:
+
+            # Create a logger
+            logger = Logger(self.stage[2], 'cleanup')
+
+            # Run the commands
+            self.run(self.cleanup, logger = logger, phase = 'cleanup', root = True)
+
+            # And note that we were successful
+            return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
+
+
 
 from hashlib import md5
 from os import listdir, mkdir, path

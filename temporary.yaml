@@ -693,4 +693,11 @@ elements:
                 - make check
             installation:
                 - make install
+# A list of commands to be run when this section ends
+cleanup:
+    - strip --strip-debug /tools/lib/*
+    - /usr/bin/strip --strip-unneeded /tools/{,s}bin/*
+    - rm -rf /tools/{,share}/{info,man,doc}
+    - find /tools/{lib,libexec} -name \*.la -delete
+    - chown -R root:root $WANDER/tools
 ...
