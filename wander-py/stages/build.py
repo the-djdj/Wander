@@ -556,6 +556,12 @@ class Module:
                             directory = path.join(self.target, self.folder),
                             logger = self.logger, phase = 'validation')
 
+            # Check that we are expecting a result
+            if self.result is None:
+
+                # And return True, as we haven't encountered errors
+                return True
+
             # Iterate through each of the acceptable results
             for possibility in self.result:
 
