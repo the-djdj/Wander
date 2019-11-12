@@ -138,7 +138,7 @@ class Module:
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
                     (self.configure, Output.CONFIGURING),
-                    (self.test,      Output.TESTING)
+                    (self.test,      Output.TESTING),
                     (self.install,   Output.INSTALLING),
                     (self.validate,  Output.VALIDATING),
                     (self.cleanup,   Output.CLEANING)]
