@@ -191,7 +191,6 @@ elements:
                 - make
             installation:
                 - make install
-            cleanup:
                 - make -C ld clean
                 - "make -C ld LIB_PATH=/usr/lib:/lib"
                 - cp -v ld/ld-new /tools/bin
@@ -289,7 +288,6 @@ elements:
                 - TZ=UTC make test
             installation:
                 - make install
-            cleanup:
                 - chmod -v u+w /tools/lib/libtcl8.6.so
                 - make install-private-headers
                 - ln -sv tclsh8.6 /tools/bin/tclsh
