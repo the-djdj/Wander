@@ -327,4 +327,22 @@ elements:
                 - make install
             validation:
                 - make check
+    m4:
+        description: M4
+        version: 1.4.18
+        file: m4-{version}
+        extension: .tar.xz
+        url: http://ftp.gnu.org/gnu/m4/
+        md5: 730bb15d96fffe47e148d1e09235af82
+        commands:
+            preparation:
+                - sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+                - echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+                - ./configure --prefix=/tools
+            compilation:
+                - make
+            testing:
+                - make check
+            installation:
+                - make install
 ...
