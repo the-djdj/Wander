@@ -202,4 +202,26 @@ elements:
         result:
             - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
+    tcl:
+        description: Tcl
+        version: 8.6.9
+        file: tcl{version}-src
+        extension: .tar.gz
+        url: https://downloads.sourceforge.net/tcl/
+        md5: aa0a121d95a0e7b73a036f26028538d4
+        folder: unix
+        skip: false
+        commands:
+            preparation:
+                - ./configure --prefix=/tools
+            compilation:
+                - make
+            testing:
+                - TZ=UTC make test
+            installation:
+                - make install
+            cleanup:
+                - chmod -v u+w /tools/lib/libtcl8.6.so
+                - make install-private-headers
+                - ln -sv tclsh8.6 /tools/bin/tclsh
 ...
