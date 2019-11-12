@@ -345,4 +345,25 @@ elements:
                 - make check
             installation:
                 - make install
+    ncurses:
+        description: Ncurses
+        version: 6.1
+        file: ncurses-{version}
+        extension: .tar.gz
+        url: http://ftp.gnu.org/gnu/ncurses/
+        md5: 98c889aaf8d23910d2b92d65be2e737a
+        commands:
+            preparation:
+                - sed -i s/mawk// configure
+                - ./configure --prefix=/tools
+                              --with-shared
+                              --without-debug
+                              --without-ada
+                              --enable-widec
+                              --enable-overwrite
+            compilation:
+                - make
+            installation:
+                - make install
+                - ln -s libncursesw.so /tools/lib/libncurses.so
 ...
