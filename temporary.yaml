@@ -384,11 +384,11 @@ elements:
                 - ln -sv bash /tools/bin/sh
     bison:
         description: Bison
-        version: 3.3.2
+        version: 3.4.1
         file: bison-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/bison/
-        md5: c9b552dee234b2f6b66e56b27e5234c9
+        md5: 201286a573b12da109df96282fe4ff4a
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -400,11 +400,11 @@ elements:
                 - make install
     bzip2:
         description: Bzip2
-        version: 1.0.6
+        version: 1.0.8
         file: bzip2-{version}
         extension: .tar.gz
         url: http://anduin.linuxfromscratch.org/LFS/
-        md5: 00b516f4704d4a7cb50a1d97e6e8e15b
+        md5: 67e051268d0c475ea773822f7500d0e5
         commands:
             compilation:
                 - make
@@ -412,11 +412,11 @@ elements:
                 - make PREFIX=/tools install
     coreutils:
         description: Coreutils
-        version: '8.30'
+        version: '8.31'
         file: coreutils-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/coreutils/
-        md5: ab06d68949758971fe744db66b572816
+        md5: 0009a224d8e288e8ec406ef0161f9293
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -445,11 +445,11 @@ elements:
                 - make install
     file:
         description: File
-        version: 5.36
+        version: 5.37
         file: file-{version}
         extension: .tar.gz
         url: ftp://ftp.astron.com/pub/file/
-        md5: 9af0eb3f5db4ae00fffc37f7b861575c
+        md5: 80c29aca745466c6c24d11f059329075
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -480,11 +480,11 @@ elements:
                 - make install
     gawk:
         description: Gawk
-        version: 4.2.1
+        version: 5.0.1
         file: gawk-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/gawk/
-        md5: 95cf553f50ec9f386b5dfcd67f30180a
+        md5: f9db3f6715207c6f13719713abc9c707
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -496,11 +496,11 @@ elements:
                 - make install
     gettext:
         description: Gettext
-        version: 0.19.8.1
+        version: 0.20.1
         file: gettext-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/gettext/
-        md5: df3f5690eaa30fd228537b00cb7b7590
+        md5: 9ed9e26ab613b668e0026222a9c23639
         commands:
             preparation:
                 - ./configure --disable-shared
@@ -576,11 +576,11 @@ elements:
                 - make install
     perl:
         description: Perl
-        version: 5.28.1
+        version: 5.30.0
         file: perl-{version}
         extension: .tar.xz
         url: https://www.cpan.org/src/5.0/
-        md5: fbb590c305f2f88578f448581b8cf9c4
+        md5: 037c35000550bdcb47552ad0f6d3064d
         commands:
             preparation:
                 - sh Configure -des
@@ -596,11 +596,11 @@ elements:
                 - cp -Rv lib/* /tools/lib/perl5/5.30.0
     python:
         description: Python
-        version: 3.7.2
+        version: 3.7.4
         file: Python-{version}
         extension: .tar.xz
         url: https://www.python.org/ftp/python/{version}/
-        md5: df6ec36011808205beda239c72f947cb
+        md5: d33e4aae66097051c2eca45ee3604803
         commands:
             preparation:
                 - sed -i '/def add_multiarch_paths/a \        return' setup.py
