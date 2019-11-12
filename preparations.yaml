@@ -61,13 +61,13 @@ elements:
             - chown -v -R wander $WANDER/sources
     cleanProfile:
         description: Cleaning previous build environment
-        test: 0
+        test: 1
         commands:
             - rm /home/wander/.bash_profile
             - rm /home/wander/.bashrc
     bashProfile:
         description: Creating build environment
-        test: 0
+        test: 1
         commands:
             - printf "exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash" >> /home/wander/.bash_profile
             - printf "set +h\numask 022\nWANDER=$WANDER\nLC_ALL=$LC_ALL\nWANDER_TGT=$WANDER_TGT\nPATH=$PATH\nexport WANDER LC_ALL WANDER_TGT PATH" >> /home/wander/.bashrc

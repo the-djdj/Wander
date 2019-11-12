@@ -9,11 +9,12 @@ class Main:
         wander system.'''
 
     # The application errors for if something goes wrong
-    ERROR_NONE             = 0
-    ERROR_PREREQUISITE     = 1
-    ERROR_PARTITIONS       = 2
-    ERROR_PREPARATIONS     = 3
-    ERROR_TEMPORARY_SYSTEM = 4
+    ERROR_NONE                = 0
+    ERROR_PREREQUISITE        = 1
+    ERROR_PARTITIONS          = 2
+    ERROR_PREPARATIONS        = 3
+    ERROR_TEMPORARY_SYSTEM    = 4
+    ERROR_SYSTEM_PREPARATIONS = 5
 
     # The path at which the YAML files can be found
     PATH = './'
@@ -28,8 +29,9 @@ class Main:
         # Create the different systems used in the build
         self.prerequisites = Prerequisites(self.commands, Main.PATH)
         self.partitions    = Partitions()
-        self.preparations  = Preparations(self.commands, Main.PATH, self.partitions)
+        self.preparations  = Preparations(self.commands, Main.PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
         self.temporary     = BuildSystem(self.commands, Main.PATH, BuildSystem.TEMPORARY_SYSTEM)
+        self.system        = Preparations(self.commands, Main.PATH, Preparations.BUILD_SYSTEM)
 
 
     def begin(self):
@@ -42,7 +44,8 @@ class Main:
         modules = [(self.prerequisites, Main.ERROR_PREREQUISITE),
                    (self.partitions,    Main.ERROR_PARTITIONS),
                    (self.preparations,  Main.ERROR_PREPARATIONS),
-                   (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM)]
+                   (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM),
+                   (self.system,        Main.ERROR_SYSTEM_PREPARATIONS)]
 
         # Iterate through each of the modules, and ensure that they succeed
         for module, error in modules:

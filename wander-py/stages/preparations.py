@@ -7,7 +7,12 @@ class Preparations(YAMLObject):
         list of preparation objects and checks each one.'''
 
 
-    def __init__(self, commands, path, partitions):
+    # Variables for the stage that is currently being built
+    TEMPORARY_SYSTEM = ('preparations.yaml', 'Preparing host environment...')
+    BUILD_SYSTEM     = ('system.yaml',       'Preparing build environment...')
+
+
+    def __init__(self, commands, location, stage, partitions = None):
         ''' The constructor. This creates the new system for ensuring that the
             host is prepared for building wander.'''
         # Create the parent object
@@ -19,21 +24,27 @@ class Preparations(YAMLObject):
         # Store the partitions system
         self.partitions = partitions
 
-        # Load the preparations list
-        self.load(path + 'preparations.yaml')
+        # Store the stage that we are in
+        self.stage = stage
+
+        # Load the elements list
+        self.load(location + self.stage[0])
 
 
     def verify(self):
         ''' A simple method which ensures that the host system is ready...'''
-        # Add the folder location
-        if self.environment.get('LOCATION') is None:
-            self.environment['LOCATION'] = self.partitions.path
+        # Check that the partition system is defined
+        if self.partitions is not None:
 
-        else:
-            self.environment['LOCATION'] += ':' + self.partitions.path
+            # Add the folder location
+            if self.environment.get('LOCATION') is None:
+                self.environment['LOCATION'] = self.partitions.path
+
+            else:
+                self.environment['LOCATION'] += ':' + self.partitions.path
 
         # Tell the user what's happening
-        Output.header('Preparing host environment...')
+        Output.header(self.stage[1])
 
         # Store whether or not the preparations are valid
         result = True
@@ -48,7 +59,7 @@ class Preparations(YAMLObject):
             print('')
 
         # Inform the user of the status
-        Output.footer(result, "Preparing host environment")
+        Output.footer(result, self.stage[1][0:-3])
 
         # And return the result
         return result
