@@ -17,27 +17,20 @@ class Main:
     ERROR_SYSTEM_PREPARATIONS = 5
     ERROR_BASE_SYSTEM         = 6
 
-    # The path at which the YAML files can be found
-    PATH = './'
 
-
-    def __init__(self, path):
+    def __init__(self, PATH):
         ''' The constructor. This creates the main object, and sets all of the
             default variables.'''
-        global PATH
-        PATH = path
-
-
         # Create the command system
         self.commands = Commands()
 
         # Create the different systems used in the build
-        self.prerequisites = Prerequisites(self.commands, Main.PATH)
+        self.prerequisites = Prerequisites(self.commands, PATH)
         self.partitions    = Partitions()
-        self.preparations  = Preparations(self.commands, Main.PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
-        self.temporary     = BuildSystem(self.commands, Main.PATH, BuildSystem.TEMPORARY_SYSTEM)
-        self.system        = Preparations(self.commands, Main.PATH, Preparations.BUILD_SYSTEM)
-        self.base_system   = BuildSystem(self.commands, Main.PATH, BuildSystem.BASE_SYSTEM, self.partitions)
+        self.preparations  = Preparations(self.commands, PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
+        self.temporary     = BuildSystem(self.commands, PATH, BuildSystem.TEMPORARY_SYSTEM)
+        self.system        = Preparations(self.commands, PATH, Preparations.BUILD_SYSTEM)
+        self.base_system   = BuildSystem(self.commands, PATH, BuildSystem.BASE_SYSTEM, self.partitions)
 
 
     def begin(self):
