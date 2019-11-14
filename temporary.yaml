@@ -2,7 +2,7 @@
 # A list of variables that must be set for all elements
 preamble:
     LC_ALL: POSIX
-    WANDER: /mnt/wander
+    WANDER: /wander
     PATH: /tools/bin:/bin:/usr/bin
     WANDER_TGT: '{arch}-wander-linux-gnu'
 # The user that must run this section

@@ -5,7 +5,7 @@ preamble:
     TERM: $TERM"
     PS1: '(lfs chroot) \u:\w\$ '
     PATH: '/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin'
-    WANDER: /mnt/wander
+    WANDER: /wander
 # The user that must run this section
 user: chroot
 # A list of commands to be run before this stage begins
