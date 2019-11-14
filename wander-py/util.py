@@ -107,18 +107,18 @@ class Commands:
     ''' The commands class. This allows for commands to be run as a subprocess
         and for the results of that command to be stored.'''
 
-    # The different user environments that can run commands
-    USERS = {'root'   : getpwnam('root'),
-             'wander' : getpwnam('wander'),
-             'chroot' : getpwnam(getuser()),
-             'default': getpwnam(getuser())}
-
 
     def call(self, command, environment, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
+        # The different user environments that can run commands
+        USERS = {'root'   : getpwnam('root'),
+                 'wander' : getpwnam('wander'),
+                 'chroot' : getpwnam(getuser()),
+                 'default': getpwnam(getuser())}
+
         # Store information about the user that we'll be running commands as
-        user = Commands.USERS.get(user)
+        user = USERS.get(user)
 
         # Do some work on the environment
         environment['HOME']    = user.pw_dir
