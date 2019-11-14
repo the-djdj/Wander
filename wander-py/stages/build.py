@@ -26,6 +26,12 @@ class BuildSystem(YAMLObject):
         # Load the elements list
         self.load(location + self.stage[0])
 
+        # Check if the partitions is none
+        if self.user is 'chroot':
+
+            # And change our root
+            chroot(self.environment['WANDER'])
+
 
     def verify(self):
         ''' A simple method which checks that each of the modules has been built
@@ -35,7 +41,7 @@ class BuildSystem(YAMLObject):
 
         # List some directories which need to exist
         directories = ['sources',
-                       self.environment['WANDER'] + '/sources']
+                   self.environment['WANDER'] + '/sources']
 
         # Go through each of the directories and do the things
         for directory in directories:
