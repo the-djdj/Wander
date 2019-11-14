@@ -49,6 +49,9 @@ class BuildSystem(YAMLObject):
         # Store whether or not the modules are valid
         result = True
 
+        # Get ready to run the stage
+        result &= self.initialise()
+
         # Iterate through each of the prerequisites, and verify them
         for element in self.elements:
 
@@ -66,6 +69,33 @@ class BuildSystem(YAMLObject):
 
         # And return the result
         return result
+
+
+    def initialise(self):
+        ''' A method which initialises the system before the current stage has
+            begun.'''
+        # First check that there is initialisation to do
+        if self.init is None:
+
+            # And escape
+            return True
+
+        # And try to initialise the system
+        try:
+
+            # Create a logger
+            logger = Logger(self.stage[2], 'init')
+
+            # Run the commands
+            self.run(self.init, logger = logger, phase = 'init')
+
+            # And note that we were successful
+            return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
 
 
     def clean(self):
