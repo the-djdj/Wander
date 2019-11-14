@@ -15,6 +15,7 @@ class Main:
     ERROR_PREPARATIONS        = 3
     ERROR_TEMPORARY_SYSTEM    = 4
     ERROR_SYSTEM_PREPARATIONS = 5
+    ERROR_BASE_SYSTEM         = 6
 
     # The path at which the YAML files can be found
     PATH = './'
@@ -32,6 +33,7 @@ class Main:
         self.preparations  = Preparations(self.commands, Main.PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
         self.temporary     = BuildSystem(self.commands, Main.PATH, BuildSystem.TEMPORARY_SYSTEM)
         self.system        = Preparations(self.commands, Main.PATH, Preparations.BUILD_SYSTEM)
+        self.base_system   = BuildSystem(self.commands, Main.PATH, BuildSystem.BASE_SYSTEM, self.partitions)
 
 
     def begin(self):
@@ -45,7 +47,8 @@ class Main:
                    (self.partitions,    Main.ERROR_PARTITIONS),
                    (self.preparations,  Main.ERROR_PREPARATIONS),
                    (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM),
-                   (self.system,        Main.ERROR_SYSTEM_PREPARATIONS)]
+                   (self.system,        Main.ERROR_SYSTEM_PREPARATIONS),
+                   (self.base_system,   Main.ERROR_BASE_SYSTEM)]
 
         # Iterate through each of the modules, and ensure that they succeed
         for module, error in modules:

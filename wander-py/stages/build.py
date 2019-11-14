@@ -1,3 +1,5 @@
+from os import chroot
+
 from exception import CommandException
 from util import Logger, Output, YAMLObject
 
@@ -9,9 +11,10 @@ class BuildSystem(YAMLObject):
 
     # Variables for the stage that is currently being built
     TEMPORARY_SYSTEM = ('temporary.yaml', 'Building temporary system...', 'temp')
+    BASE_SYSTEM      = ('basic.yaml',     'Building base system...',      'base')
 
 
-    def __init__(self, commands, location, stage):
+    def __init__(self, commands, location, stage, partitions = None):
         ''' The constructor. This creates the new system for building a set of
             modules used in wander.'''
         # Create the parent object
@@ -161,11 +164,11 @@ class Module:
         self.result       = element.get('result')
 
         # Store the system for running commands
-        self.parent        = parent
+        self.parent       = parent
 
         # Store the root file name
-        self.source        = path.join('sources', self.file)
-        self.target        = path.join(self.parent.environment['WANDER'], self.source)
+        self.source       = path.join('sources', self.file)
+        self.target       = path.join(self.parent.environment['WANDER'], self.source)
 
         # Check if there are prerequisites
         if self.modules is None:
