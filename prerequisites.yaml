@@ -142,9 +142,10 @@ elements:
             - xz --version | head -n 1 | cut -d " " -f 4 | cut -d "a" -f 1
     g++-compilation:
         description: G++ compilation
-        test: 1
+        test: 2
         commands:
-            - 'echo "int main(){}" > dummy.c && g++ -o dummy dummy.c'
-            - 'test -x dummy'
+            - echo "int main(){}" > dummy.c
+            - g++ -o dummy dummy.c
+            - test -x dummy
             - rm -f dummy.c dummy
 ...
