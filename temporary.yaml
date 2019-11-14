@@ -5,7 +5,6 @@ preamble:
     WANDER: /mnt/wander
     PATH: /tools/bin:/bin:/usr/bin
     WANDER_TGT: '{arch}-wander-linux-gnu'
-#     LDFLAGS = --sysroot=$WANDER
 # The user that must run this section
 user: wander
 # The elements, each representing one unit to execute
