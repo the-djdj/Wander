@@ -110,6 +110,7 @@ class Commands:
     # The different user environments that can run commands
     USERS = {'root'   : getpwnam('root'),
              'wander' : getpwnam('wander'),
+             'chroot' : getpwnam(getuser()),
              'default': getpwnam(getuser())}
 
 
@@ -182,7 +183,6 @@ class YAMLObject:
         # Create all of the lists for the application
         self.preamble = dict()
         self.elements = dict()
-        self.cleanup  = list()
 
         # Create the command system
         self.commands = commands
@@ -198,6 +198,9 @@ class YAMLObject:
 
                 # Store the file contents
                 elements = load(stream)
+
+                # And get any init which needs to be done
+                self.init = elements.get('init')
 
                 # Sort out the preamble
                 preamble = elements.get('preamble')
@@ -216,7 +219,13 @@ class YAMLObject:
                 print(error)
 
         # Process the preamble into a usable environment
-        self.environment = environ.copy()
+        self.environment = dict()
+
+        # Check whether or not we should populate the environment
+        if self.user is not 'wander' and self.user is not 'chroot':
+
+            # And duplicate the environment
+            self.environment = environ.copy()
 
         # Check that a preamble exists
         preamble = preamble if preamble is not None else dict()
