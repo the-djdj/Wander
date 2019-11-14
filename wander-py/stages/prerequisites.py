@@ -157,7 +157,7 @@ class Prerequisite:
             for element in range(self.test + 1):
 
                 # Execute the commands
-                result = self.parent.run([self.commands[element]], True)[-1]
+                result = self.parent.run([self.commands[element]], test = True)[-1]
 
             # And execute the rest of the commands
             for element in range(self.test + 1, len(self.commands)):
