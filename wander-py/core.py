@@ -21,9 +21,13 @@ class Main:
     PATH = './'
 
 
-    def __init__(self):
+    def __init__(self, path):
         ''' The constructor. This creates the main object, and sets all of the
             default variables.'''
+        global PATH
+        PATH = path
+
+
         # Create the command system
         self.commands = Commands()
 
@@ -76,10 +80,51 @@ class Main:
         exit(status)
 
 
+from glob import glob
+from yaml import safe_load as load, YAMLError
 
 if __name__ == '__main__':
     ''' The entry point into the wander-py application. This starts the whole
         process, so that things can run smoothly.'''
+    # Print some nice user messages
+    print("The Wander Linux build system has detected the following releases:")
+
+    # Create a list of all of the distributions
+    dists = list()
+
+    # Add the distributions to a list
+    for index, dist in enumerate(glob('dists/*/__metadata.yaml')):
+
+        # Add the path of this distribution to the build system
+        dists.append(dist.replace('__metadata.yaml', ''))
+
+
+    # Store the user's selection
+    selection = -1
+
+    # Make sure that the user's input is valid
+    while selection < 0 or selection >= len(dists):
+
+        # Iterate through each of the found distributions
+        for index, dist in enumerate(glob('dists/*/__metadata.yaml')):
+
+            # Load the YAML file
+            with open(dist, 'r') as stream:
+
+                # Get all of the elements in the distribution file
+                elements = load(stream)
+
+                # Print information about the build
+                print('[{}] {} ({}-{}) {}'.format(index, elements['distribution'],
+                                                         elements['version'],
+                                                         elements['status'],
+                                                         elements['release']))
+
+
+        # Ask the user for details on which build they are going to use
+        selection = int(input('Please enter the number of the system you wish to build: '))
+
+
     # Create the build environment
-    main = Main()
+    main = Main(dists[selection])
     main.begin()
