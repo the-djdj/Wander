@@ -108,17 +108,55 @@ class Commands:
         and for the results of that command to be stored.'''
 
 
+    def __init__(self):
+        ''' The constructor, which creates a new Commands object, and creates
+            the user objects.'''
+        # Store the list of usernames used in the build
+        self.users = {'root',
+                      'wander',
+                      'chroot',
+                      'default'}
+
+        # And upate the list of users
+        self.update()
+
+
+    def update(self):
+
+        # Create the dictionary to store the users
+        USERS = dict()
+
+        # Attempt to add each of the users in turn
+        for user in self.users:
+
+            try:
+
+                # Check for special users
+                if user is 'chroot' or user is 'default':
+
+                    USERS[user] = getpwnam(getuser())
+
+                # Otherwise just add them
+                else:
+
+                    USERS[user] = getpwnam(user)
+
+            # This will be thrown if a user doesn't exist (yet)
+            except KeyError:
+
+                # We don't have to do anything
+                pass
+
+
+        # And store the users for later use
+        self.USERS = USERS
+
+
     def call(self, command, environment, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
-        # The different user environments that can run commands
-        USERS = {'root'   : getpwnam('root'),
-                 'wander' : getpwnam('wander'),
-                 'chroot' : getpwnam(getuser()),
-                 'default': getpwnam(getuser())}
-
         # Store information about the user that we'll be running commands as
-        user = USERS.get(user)
+        user = self.USERS.get(user)
 
         # Do some work on the environment
         environment['HOME']    = user.pw_dir

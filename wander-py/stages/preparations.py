@@ -58,6 +58,9 @@ class Preparations(YAMLObject):
             # Add the final line of output
             print('')
 
+        # Update any changes in the user list
+        self.commands.update()
+
         # Inform the user of the status
         Output.footer(result, self.stage[1][0:-3])
 
