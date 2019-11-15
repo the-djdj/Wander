@@ -43,12 +43,12 @@ elements:
         description: Creating the user group
         test: 0
         commands:
-            - groupadd wander
+            - /usr/sbin/groupadd wander
     useradd:
         description: Adding the user for building packages
         test: 0
         commands:
-            - useradd -s /bin/bash -g wander -m -k /dev/null wander
+            - /usr/sbin/useradd -s /bin/bash -g wander -m -k /dev/null wander
     toolsPermission:
         description: Setting tools directory permissions
         test: 0
