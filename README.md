@@ -2,7 +2,7 @@
 A simple Wander Linux builder implemented in Python.
 
 ## What is it?
-Wander Linux is a linux distribution based on the [Linux From Scratch](linuxfromscratch.org) project. It provides a simple, fast, linux distribution tailored specifically to your device's hardware by compiling each package from scratch. All of the configuration files are easily changable and human-readable, providing great opportunities for customisation!
+Wander Linux is a linux distribution based on the [Linux From Scratch](http://linuxfromscratch.org) project. It provides a simple, fast, linux distribution tailored specifically to your device's hardware by compiling each package from scratch. All of the configuration files are easily changable and human-readable, providing great opportunities for customisation!
 
 ## How does it work?
 The Wander Linux builder downloads source packages and uses those to construct a temporary system upon which Wander will be built. Once this is done, packages are added to the system as they are needed.
