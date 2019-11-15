@@ -12,7 +12,7 @@ All information about what packages are needed where and what they need to do ar
 ## What do I need?
 
 ### Dependencies
-The Wander Linux builder is written entirely in Python 3 and tested using Python 3.7, although other Python 3 version will probably work. 
+The Wander Linux builder is written entirely in Python 3 and tested using Python 3.7, although other Python 3 versions will probably work. 
 
 Two special python packages are required;
 * `pyparted`, a Python wrapper for `fdisk`, and
