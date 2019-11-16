@@ -29,12 +29,6 @@ class BuildSystem(YAMLObject):
         # Load the elements list
         self.load(location + self.stage[0])
 
-        # Check if the partitions is none
-        if self.user is 'chroot':
-
-            # And change our root
-            chroot(self.environment['WANDER'])
-
 
     def verify(self):
         ''' A simple method which checks that each of the modules has been built
@@ -54,6 +48,12 @@ class BuildSystem(YAMLObject):
 
                 # And create the directory if it does not
                 mkdir(directory)
+
+        # Change the root if necessary
+        if self.user == 'chroot':
+
+            # And change our root
+            chroot(self.environment['WANDER'])
 
         # Store whether or not the modules are valid
         result = True
