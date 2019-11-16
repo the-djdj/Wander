@@ -295,7 +295,7 @@ class YAMLObject:
             # If we are in test mode, add something to the command
             if test:
                 command = self.commands.call(element
-                        + '&& echo True || echo False', self.environment,
+                        + '; echo $?', self.environment,
                         user = user)
 
             # If we have a directory set, run there
