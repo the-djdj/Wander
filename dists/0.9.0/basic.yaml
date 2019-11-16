@@ -2,7 +2,7 @@
 # A list of variables that must be set for all elements
 preamble:
     HOME: /root
-    TERM: $TERM"
+    TERM: $TERM
     PS1: '(wander chroot) \u:\w\$ '
     PATH: '/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin'
     WANDER: /wander
