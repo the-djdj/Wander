@@ -38,6 +38,6 @@ elements:
         test: 0
         commands:
             - if [ -h $WANDER/dev/shm ]; then
-                mkdir -pv $WANDER/$(readlink $WANDER/dev/shm)
+                mkdir -pv $WANDER/$(readlink $WANDER/dev/shm);
               fi
 ...
