@@ -402,7 +402,7 @@ elements:
         version: 1.0.8
         file: bzip2-{version}
         extension: .tar.gz
-        url: http://anduin.linuxfromscratch.org/LFS/
+        url: https://www.sourceware.org/pub/bzip2/
         md5: 67e051268d0c475ea773822f7500d0e5
         commands:
             compilation:
