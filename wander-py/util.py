@@ -152,7 +152,7 @@ class Commands:
         self.USERS = USERS
 
 
-    def call(self, command, environment, directory=None, user='default'):
+    def call(self, command, environment, executable, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store information about the user that we'll be running commands as
@@ -173,14 +173,16 @@ class Commands:
                             preexec_fn=self.demote(user.pw_uid, user.pw_gid),
                             stdout=PIPE,
                             stderr=STDOUT,
-                            cwd=directory)
+                            cwd=directory,
+                            executable=executable)
 
         else:
             # Prepare the subprocess system
             process = Popen(command, shell=True, env=environment,
                             preexec_fn=self.demote(user.pw_uid, user.pw_gid),
                             stdout=PIPE,
-                            stderr=STDOUT)
+                            stderr=STDOUT,
+                            executable=executable)
 
         # Get the stdout and stderr from the command
         stdout, stderr = process.communicate(command)
@@ -281,7 +283,7 @@ class YAMLObject:
             self.environment[element] = preamble[element]
 
 
-    def run(self, elements, test = False, directory = None, logger = None, phase = None, root = False):
+    def run(self, elements, test = False, directory = None, executable='/bin/sh', logger = None, phase = None, root = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -296,17 +298,21 @@ class YAMLObject:
             if test:
                 command = self.commands.call(element
                         + '; echo $?', self.environment,
-                        user = user)
+                        user = user,
+                        executable = executable)
 
             # If we have a directory set, run there
             elif directory is not None:
                 command = self.commands.call(element, self.environment,
-                        directory = directory, user = user)
+                        directory = directory,
+                        user = user,
+                        executable = executable)
 
             # Otherwise, get the response of the command
             else:
                 command = self.commands.call(element, self.environment,
-                        user = user)
+                        user = user,
+                        executable = executable)
 
             # Check if there is an attached logger
             if logger is not None and phase is not 'unpacking':
