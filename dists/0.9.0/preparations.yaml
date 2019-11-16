@@ -69,6 +69,6 @@ elements:
         description: Creating build environment
         test: 1
         commands:
-            - printf "exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash" >> /home/wander/.bash_profile
+            - printf "exec env -i HOME=/home/wander TERM=$TERM PS1='\u:\w\\$ ' /bin/bash" >> /home/wander/.bash_profile
             - printf "set +h\numask 022\nWANDER=$WANDER\nLC_ALL=$LC_ALL\nWANDER_TGT=$WANDER_TGT\nPATH=$PATH\nexport WANDER LC_ALL WANDER_TGT PATH" >> /home/wander/.bashrc
 ...
