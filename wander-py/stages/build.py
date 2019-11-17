@@ -171,8 +171,16 @@ class Module:
         self.file        = self.package.get('file').replace('{version}', str(self.version))
         self.extension   = self.package.get('extension')
 
-        # Store the root file name
-        self.target = path.join(self.parent.environment['WANDER'], 'sources', self.file)
+        # Check if we're in chroot
+        if self.parent.user != 'chroot':
+
+            # If we're not in chroot, use the full path
+            self.target = path.join(self.parent.environment['WANDER'], 'sources', self.file)
+
+        else:
+
+            # Store the root file name
+            self.target = path.join('/sources', self.file)
 
         # Check if there are prerequisites
         if self.modules is None:
