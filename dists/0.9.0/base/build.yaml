@@ -86,12 +86,7 @@ init:
 # The elements, each representing one unit to execute
 elements:
     linux:
-        description: Linux API Headers
-        version: 5.2.8
-        file: linux-{version}
-        extension: .tar.xz
-        url: http://www.kernel.org/pub/linux/kernel/v5.x/
-        md5: 602dd0ecb8646e539fefb2beb6eb6fe0
+        package: linux
         commands:
             preparation:
                 - make mrproper
