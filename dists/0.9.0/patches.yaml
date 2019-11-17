@@ -27,10 +27,10 @@ elements:
         extension: .patch
         url: http://www.linuxfromscratch.org/patches/lfs/9.0/
         md5: 9a5997c3452909b1769918c759eff8a2
-    kdb-backspace-delete-fix:
+    kbd-backspace-delete-fix:
         description: Kbd Backspace/Delete Fix Patch
         version: 2.2.0
-        file: kdb-{version}-backspace-1
+        file: kbd-{version}-backspace-1
         extension: .patch
         url: http://www.linuxfromscratch.org/patches/lfs/9.0/
         md5: f75cca16a38da6caa7d52151f7136895
