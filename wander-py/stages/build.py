@@ -154,6 +154,7 @@ class Module:
             built on the host system.'''
         # Store information about the prerequisite
         self.package  = element.get('package')
+        self.patch    = element.get('patch')
         self.modules  = element.get('modules')
         self.folder   = element.get('folder')
         self.commands = element.get('commands')
@@ -170,6 +171,16 @@ class Module:
         self.version     = self.package.get('version')
         self.file        = self.package.get('file').replace('{version}', str(self.version))
         self.extension   = self.package.get('extension')
+
+        # Check if there is a patch to apply
+        if self.patch is not None:
+
+            # Extract information about the patches
+            self.patch = parent.patches.elements[self.patch]
+
+            self.patch_version   = self.patch.get('version')
+            self.patch_file      = self.patch.get('file').replace('{version}', str(self.patch_version))
+            self.patch_extension = self.patch.get('extension')
 
         # Check if we're in chroot
         if self.parent.user != 'chroot':
@@ -210,6 +221,7 @@ class Module:
 
         # Collect each of the elements which needs to be built
         elements = [(self.extract,   Output.EXTRACTING),
+                    (self.patch,     Output.PATCHING),
                     (self.setup,     Output.SETUP),
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
@@ -328,6 +340,35 @@ class Module:
 
         # And return if the directory exists
         return path.isdir(self.target) and result
+
+
+    def patch(self):
+        ''' A simple method which patches the extracted sources so that
+            compilation completes successfully.'''
+        # Check that there is a preparation for this module
+        if self.patch is None:
+
+            # If there's nothing to do, return
+            return True
+
+
+        # Attempt to run all of the commands
+        try:
+
+            # Run the commands
+            self.parent.run(['patch -Np1 -i ../' + self.patch_file + self.patch_extension],
+                    directory = self.target,
+                    logger = self.logger,
+                    phase = 'patch',
+                    executable = self.parent.executable)
+
+            # And return if there are no errors
+            return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
 
 
     def setup(self):
