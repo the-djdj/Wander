@@ -261,7 +261,7 @@ elements:
     kbd:
         description: Kbd
         version: 2.2.0
-        file: kdb-{version}
+        file: kbd-{version}
         extension: .tar.xz
         url: https://www.kernel.org/pub/linux/utils/kbd/
         md5: d1d7ae0b5fb875dc082731e09cd0c8bc
