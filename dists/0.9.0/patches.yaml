@@ -37,7 +37,7 @@ elements:
     systemd-networkd-and-rdrand:
         description: Systemd networkd and rdrand patch
         version: 241
-        file: systemd-{version}-networkd_and_rdand_fixes-1
+        file: systemd-{version}-networkd_and_rdrand_fixes-1
         extension: .patch
         url: http://www.linuxfromscratch.org/patches/lfs/9.0/
         md5: bb26f26d7c3a17d1888ab3171366906b
