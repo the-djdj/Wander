@@ -366,7 +366,7 @@ elements:
     ninja:
         description: Ninja
         version: 1.9.0
-        file: ninja-{file}
+        file: ninja-{version}
         extension: .tar.gz
         url: https://github.com/ninja-build/ninja/archive/v{version}/
         md5: f340be768a76724b83e6daab69009902
