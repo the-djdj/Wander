@@ -22,7 +22,7 @@ elements:
         md5: a9404fb575dfd5514f3c8f4120f9ca7d
     glibc-fhs:
         description: Glibc FHS Patch
-        version: 2.30
+        version: '2.30'
         file: glibc-{version}-fhs-1
         extension: .patch
         url: http://www.linuxfromscratch.org/patches/lfs/9.0/
