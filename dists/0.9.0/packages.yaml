@@ -387,7 +387,7 @@ elements:
     patch:
         description: Patch
         version: 2.7.6
-        file: patch-{file}
+        file: patch-{version}
         extension: .tar.xz
         url: http://ftp.gnu.org/gnu/patch/
         md5: 78ad9937e4caadcba1526ef1853730d5
