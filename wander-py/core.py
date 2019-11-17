@@ -52,8 +52,8 @@ class Main:
                    (self.downloader,    Main.ERROR_DOWNLOADER),
                    (self.preparations,  Main.ERROR_PREPARATIONS),
                    (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM),
-                   (self.compiler,      MAIN.ERROR_COMPILER_PREPARATIONS),
-                   (self.compilation,   MAIN.ERROR_COMPILATION_SYSTEM),
+                   (self.compiler,      Main.ERROR_COMPILER_PREPARATIONS),
+                   (self.compilation,   Main.ERROR_COMPILATION_SYSTEM),
                    (self.system,        Main.ERROR_SYSTEM_PREPARATIONS),
                    (self.base_system,   Main.ERROR_BASE_SYSTEM)]
 
