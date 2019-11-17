@@ -485,7 +485,7 @@ elements:
             installation:
                 - make install
     xz:
-        package: xz
+        package: xz-utils
         commands:
             preparation:
                 - ./configure --prefix=/tools
