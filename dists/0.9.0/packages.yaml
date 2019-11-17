@@ -345,7 +345,7 @@ elements:
     meson:
         description: Meson
         version: 0.51.1
-        file: meson-{file}
+        file: meson-{version}
         extension: .tar.gz
         url: https://github.com/mesonbuild/meson/releases/download/{version}/
         md5: 48787e391ec5c052799a3dd491f73909
