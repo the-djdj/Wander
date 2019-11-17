@@ -398,7 +398,7 @@ class Module:
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
                     phase = 'compilation',
-                    executable = self.executable)
+                    executable = self.parent.executable)
 
             # And return if there are no errors
             return True
@@ -427,7 +427,7 @@ class Module:
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
                     phase = 'configuration',
-                    executable = self.executable)
+                    executable = self.parent.executable)
 
             # And return if there are no errors
             return True
@@ -456,7 +456,7 @@ class Module:
                             directory = path.join(self.target, self.folder),
                             logger = self.logger,
                             phase = 'testing',
-                            executable = self.executable)
+                            executable = self.parent.executable)
 
             # If nothing went wrong, return True
             return True
@@ -485,7 +485,7 @@ class Module:
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
                     phase = 'installation',
-                    executable = self.executable)
+                    executable = self.parent.executable)
 
             # And return if there are no errors
             return True
@@ -515,7 +515,7 @@ class Module:
                             directory = path.join(self.target, self.folder),
                             logger = self.logger,
                             phase = 'validation',
-                            executable = self.executable)
+                            executable = self.parent.executable)
 
             # Check that we are expecting a result
             if self.result is None:
@@ -554,7 +554,7 @@ class Module:
                         directory = path.join(self.target, self.folder),
                         logger = self.logger,
                         phase = 'cleanup',
-                        executable = self.executable)
+                        executable = self.parent.executable)
 
             except CommandException:
 
