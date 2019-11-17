@@ -30,7 +30,7 @@ class Preparations(YAMLObject):
         self.stage = stage
 
         # Load the elements list
-        self.load(path.join(location, self.stage[0], 'preparations.yaml'))
+        self.load(path.join(location, self.stage[1], 'preparations.yaml'))
 
 
     def verify(self):
