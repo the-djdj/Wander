@@ -218,7 +218,7 @@ class YAMLObject:
         file.'''
 
 
-    def __init__(self, commands):
+    def __init__(self, commands = None):
         ''' The init method. This creates a new YAML object.'''
         # Create all of the lists for the application
         self.preamble = dict()
