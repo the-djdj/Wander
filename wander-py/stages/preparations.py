@@ -104,13 +104,14 @@ class Preparation:
         for element in range(self.test + 1):
 
             # Execute the commands
-            result = self.parent.run([self.commands[element]], True)[-1]
+            result = self.parent.run([self.commands[element]], self.result is None,
+                            directory = '/')[-1]
 
         # And execute the rest of the commands
         for element in range(self.test + 1, len(self.commands)):
 
             # Execute the final commands
-            self.parent.run([self.commands[element]])
+            self.parent.run([self.commands[element]], directory = '/')
 
         # Check that the output is correct
         if self.result is not None:
@@ -119,7 +120,7 @@ class Preparation:
             for possibility in self.result:
 
                 # And return if the output matches
-                if result[-1].strip() in possibility:
+                if result.strip() in possibility:
 
                     # Inform the user that things went well
                     Output.clear()
