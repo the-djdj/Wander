@@ -41,25 +41,21 @@ elements:
         commands:
             - grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
         result:
-            - /usr/lib/../lib/crt1.o succeeded
-            - /usr/lib/../lib/crti.o succeeded
-            - /usr/lib/../lib/crtn.o succeeded
+            - /usr/lib/../lib/crt1.o succeeded\n/usr/lib/../lib/crti.o succeeded\n/usr/lib/../lib/crtn.o succeeded
     search:
-        description: Ensuring that the compiler is searching for the correct header files
+        description: Ensuring correct header files for compiler
         test: 0
         commands:
             - grep -B1 '^ /usr/include' dummy.log
         result:
-            - "#include <...> search starts here:"
-            - /usr/include
-    linker:
+            - '#include <...> search starts here:\n /usr/include'
+    paths:
         description: Ensuring that the linker is using the correct search path
         test: 0
         commands:
             - grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
         result:
-            - SEARCH_DIR("/usr/lib")
-            - SEARCH_DIR("/lib")
+            - SEARCH_DIR("/usr/lib")\nSEARCH_DIR("/lib")
     libc:
         description: Ensuring that we're using the correct libc
         test: 0
