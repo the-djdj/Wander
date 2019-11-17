@@ -121,8 +121,12 @@ class Preparation:
                 # And return if the output matches
                 if result[-1].strip() in possibility:
 
+                    # Inform the user that things went well
+                    Output.clear()
+                    Output.log(Output.PASSED, self.description)
+
                     return True
-                    
+
 
         elif result.endswith("0"):
 
