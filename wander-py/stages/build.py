@@ -221,7 +221,7 @@ class Module:
 
         # Collect each of the elements which needs to be built
         elements = [(self.extract,   Output.EXTRACTING),
-                    (self.patch,     Output.PATCHING),
+                    (self.fix,       Output.PATCHING),
                     (self.setup,     Output.SETUP),
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
@@ -342,7 +342,7 @@ class Module:
         return path.isdir(self.target) and result
 
 
-    def patch(self):
+    def fix(self):
         ''' A simple method which patches the extracted sources so that
             compilation completes successfully.'''
         # Check that there is a preparation for this module
