@@ -281,7 +281,7 @@ class Module:
         for value in self.modules:
 
             # Extract information on the package archive itself
-            package = parent.packages.elements[value]
+            package = self.parent.packages.elements[value]
 
             # Store some variables about the prerequisite
             description = package.get('description')
