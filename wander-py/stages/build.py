@@ -1,4 +1,4 @@
-from os import chroot
+from os import chroot, path
 
 from exception import CommandException
 from util import Logger, Output, YAMLObject
@@ -10,8 +10,8 @@ class BuildSystem(YAMLObject):
         it.'''
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('temporary.yaml', 'Building temporary system...', 'temp')
-    BASE_SYSTEM      = ('basic.yaml',     'Building base system...',      'base')
+    TEMPORARY_SYSTEM = ('Building temporary system...', 'temp')
+    BASE_SYSTEM      = ('Building base system...',      'base')
 
 
     def __init__(self, commands, location, downloader, stage, partitions = None):
@@ -34,14 +34,14 @@ class BuildSystem(YAMLObject):
         self.executable = '/bin/sh'
 
         # Load the elements list
-        self.load(location + self.stage[0])
+        self.load(path.join(location, self.stage[1], 'build.yaml'))
 
 
     def verify(self):
         ''' A simple method which checks that each of the modules has been built
             correctly.'''
         # Tell the user what's happening
-        Output.header(self.stage[1])
+        Output.header(self.stage[0])
 
         # Change the root if necessary
         if self.user == 'chroot':
@@ -71,7 +71,7 @@ class BuildSystem(YAMLObject):
         result &= self.clean()
 
         # Inform the user of the status
-        Output.footer(result, self.stage[1][0:-3])
+        Output.footer(result, self.stage[0][0:-3])
 
         # And return the result
         return result
@@ -90,7 +90,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.stage[2], 'init')
+            logger = Logger(self.stage[1], 'init')
 
             # Run the commands
             self.run(self.init,
@@ -120,7 +120,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.stage[2], 'cleanup')
+            logger = Logger(self.stage[1], 'cleanup')
 
             # Run the commands
             self.run(self.cleanup,
@@ -139,7 +139,7 @@ class BuildSystem(YAMLObject):
 
 
 
-from os import listdir, mkdir, path
+from os import listdir, mkdir
 from shutil import move, rmtree
 import tarfile
 
@@ -181,7 +181,7 @@ class Module:
             self.modules = list()
 
         # Initialise the logger
-        self.logger = Logger(self.parent.stage[2], self.file)
+        self.logger = Logger(self.parent.stage[1], self.file)
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
