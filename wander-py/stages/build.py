@@ -14,14 +14,18 @@ class BuildSystem(YAMLObject):
     BASE_SYSTEM      = ('basic.yaml',     'Building base system...',      'base')
 
 
-    def __init__(self, commands, location, stage, partitions = None):
+    def __init__(self, commands, location, downloader, stage, partitions = None):
         ''' The constructor. This creates the new system for building a set of
             modules used in wander.'''
         # Create the parent object
-        YAMLObject.__init__(self, commands);
+        YAMLObject.__init__(self, commands)
 
         # Store the command system
         self.commands = commands
+
+        # Store the patches and packages for use later
+        self.packages = downloader.packages
+        self.patches  = downloader.patches
 
         # Store the stage that we are in
         self.stage = stage
@@ -38,19 +42,6 @@ class BuildSystem(YAMLObject):
             correctly.'''
         # Tell the user what's happening
         Output.header(self.stage[1])
-
-        # List some directories which need to exist
-        directories = ['sources',
-                   self.environment['WANDER'] + '/sources']
-
-        # Go through each of the directories and do the things
-        for directory in directories:
-
-            # Check that the directory exists
-            if not path.exists(directory):
-
-                # And create the directory if it does not
-                mkdir(directory)
 
         # Change the root if necessary
         if self.user == 'chroot':
@@ -148,11 +139,9 @@ class BuildSystem(YAMLObject):
 
 
 
-from hashlib import md5
 from os import listdir, mkdir, path
-from shutil import copyfile, move, rmtree
+from shutil import move, rmtree
 import tarfile
-from urllib.request import urlretrieve as get
 
 
 class Module:
@@ -164,30 +153,32 @@ class Module:
         ''' The init method, used to create a new module object which can be
             built on the host system.'''
         # Store information about the prerequisite
-        self.description  = element.get('description')
-        self.version      = element.get('version')
-        self.file         = element.get('file').replace('{version}', str(self.version))
-        self.extension    = element.get('extension')
-        self.url          = path.join(element.get('url').replace('{version}', str(self.version)), self.file + self.extension)
-        self.md5          = element.get('md5')
-        self.modules      = element.get('modules')
-        self.folder       = element.get('folder')
-        self.commands     = element.get('commands')
-        self.skip         = element.get('skip')
-        self.result       = element.get('result')
+        self.package  = element.get('package')
+        self.modules  = element.get('modules')
+        self.folder   = element.get('folder')
+        self.commands = element.get('commands')
+        self.skip     = element.get('skip')
+        self.result   = element.get('result')
 
         # Store the system for running commands
-        self.parent       = parent
+        self.parent   = parent
+
+        # Extract information on the package archive itself
+        self.package = parent.packages.elements[self.package]
+
+        self.description = self.package.get('description') if element.get('description') is None else element.get('description')
+        self.version     = self.package.get('version')
+        self.file        = self.package.get('file')
+        self.extension   = self.package.get('extension')
 
         # Store the root file name
-        self.source       = path.join('sources', self.file)
-        self.target       = path.join(self.parent.environment['WANDER'], self.source)
+        self.target = path.join(self.parent.environment['WANDER'], 'sources', self.file)
 
         # Check if there are prerequisites
         if self.modules is None:
 
             # And make it an empty list
-            self.modules = dict()
+            self.modules = list()
 
         # Initialise the logger
         self.logger = Logger(self.parent.stage[2], self.file)
@@ -210,10 +201,7 @@ class Module:
             return True
 
         # Collect each of the elements which needs to be built
-        elements = [(self.download,  Output.DOWNLOADING),
-                    (self.checksum,  Output.VERIFYING),
-                    (self.copy,      Output.COPYING),
-                    (self.extract,   Output.EXTRACTING),
+        elements = [(self.extract,   Output.EXTRACTING),
                     (self.setup,     Output.SETUP),
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
@@ -254,131 +242,6 @@ class Module:
         return True
 
 
-    def download(self):
-        ''' A simple method which checks if the archive exists in the local
-            sources directory, and if not, downloads it from the specified
-            address.'''
-        # Check that the file doesn't exist
-        if not path.isfile(self.source + self.extension):
-
-            # Download the file
-            get(self.url, self.source + self.extension)
-
-        # Store the result of the prerequisite downloads
-        result = True
-
-        # Do the same for all of the prerequisites
-        for key, value in self.modules.items():
-
-            # Store some variables about the prerequisite
-            file      = value.get('file').replace('{version}', value.get('version'))
-            source    = path.join('sources', file)
-            target    = path.join(self.parent.environment['WANDER'], source)
-            extension = value.get('extension')
-
-            # Check that the prerequisite doesn't exist
-            if not path.isfile(source + extension):
-
-                # Download the file
-                get(path.join(value.get('url').replace('{version}', value.get('version')), file + extension), source + extension)
-
-                # Check if the file downloaded
-                result &= path.isfile(source + extension)
-
-
-        # And return if the file exists
-        return path.isfile(self.source + self.extension) and result
-
-
-    def checksum(self):
-        ''' A simple method which checks if the downloaded file has the correct
-            checksum and was not tampered with on the download.'''
-        # Open the file to verify it
-        with open(self.source + self.extension, 'rb') as file:
-
-            # Generate the MD5 has
-            hash = md5()
-
-            # Read the data in a loop
-            while True:
-
-                # Read in a chunk of data
-                data = file.read(8192)
-
-                # Check that that chunk is not empty
-                if not data:
-                    break
-
-                # And update our hash
-                hash.update(data)
-
-        # Store the result of the prerequisite verification
-        result = True
-
-        # Do the same for all of the prerequisites
-        for key, value in self.modules.items():
-
-            # Store some variables about the prerequisite
-            file      = value.get('file').replace('{version}', value.get('version'))
-            source    = path.join('sources', file)
-            extension = value.get('extension')
-
-            # Open the file to verify it
-            with open(source + extension, 'rb') as file:
-
-                # Generate the MD5 has
-                subhash = md5()
-
-                # Read the data in a loop
-                while True:
-
-                    # Read in a chunk of data
-                    data = file.read(8192)
-
-                    # Check that that chunk is not empty
-                    if not data:
-                        break
-
-                    # And update our hash
-                    subhash.update(data)
-
-            # Update our result
-            result &= subhash.hexdigest() == value.get('md5')
-
-
-        # And return if our file matches
-        return hash.hexdigest() == self.md5 and result
-
-
-    def copy(self):
-        ''' A simple method which copies our downloaded archive into the build
-            systems' sources directory.'''
-        # Copy the file over
-        copyfile(self.source + self.extension, self.target + self.extension)
-
-        # Store the result of the prerequisites
-        result = True
-
-        # Copy over each of the prerequisites
-        for key, value in self.modules.items():
-
-            # Store some variables about the prerequisite
-            file      = value.get('file').replace('{version}', value.get('version'))
-            source    = path.join('sources', file)
-            target    = self.parent.environment['WANDER'] + '/' + source
-            extension = value.get('extension')
-
-            # Copy them each in turn
-            copyfile(source + extension, target + extension)
-
-            # And update our prerequisite variable
-            result &= path.isfile(target + extension)
-
-
-        # And return if the file exists
-        return path.isfile(self.target + self.extension) and result
-
-
     def extract(self):
         ''' A simple method which extracts the downloaded tarball so that it can
             be used.'''
@@ -415,15 +278,19 @@ class Module:
         result = True
 
         # And do the same for all of the prerequisites
-        for key, value in self.modules.items():
+        for value in self.modules:
+
+            # Extract information on the package archive itself
+            package = parent.packages.elements[value]
 
             # Store some variables about the prerequisite
-            file      = value.get('file').replace('{version}', value.get('version'))
-            folder    = value.get('folder')
-            source    = path.join('sources', file)
-            target    = path.join(self.parent.environment['WANDER'], 'sources', file)
-            location  = path.join(self.parent.environment['WANDER'], 'sources', self.file)
-            extension = value.get('extension')
+            description = package.get('description')
+            version     = package.get('version')
+            file        = package.get('file').replace('{version}', value.get('version'))
+            extension   = package.get('extension')
+            folder      = value
+            target      = path.join(self.parent.environment['WANDER'], 'sources', file)
+            location    = path.join(self.parent.environment['WANDER'], 'sources', self.file)
 
             # Open the archive
             with tarfile.open(target + extension) as archive:
@@ -435,7 +302,7 @@ class Module:
             move(path.join(location, file), path.join(location, folder))
 
             # And update the results variable
-            result &= path.isdir(path.join(self.target, value.get('folder')))
+            result &= path.isdir(path.join(self.target, folder))
 
 
         # Finally, ensure that the extracted files have the correct permissions

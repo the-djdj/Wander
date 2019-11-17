@@ -1,4 +1,5 @@
 from stages.build import BuildSystem
+from stages.downloads import Downloader
 from stages.partitions import Partitions
 from stages.preparations import Preparations
 from stages.prerequisites import Prerequisites
@@ -12,10 +13,11 @@ class Main:
     ERROR_NONE                = 0
     ERROR_PREREQUISITE        = 1
     ERROR_PARTITIONS          = 2
-    ERROR_PREPARATIONS        = 3
-    ERROR_TEMPORARY_SYSTEM    = 4
-    ERROR_SYSTEM_PREPARATIONS = 5
-    ERROR_BASE_SYSTEM         = 6
+    ERROR_DOWNLOADER          = 3
+    ERROR_PREPARATIONS        = 4
+    ERROR_TEMPORARY_SYSTEM    = 5
+    ERROR_SYSTEM_PREPARATIONS = 6
+    ERROR_BASE_SYSTEM         = 7
 
 
     def __init__(self, PATH):
@@ -27,10 +29,11 @@ class Main:
         # Create the different systems used in the build
         self.prerequisites = Prerequisites(self.commands, PATH)
         self.partitions    = Partitions()
+        self.downloader    = Downloader(PATH)
         self.preparations  = Preparations(self.commands, PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
-        self.temporary     = BuildSystem(self.commands, PATH, BuildSystem.TEMPORARY_SYSTEM)
+        self.temporary     = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.TEMPORARY_SYSTEM)
         self.system        = Preparations(self.commands, PATH, Preparations.BUILD_SYSTEM)
-        self.base_system   = BuildSystem(self.commands, PATH, BuildSystem.BASE_SYSTEM, self.partitions)
+        self.base_system   = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.BASE_SYSTEM, self.partitions)
 
 
     def begin(self):
@@ -42,6 +45,7 @@ class Main:
         # Create a list of modules needed to build the system
         modules = [(self.prerequisites, Main.ERROR_PREREQUISITE),
                    (self.partitions,    Main.ERROR_PARTITIONS),
+                   (self.downloader,    Main.ERROR_DOWNLOADER),
                    (self.preparations,  Main.ERROR_PREPARATIONS),
                    (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM),
                    (self.system,        Main.ERROR_SYSTEM_PREPARATIONS),
