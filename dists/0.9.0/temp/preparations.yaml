@@ -2,7 +2,7 @@
 # A list of variables that must be set for all elements
 preamble:
     LC_ALL: POSIX
-    WANDER: /mnt/wander
+    WANDER: /wander
     WANDER_TGT: '{arch}-wander-linux-gnu'
     PATH: /tools/bin:/bin:/usr/bin
 # The user that must run this section
@@ -43,12 +43,12 @@ elements:
         description: Creating the user group
         test: 0
         commands:
-            - groupadd wander
+            - /usr/sbin/groupadd wander
     useradd:
         description: Adding the user for building packages
         test: 0
         commands:
-            - useradd -s /bin/bash -g wander -m -k /dev/null wander
+            - /usr/sbin/useradd -s /bin/bash -g wander -m -k /dev/null wander
     toolsPermission:
         description: Setting tools directory permissions
         test: 0
@@ -69,6 +69,6 @@ elements:
         description: Creating build environment
         test: 1
         commands:
-            - printf "exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash" >> /home/wander/.bash_profile
+            - printf "exec env -i HOME=/home/wander TERM=$TERM PS1='\u:\w\\$ ' /bin/bash" >> /home/wander/.bash_profile
             - printf "set +h\numask 022\nWANDER=$WANDER\nLC_ALL=$LC_ALL\nWANDER_TGT=$WANDER_TGT\nPATH=$PATH\nexport WANDER LC_ALL WANDER_TGT PATH" >> /home/wander/.bashrc
 ...

@@ -107,18 +107,56 @@ class Commands:
     ''' The commands class. This allows for commands to be run as a subprocess
         and for the results of that command to be stored.'''
 
-    # The different user environments that can run commands
-    USERS = {'root'   : getpwnam('root'),
-             'wander' : getpwnam('wander'),
-             'chroot' : getpwnam(getuser()),
-             'default': getpwnam(getuser())}
+
+    def __init__(self):
+        ''' The constructor, which creates a new Commands object, and creates
+            the user objects.'''
+        # Store the list of usernames used in the build
+        self.users = {'root',
+                      'wander',
+                      'chroot',
+                      'default'}
+
+        # And upate the list of users
+        self.update()
 
 
-    def call(self, command, environment, directory=None, user='default'):
+    def update(self):
+
+        # Create the dictionary to store the users
+        USERS = dict()
+
+        # Attempt to add each of the users in turn
+        for user in self.users:
+
+            try:
+
+                # Check for special users
+                if user is 'chroot' or user is 'default':
+
+                    USERS[user] = getpwnam(getuser())
+
+                # Otherwise just add them
+                else:
+
+                    USERS[user] = getpwnam(user)
+
+            # This will be thrown if a user doesn't exist (yet)
+            except KeyError:
+
+                # We don't have to do anything
+                pass
+
+
+        # And store the users for later use
+        self.USERS = USERS
+
+
+    def call(self, command, environment, executable, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store information about the user that we'll be running commands as
-        user = Commands.USERS.get(user)
+        user = self.USERS.get(user)
 
         # Do some work on the environment
         environment['HOME']    = user.pw_dir
@@ -135,14 +173,16 @@ class Commands:
                             preexec_fn=self.demote(user.pw_uid, user.pw_gid),
                             stdout=PIPE,
                             stderr=STDOUT,
-                            cwd=directory)
+                            cwd=directory,
+                            executable=executable)
 
         else:
             # Prepare the subprocess system
             process = Popen(command, shell=True, env=environment,
                             preexec_fn=self.demote(user.pw_uid, user.pw_gid),
                             stdout=PIPE,
-                            stderr=STDOUT)
+                            stderr=STDOUT,
+                            executable=executable)
 
         # Get the stdout and stderr from the command
         stdout, stderr = process.communicate(command)
@@ -178,7 +218,7 @@ class YAMLObject:
         file.'''
 
 
-    def __init__(self, commands):
+    def __init__(self, commands = None):
         ''' The init method. This creates a new YAML object.'''
         # Create all of the lists for the application
         self.preamble = dict()
@@ -243,7 +283,7 @@ class YAMLObject:
             self.environment[element] = preamble[element]
 
 
-    def run(self, elements, test = False, directory = None, logger = None, phase = None, root = False):
+    def run(self, elements, test = False, directory = None, executable='/bin/sh', logger = None, phase = None, root = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -257,18 +297,22 @@ class YAMLObject:
             # If we are in test mode, add something to the command
             if test:
                 command = self.commands.call(element
-                        + '&& echo True || echo False', self.environment,
-                        user = user)
+                        + '; echo $?', self.environment,
+                        user = user,
+                        executable = executable)
 
             # If we have a directory set, run there
             elif directory is not None:
                 command = self.commands.call(element, self.environment,
-                        directory = directory, user = user)
+                        directory = directory,
+                        user = user,
+                        executable = executable)
 
             # Otherwise, get the response of the command
             else:
                 command = self.commands.call(element, self.environment,
-                        user = user)
+                        user = user,
+                        executable = executable)
 
             # Check if there is an attached logger
             if logger is not None and phase is not 'unpacking':

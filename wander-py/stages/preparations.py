@@ -1,3 +1,5 @@
+from os import path
+
 from util import Output, YAMLObject
 
 
@@ -8,8 +10,8 @@ class Preparations(YAMLObject):
 
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('preparations.yaml', 'Preparing host environment...')
-    BUILD_SYSTEM     = ('system.yaml',       'Preparing build environment...')
+    TEMPORARY_SYSTEM = ('Preparing host environment...', 'temp')
+    BUILD_SYSTEM     = ('Preparing build environment...', 'base')
 
 
     def __init__(self, commands, location, stage, partitions = None):
@@ -28,7 +30,7 @@ class Preparations(YAMLObject):
         self.stage = stage
 
         # Load the elements list
-        self.load(location + self.stage[0])
+        self.load(path.join(location, self.stage[1], 'preparations.yaml'))
 
 
     def verify(self):
@@ -44,7 +46,7 @@ class Preparations(YAMLObject):
                 self.environment['LOCATION'] += ':' + self.partitions.path
 
         # Tell the user what's happening
-        Output.header(self.stage[1])
+        Output.header(self.stage[0])
 
         # Store whether or not the preparations are valid
         result = True
@@ -58,8 +60,11 @@ class Preparations(YAMLObject):
             # Add the final line of output
             print('')
 
+        # Update any changes in the user list
+        self.commands.update()
+
         # Inform the user of the status
-        Output.footer(result, self.stage[1][0:-3])
+        Output.footer(result, self.stage[0][0:-3])
 
         # And return the result
         return result
@@ -106,7 +111,7 @@ class Preparation:
             self.parent.run([self.commands[element]])
 
         # Check that the output is correct
-        if result.endswith("True"):
+        if result.endswith("0"):
 
             # If the endpoints are the same, things are good
             Output.clear()

@@ -1,0 +1,10 @@
+---
+# The name of this linux distribution
+distribution: Wander
+# The release name, a short codename for each version
+release: Susan
+# The actual version
+version: 0.9.0
+# The status of this build: alpha, beta, release, or deprecated
+status: alpha
+...

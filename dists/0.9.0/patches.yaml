@@ -1,0 +1,44 @@
+---
+# A list of variables that must be set for all elements
+preamble:
+    WANDER: /wander
+# The user that must run this section
+user: default
+# The elements, each representing one unit to execute
+elements:
+    bzip2-documentation:
+        description: Bzip2 Documentation Patch
+        version: 1.0.8
+        file: bzip2-{version}-install_docs-1
+        extension: .patch
+        url: http://www.linuxfromscratch.org/patches/lfs/9.0/
+        md5: 6a5ac7e89b791aae556de0f745916f7f
+    coreutils-internationalisation-fixes:
+        description: Coreutils Internationalization Fixes Patch
+        version: 8.31
+        file: coreutils-{version}-i18n-1
+        extension: .patch
+        url: http://www.linuxfromscratch.org/patches/lfs/9.0/
+        md5: a9404fb575dfd5514f3c8f4120f9ca7d
+    glibc-fhs:
+        description: Glibc FHS Patch
+        version: '2.30'
+        file: glibc-{version}-fhs-1
+        extension: .patch
+        url: http://www.linuxfromscratch.org/patches/lfs/9.0/
+        md5: 9a5997c3452909b1769918c759eff8a2
+    kbd-backspace-delete-fix:
+        description: Kbd Backspace/Delete Fix Patch
+        version: 2.2.0
+        file: kbd-{version}-backspace-1
+        extension: .patch
+        url: http://www.linuxfromscratch.org/patches/lfs/9.0/
+        md5: f75cca16a38da6caa7d52151f7136895
+    systemd-networkd-and-rdrand:
+        description: Systemd networkd and rdrand patch
+        version: 241
+        file: systemd-{version}-networkd_and_rdrand_fixes-1
+        extension: .patch
+        url: http://www.linuxfromscratch.org/patches/lfs/9.0/
+        md5: bb26f26d7c3a17d1888ab3171366906b
+...

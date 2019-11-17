@@ -2,10 +2,10 @@
 # A list of variables that must be set for all elements
 preamble:
     HOME: /root
-    TERM: $TERM"
-    PS1: '(lfs chroot) \u:\w\$ '
+    TERM: $TERM
+    PS1: '(wander chroot) \u:\w\$ '
     PATH: '/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin'
-    WANDER: /mnt/wander
+    WANDER: /wander
 # The user that must run this section
 user: chroot
 # A list of commands to be run before this stage begins
@@ -86,12 +86,7 @@ init:
 # The elements, each representing one unit to execute
 elements:
     linux:
-        description: Linux API Headers
-        version: 5.2.8
-        file: linux-{version}
-        extension: .tar.xz
-        url: http://www.kernel.org/pub/linux/kernel/v5.x/
-        md5: 602dd0ecb8646e539fefb2beb6eb6fe0
+        package: linux
         commands:
             preparation:
                 - make mrproper
@@ -99,3 +94,4 @@ elements:
                 - make INSTALL_HDR_PATH=dest headers_install
                 - find dest/include \( -name .install -o -name ..install.cmd \) -delete
                 - cp -rv dest/include/* /usr/include
+...

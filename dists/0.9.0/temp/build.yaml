@@ -2,7 +2,7 @@
 # A list of variables that must be set for all elements
 preamble:
     LC_ALL: POSIX
-    WANDER: /mnt/wander
+    WANDER: /wander
     PATH: /tools/bin:/bin:/usr/bin
     WANDER_TGT: '{arch}-wander-linux-gnu'
 # The user that must run this section
@@ -11,11 +11,7 @@ user: wander
 elements:
     binutils_1:
         description: Binutils (Pass 1)
-        version: 2.32
-        file: binutils-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/binutils/
-        md5: 0d174cdaf85721c5723bf52355be41e6
+        package: binutils
         folder: build
         commands:
             preparation:
@@ -35,36 +31,11 @@ elements:
                 - make install
     gcc_1:
         description: GCC (Pass 1)
-        version: 9.2.0
-        file: gcc-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
-        md5: 3818ad8600447f05349098232c2ddc78
+        package: gcc
         modules:
-            mpfr:
-                description: MPFR
-                version: 4.0.2
-                file: mpfr-{version}
-                extension: .tar.xz
-                url: http://www.mpfr.org/mpfr-{version}
-                md5: 320fbc4463d4c8cb1e566929d8adc4f8
-                folder: mpfr
-            gmp:
-                description: GMP
-                version: 6.1.2
-                file: gmp-{version}
-                extension: .tar.xz
-                url: http://ftp.gnu.org/gnu/gmp/
-                md5: f58fa8001d60c4c77595fbbb62b63c1d
-                folder: gmp
-            mpc:
-                description: MPC
-                version: 1.1.0
-                file: mpc-{version}
-                extension: .tar.gz
-                url: http://ftp.gnu.org/gnu/mpc/
-                md5: 4125404e41e482ec68282a2e687f6c73
-                folder: mpc
+            - mpfr
+            - gmp
+            - mpc
         folder: build
         commands:
             setup:
@@ -107,12 +78,7 @@ elements:
             installation:
                 - make install
     linux:
-        description: Linux API Headers
-        version: 5.2.8
-        file: linux-{version}
-        extension: .tar.xz
-        url: http://www.kernel.org/pub/linux/kernel/v5.x/
-        md5: 602dd0ecb8646e539fefb2beb6eb6fe0
+        package: linux
         commands:
             preparation:
                 - make mrproper
@@ -120,12 +86,7 @@ elements:
                 - make INSTALL_HDR_PATH=dest headers_install
                 - cp -rv dest/include/* /tools/include
     glibc:
-        description: Glibc
-        version: '2.30'
-        file: glibc-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/glibc/
-        md5: 2b1dbdf27b28620752956c061d62f60c
+        package: glibc
         folder: build
         commands:
             preparation:
@@ -149,11 +110,7 @@ elements:
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
     libstdc++:
         description: Libstdc++ (from GCC)
-        version: 9.2.0
-        file: gcc-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
-        md5: 3818ad8600447f05349098232c2ddc78
+        package: gcc
         folder: build
         commands:
             preparation:
@@ -170,11 +127,7 @@ elements:
                 - make install
     binutils_2:
         description: Binutils (Pass 2)
-        version: 2.32
-        file: binutils-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/binutils/
-        md5: 0d174cdaf85721c5723bf52355be41e6
+        package: binutils
         folder: build
         commands:
             preparation:
@@ -195,36 +148,11 @@ elements:
                 - cp -v ld/ld-new /tools/bin
     gcc_2:
         description: GCC (Pass 2)
-        version: 9.2.0
-        file: gcc-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gcc/gcc-{version}/
-        md5: 3818ad8600447f05349098232c2ddc78
+        package: gcc
         modules:
-            mpfr:
-                description: MPFR
-                version: 4.0.2
-                file: mpfr-{version}
-                extension: .tar.xz
-                url: http://www.mpfr.org/mpfr-{version}
-                md5: 320fbc4463d4c8cb1e566929d8adc4f8
-                folder: mpfr
-            gmp:
-                description: GMP
-                version: 6.1.2
-                file: gmp-{version}
-                extension: .tar.xz
-                url: http://ftp.gnu.org/gnu/gmp/
-                md5: f58fa8001d60c4c77595fbbb62b63c1d
-                folder: gmp
-            mpc:
-                description: MPC
-                version: 1.1.0
-                file: mpc-{version}
-                extension: .tar.gz
-                url: http://ftp.gnu.org/gnu/mpc/
-                md5: 4125404e41e482ec68282a2e687f6c73
-                folder: mpc
+            - mpfr
+            - gmp
+            - mpc
         folder: build
         commands:
             setup:
@@ -271,12 +199,7 @@ elements:
             - "[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]"
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
     tcl:
-        description: Tcl
-        version: 8.6.9
-        file: tcl{version}-src
-        extension: .tar.gz
-        url: https://downloads.sourceforge.net/tcl/
-        md5: aa0a121d95a0e7b73a036f26028538d4
+        package: tcl
         folder: unix
         commands:
             preparation:
@@ -291,12 +214,7 @@ elements:
                 - make install-private-headers
                 - ln -sv tclsh8.6 /tools/bin/tclsh
     expect:
-        description: Expect
-        version: 5.45.4
-        file: expect{version}
-        extension: .tar.gz
-        url: https://prdownloads.sourceforge.net/expect/
-        md5: 00fce8de158422f5ccd2666512329bd2
+        package: expect
         commands:
             preparation:
                 - cp -v configure{,.orig}
@@ -311,12 +229,7 @@ elements:
             installation:
                 - make SCRIPTS="" install
     dejagnu:
-        description: DejaGNU
-        version: 1.6.2
-        file: dejagnu-{version}
-        extension: .tar.gz
-        url: http://ftp.gnu.org/gnu/dejagnu/
-        md5: e1b07516533f351b3aba3423fafeffd6
+        package: dejagnu
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -325,12 +238,7 @@ elements:
             validation:
                 - make check
     m4:
-        description: M4
-        version: 1.4.18
-        file: m4-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/m4/
-        md5: 730bb15d96fffe47e148d1e09235af82
+        package: m4
         commands:
             preparation:
                 - sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -343,12 +251,7 @@ elements:
             installation:
                 - make install
     ncurses:
-        description: Ncurses
-        version: 6.1
-        file: ncurses-{version}
-        extension: .tar.gz
-        url: http://ftp.gnu.org/gnu/ncurses/
-        md5: 98c889aaf8d23910d2b92d65be2e737a
+        package: ncurses
         commands:
             preparation:
                 - sed -i s/mawk// configure
@@ -364,12 +267,7 @@ elements:
                 - make install
                 - ln -s libncursesw.so /tools/lib/libncurses.so
     bash:
-        description: Bash
-        version: 5.0
-        file: bash-{version}
-        extension: .tar.gz
-        url: http://ftp.gnu.org/gnu/bash/
-        md5: 2b44b47b905be16f45709648f671820b
+        package: bash
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -382,12 +280,7 @@ elements:
                 - make install
                 - ln -sv bash /tools/bin/sh
     bison:
-        description: Bison
-        version: 3.4.1
-        file: bison-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/bison/
-        md5: 201286a573b12da109df96282fe4ff4a
+        package: bison
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -398,24 +291,14 @@ elements:
             installation:
                 - make install
     bzip2:
-        description: Bzip2
-        version: 1.0.8
-        file: bzip2-{version}
-        extension: .tar.gz
-        url: http://anduin.linuxfromscratch.org/LFS/
-        md5: 67e051268d0c475ea773822f7500d0e5
+        package: bzip2
         commands:
             compilation:
                 - make
             installation:
                 - make PREFIX=/tools install
     coreutils:
-        description: Coreutils
-        version: '8.31'
-        file: coreutils-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/coreutils/
-        md5: 0009a224d8e288e8ec406ef0161f9293
+        package: coreutils
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -427,12 +310,7 @@ elements:
             installation:
                 - make install
     diffutils:
-        description: Diffutils
-        version: 3.7
-        file: diffutils-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/diffutils/
-        md5: 4824adc0e95dbbf11dfbdfaad6a1e461
+        package: diffutils
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -443,12 +321,7 @@ elements:
             installation:
                 - make install
     file:
-        description: File
-        version: 5.37
-        file: file-{version}
-        extension: .tar.gz
-        url: ftp://ftp.astron.com/pub/file/
-        md5: 80c29aca745466c6c24d11f059329075
+        package: file
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -459,12 +332,7 @@ elements:
             installation:
                 - make install
     findutils:
-        description: Findutils
-        version: 4.6.0
-        file: findutils-{version}
-        extension: .tar.gz
-        url: http://ftp.gnu.org/gnu/findutils/
-        md5: 9936aa8009438ce185bea2694a997fc1
+        package: findutils
         commands:
             preparation:
                 - sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
@@ -478,12 +346,7 @@ elements:
             installation:
                 - make install
     gawk:
-        description: Gawk
-        version: 5.0.1
-        file: gawk-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gawk/
-        md5: f9db3f6715207c6f13719713abc9c707
+        package: gawk
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -494,12 +357,7 @@ elements:
             installation:
                 - make install
     gettext:
-        description: Gettext
-        version: 0.20.1
-        file: gettext-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gettext/
-        md5: 9ed9e26ab613b668e0026222a9c23639
+        package: gettext
         commands:
             preparation:
                 - ./configure --disable-shared
@@ -508,12 +366,7 @@ elements:
             installation:
                 - cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /tools/bin
     grep:
-        description: Grep
-        version: 3.3
-        file: grep-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/grep/
-        md5: 05d0718a1b7cc706a4bdf8115363f1ed
+        package: grep
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -524,12 +377,7 @@ elements:
             installation:
                 - make install
     gzip:
-        description: Gzip
-        version: '1.10'
-        file: gzip-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/gzip/
-        md5: 691b1221694c3394f1c537df4eee39d3
+        package: gzip
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -540,12 +388,7 @@ elements:
             installation:
                 - make install
     make:
-        description: Make
-        version: 4.2.1
-        file: make-{version}
-        extension: .tar.bz2
-        url: http://ftp.gnu.org/gnu/make/
-        md5: 15b012617e7c44c0ed482721629577ac
+        package: make
         commands:
             preparation:
                 - sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
@@ -558,12 +401,7 @@ elements:
             installation:
                 - make install
     patch:
-        description: Patch
-        version: 2.7.6
-        file: patch-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/patch/
-        md5: 78ad9937e4caadcba1526ef1853730d5
+        package: patch
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -574,12 +412,7 @@ elements:
             installation:
                 - make install
     perl:
-        description: Perl
-        version: 5.30.0
-        file: perl-{version}
-        extension: .tar.xz
-        url: https://www.cpan.org/src/5.0/
-        md5: 037c35000550bdcb47552ad0f6d3064d
+        package: perl
         commands:
             preparation:
                 - sh Configure -des
@@ -594,12 +427,7 @@ elements:
                 - mkdir -pv /tools/lib/perl5/5.30.0
                 - cp -Rv lib/* /tools/lib/perl5/5.30.0
     python:
-        description: Python
-        version: 3.7.4
-        file: Python-{version}
-        extension: .tar.xz
-        url: https://www.python.org/ftp/python/{version}/
-        md5: d33e4aae66097051c2eca45ee3604803
+        package: python
         commands:
             preparation:
                 - sed -i '/def add_multiarch_paths/a \        return' setup.py
@@ -610,12 +438,7 @@ elements:
             installation:
                 - make install
     sed:
-        description: Sed
-        version: 4.7
-        file: sed-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/sed/
-        md5: 777ddfd9d71dd06711fe91f0925e1573
+        package: sed
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -626,12 +449,7 @@ elements:
             installation:
                 - make install
     tar:
-        description: Tar
-        version: 1.32
-        file: tar-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/tar/
-        md5: 83e38700a80a26e30b2df054e69956e5
+        package: tar
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -642,12 +460,7 @@ elements:
             installation:
                 - make install
     texinfo:
-        description: Texinfo
-        version: 6.6
-        file: texinfo-{version}
-        extension: .tar.xz
-        url: http://ftp.gnu.org/gnu/texinfo/
-        md5: 5231da3e6aa106cd0532b8609e5b3702
+        package: texinfo
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -658,12 +471,7 @@ elements:
             installation:
                 - make install
     util-linux:
-        description: Util-linux
-        version: 2.34
-        file: util-linux-{version}
-        extension: .tar.xz
-        url: https://www.kernel.org/pub/linux/utils/util-linux/v{version}/
-        md5: a78cbeaed9c39094b96a48ba8f891d50
+        package: util-linux
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -677,12 +485,7 @@ elements:
             installation:
                 - make install
     xz:
-        description: Xz
-        version: 5.2.4
-        file: xz-{version}
-        extension: .tar.xz
-        url: https://tukaani.org/xz/
-        md5: 003e4d0b1b1899fc6e3000b24feddf7c
+        package: xz-utils
         commands:
             preparation:
                 - ./configure --prefix=/tools

@@ -166,7 +166,7 @@ class Prerequisite:
                 self.parent.run([self.commands[element]])
 
             # Check that the output is correct
-            if result.endswith("True"):
+            if result.endswith('0'):
 
                 # If the endpoints are the same, things are good
                 Output.clear()
