@@ -84,6 +84,7 @@ class Preparation:
         self.description = element.get('description')
         self.test        = element.get('test')
         self.commands    = element.get('commands')
+        self.result      = element.get('result')
 
         # Store the system for running commands
         self.parent = parent
@@ -112,7 +113,18 @@ class Preparation:
             self.parent.run([self.commands[element]])
 
         # Check that the output is correct
-        if result.endswith("0"):
+        if self.result is not None:
+
+            # Iterate through each of the acceptable results
+            for possibility in self.result:
+
+                # And return if the output matches
+                if result[-1].strip() in possibility:
+
+                    return True
+                    
+
+        elif result.endswith("0"):
 
             # If the endpoints are the same, things are good
             Output.clear()
