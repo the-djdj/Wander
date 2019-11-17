@@ -168,7 +168,7 @@ class Module:
 
         self.description = self.package.get('description') if element.get('description') is None else element.get('description')
         self.version     = self.package.get('version')
-        self.file        = self.package.get('file')
+        self.file        = self.package.get('file').replace('{version}', str(self.version))
         self.extension   = self.package.get('extension')
 
         # Store the root file name
