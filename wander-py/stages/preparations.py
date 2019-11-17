@@ -10,8 +10,9 @@ class Preparations(YAMLObject):
 
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('Preparing host environment...', 'temp')
-    BUILD_SYSTEM     = ('Preparing build environment...', 'base')
+    TEMPORARY_SYSTEM   = ('Preparing host environment...', 'temp')
+    COMPILATION_SYSTEM = ('Preparing compilation environment...', 'compile')
+    BASE_SYSTEM        = ('Preparing build environment...', 'base')
 
 
     def __init__(self, commands, location, stage, partitions = None):

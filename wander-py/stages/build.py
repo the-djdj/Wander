@@ -10,11 +10,12 @@ class BuildSystem(YAMLObject):
         it.'''
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('Building temporary system...', 'temp')
-    BASE_SYSTEM      = ('Building base system...',      'base')
+    TEMPORARY_SYSTEM   = ('Building temporary system...', 'temp')
+    COMPILATION_SYSTEM = ('Building compilation environment...', 'compile')
+    BASE_SYSTEM        = ('Building base system...',      'base')
 
 
-    def __init__(self, commands, location, downloader, stage, partitions = None):
+    def __init__(self, commands, location, downloader, stage):
         ''' The constructor. This creates the new system for building a set of
             modules used in wander.'''
         # Create the parent object
