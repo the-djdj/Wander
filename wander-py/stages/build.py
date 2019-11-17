@@ -286,7 +286,7 @@ class Module:
             # Store some variables about the prerequisite
             description = package.get('description')
             version     = package.get('version')
-            file        = package.get('file').replace('{version}', value.get('version'))
+            file        = package.get('file').replace('{version}', version)
             extension   = package.get('extension')
             folder      = value
             target      = path.join(self.parent.environment['WANDER'], 'sources', file)
