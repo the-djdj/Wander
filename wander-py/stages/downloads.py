@@ -87,8 +87,8 @@ class DownloadList(YAMLObject):
         for element in self.elements:
 
             # Get the information from the file
-            self.description = self.elements[element].get('description')
             self.version     = self.elements[element].get('version')
+            self.description = self.elements[element].get('description') + ' ' + str(self.version)
             self.file        = self.elements[element].get('file').replace('{version}', str(self.version))
             self.extension   = self.elements[element].get('extension')
             self.url         = path.join(self.elements[element].get('url').replace('{version}', str(self.version)), self.file + self.extension)
