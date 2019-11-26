@@ -1,6 +1,6 @@
 from os import path
 
-from util import Output, YAMLObject
+from util import Output, YAMLObject, docker
 
 
 class Preparations(YAMLObject):
@@ -37,7 +37,7 @@ class Preparations(YAMLObject):
     def verify(self):
         ''' A simple method which ensures that the host system is ready...'''
         # Check that the partition system is defined
-        if self.partitions is not None:
+        if self.partitions is not None and not docker():
 
             # Add the folder location
             if self.environment.get('LOCATION') is None:
