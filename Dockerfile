@@ -20,9 +20,6 @@ RUN apt-get install -y texinfo
 # Copy the sources over into the new machine
 COPY . /root
 
-# Ensure that our built machine can be extracted
-VOLUME /wander
-
 # And start the wander builder
 WORKDIR /root
 ENTRYPOINT ["python3"]
