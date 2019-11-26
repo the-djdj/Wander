@@ -1,4 +1,4 @@
-from util import Output
+from util import Output, docker
 
 import parted
 from _ped import DeviceException, IOException
@@ -19,7 +19,15 @@ class Partitions:
 
 
     def verify(self):
-        # Tell the user what's happening
+        ''' The verify method, which ensures that the partition is correctly
+            selected and properly formatted.'''
+        # First, check if we are in a docker container
+        if docker():
+
+            return True
+
+
+        # Otherwise, tell the user what's happening
         Output.header('Checking partition system...')
 
         # Create the disk variable
