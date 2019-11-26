@@ -395,4 +395,4 @@ def docker():
     stdout, stderr = process.communicate()
 
     # And check if we're in a docker container
-    return str(stdout, 'utf-8', 'replace').rstrip() == '0'
+    return str(stdout, 'utf-8', 'replace') == '0'
