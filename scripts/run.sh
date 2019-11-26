@@ -1,1 +1,1 @@
-docker run -it --mount source=wander,target=/wander wander
+docker run -it -v /wander:/wander wander
