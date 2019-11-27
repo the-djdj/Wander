@@ -91,7 +91,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.stage[1], 'init')
+            logger = Logger(self.parent.environment['WANDER'], self.stage[1], 'init')
 
             # Run the commands
             self.run(self.init,
@@ -121,7 +121,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.stage[1], 'cleanup')
+            logger = Logger(self.parent.environment['WANDER'], self.stage[1], 'cleanup')
 
             # Run the commands
             self.run(self.cleanup,
@@ -201,7 +201,7 @@ class Module:
             self.modules = list()
 
         # Initialise the logger
-        self.logger = Logger(self.parent.stage[1], self.file)
+        self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], self.file)
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)

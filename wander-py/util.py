@@ -342,13 +342,13 @@ class Logger:
         to a specific file.'''
 
 
-    def __init__(self, stage, name):
+    def __init__(self, wander, stage, name):
         ''' The default constructor. This creates a new logging system with a
             specified stage, used to delineate the logs into different folders,
             and the name of the module, which decides the name of the log
             file.'''
         # Store the filename and folder to write
-        self.folder = path.join('logs', stage, name)
+        self.folder = path.join(wander, 'logs', stage, name)
 
         # Check that the folder to write the logs in exists
         if not path.isdir(self.folder):
