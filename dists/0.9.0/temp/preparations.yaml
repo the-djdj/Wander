@@ -46,8 +46,9 @@ elements:
             - /usr/sbin/groupadd wander
     useradd:
         description: Adding the user for building packages
-        test: 0
+        test: 1
         commands:
+            - mkdir /home/wander
             - /usr/sbin/useradd -s /bin/bash -g wander -m -k /dev/null wander
     toolsPermission:
         description: Setting tools directory permissions
