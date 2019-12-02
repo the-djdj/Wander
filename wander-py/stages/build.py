@@ -189,19 +189,22 @@ class Module:
             # If we're not in chroot, use the full path
             self.target = path.join(self.parent.environment['WANDER'], 'sources', self.file)
 
+            # Initialise the logger
+            self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], self.file)
+
         else:
 
             # Store the root file name
             self.target = path.join('/sources', self.file)
+
+            # Initialise the logger
+            self.logger = Logger(self.parent.stage[1], self.file)
 
         # Check if there are prerequisites
         if self.modules is None:
 
             # And make it an empty list
             self.modules = list()
-
-        # Initialise the logger
-        self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], self.file)
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
