@@ -1,5 +1,5 @@
 # Define the docker image
-FROM ubuntu:latest
+FROM ubuntu:rolling
 MAINTAINER Dan Jenkins (jenkins.daniel.02@gmail.com)
 
 # Install all of the needed packages
