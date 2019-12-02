@@ -22,6 +22,8 @@ Both of these dependencies can be installed using `pip3 install pyparted pyyaml`
 
 The other dependencies are inherent to the operating system build process, and can thus vary from build to build. These dependencies can be found in `prerequisites.yaml`, and are tested whenever the Wander Linux builder starts up.
 
+Alternatively, the entire system can be built using Docker, being built using the included scripts and the Dockerfile to compile the image. If this is the case, the only dependency is the docker runtime - everything else is housed inside the image.
+
 ### Distribution
 This system has been tested on Ubuntu 19.10 and Slackware 14.2, on 64- and 32-bit hardware, respectively. If you are using another distribution, you may need an additional amount of tweaking, but it should nevertheless be possible to run this smoothly.
 
@@ -29,11 +31,34 @@ This system has been tested on Ubuntu 19.10 and Slackware 14.2, on 64- and 32-bi
 Wander requires a dedicated partition on which its filesystem will be built. Once it has completed, you can archive this system and use it elsewhere, but a partition with at least **12 GB** of free space is required for the build process. The final system will be much smaller than this, but this allows for debug headers and sources to be stored, before they are later stripped.
 
 ## How do I run it?
-To run the Wander Linux build system, issue the following as root:
+The Wander Linux builder can be run either natively on a Linux distribution, or inside a Docker container, allowing an extra layer of protection should something go wrong.
+
+### Native execution
+To run the Wander Linux build system natively, issue the following as root:
 ```shell
 python3 wander-py/core.py
 ```
-You will then be able to choose a Wander version to build, whereafter the system will check that you meet the prerequisites for the build, and find your partition. This process will take quite a while, and it is advised that you allow it to run through the entire build without stopping. If you do need to stop however, you can skip packages which have already been built by adding `skip: true` underneath the package name in the respective `YAML` file.
+
+### Docker execution
+To run the Wander Linux build system using a Docker container, the `build` and `run` scripts can be used.
+
+For Linux, these commands are as follows:
+```shell
+./scripts/build.sh
+./scripts/run.sh
+```
+And on Windows systems, the same can be achieved using:
+```batch
+.\scripts\build.bat
+.\scripts\run.bat
+```
+The Windows build system requires that a folder called `Wander` be present in the user's home directory. This folder is where Wander Linux will be built so that it can be retrieved later.
+
+The build scripts copy the contents of this repository into the `/root` folder of the image so that the code can be run in that new environment. In order to save having to download the packages anew for every build, we recomment that you copy your sources directory into your local copy of this repository after your first run so that the sources are preserved.
+
+### Using the build system
+
+Once the build system has been started up, you will be able to choose a Wander version to build, whereafter the system will check that you meet the prerequisites for the build, and find your partition (if you are not running in Docker). This process will take quite a while, and it is advised that you allow it to run through the entire build without stopping. If you do need to stop however, you can skip packages which have already been built by adding `skip: true` underneath the package name in the respective `YAML` file.
 
 **Please** make a backup of your system before you run this - a badly configured Wander build script can destroy your machine. Additionally, always ensure that you are either building a release of Wander, or are on the `stable` branch of this repository.
 

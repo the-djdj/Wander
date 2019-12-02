@@ -27,6 +27,7 @@ If applicable, add screenshots to help explain your problem.
  - OS: [e.g. iOS]
  - Python Version [e.g. 3.7]
  - Wander Version [e.g. 1.0]
+ - Docker [yes/no]
 
 **Additional context**
 Add any other context about the problem here.
