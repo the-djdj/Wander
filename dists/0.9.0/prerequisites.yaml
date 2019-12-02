@@ -15,7 +15,7 @@ elements:
         description: Bash (/bin/sh -> /bin/bash)
         endpoint: bash
         commands:
-            - readlink -f /bin/sh | cut -d "/" -f 3
+            - if [[ $(readlink -f /bin/sh) =~ "bash" ]]; then echo "bash"; fi
     binutils:
         description: Binutils
         version: 2.25
