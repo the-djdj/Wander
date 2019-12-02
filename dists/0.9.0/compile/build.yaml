@@ -1,0 +1,188 @@
+---
+# A list of variables that must be set for all elements
+preamble:
+    HOME: /root
+    TERM: $TERM
+    PS1: '(wander chroot) \u:\w\$ '
+    PATH: '/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin'
+    WANDER: /wander
+    ZONEINFO: /usr/share/zoneinfo
+# The user that must run this section
+user: chroot
+# A list of commands to be run before this stage begins
+init:
+    - mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+    - mkdir -pv /{media/{floppy,cdrom},sbin,srv,var}
+    - install -dv -m 0750 /root
+    - install -dv -m 1777 /tmp /var/tmp
+    - mkdir -pv /usr/{,local/}{bin,include,lib,sbin,src}
+    - mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
+    - mkdir -v  /usr/{,local/}share/{misc,terminfo,zoneinfo}
+    - mkdir -v  /usr/libexec
+    - mkdir -pv /usr/{,local/}share/man/man{1..8}
+    - mkdir -v  /usr/lib/pkgconfig
+    - case $(uname -m) in
+        x86_64) mkdir -v /lib64 ;;
+      esac
+    - mkdir -v /var/{log,mail,spool}
+    - ln -sv /run /var/run
+    - ln -sv /run/lock /var/lock
+    - mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
+    - ln -sv /tools/bin/{bash,cat,chmod,dd,echo,ln,mkdir,pwd,rm,stty,touch} /bin
+    - ln -sv /tools/bin/{env,install,perl,printf} /usr/bin
+    - ln -sv /tools/lib/libgcc_s.so{,.1} /usr/lib
+    - ln -sv /tools/lib/libstdc++.{a,so{,.6}} /usr/lib
+    - ln -sv bash /bin/sh
+    - ln -sv /proc/self/mounts /etc/mtab
+    - printf "root:x:0:0:root:/root:/bin/bash\n
+              bin:x:1:1:bin:/dev/null:/bin/false\n
+              daemon:x:6:6:Daemon User:/dev/null:/bin/false\n
+              messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false\n
+              systemd-bus-proxy:x:72:72:systemd Bus Proxy:/:/bin/false\n
+              systemd-journal-gateway:x:73:73:systemd Journal Gateway:/:/bin/false\n
+              systemd-journal-remote:x:74:74:systemd Journal Remote:/:/bin/false\n
+              systemd-journal-upload:x:75:75:systemd Journal Upload:/:/bin/false\n
+              systemd-network:x:76:76:systemd Network Management:/:/bin/false\n
+              systemd-resolve:x:77:77:systemd Resolver:/:/bin/false\n
+              systemd-timesync:x:78:78:systemd Time Synchronization:/:/bin/false\n
+              systemd-coredump:x:79:79:systemd Core Dumper:/:/bin/false\n
+              nobody:x:99:99:Unprivileged User:/dev/null:/bin/false" > /etc/passwd
+    - printf "root:x:0:\n
+              bin:x:1:daemon\n
+              sys:x:2:\n
+              kmem:x:3:\n
+              tape:x:4:\n
+              tty:x:5:\n
+              daemon:x:6:\n
+              floppy:x:7:\n
+              disk:x:8:\n
+              lp:x:9:\n
+              dialout:x:10:\n
+              audio:x:11:\n
+              video:x:12:\n
+              utmp:x:13:\n
+              usb:x:14:\n
+              cdrom:x:15:\n
+              adm:x:16:\n
+              messagebus:x:18:\n
+              systemd-journal:x:23:\n
+              input:x:24:\n
+              mail:x:34:\n
+              kvm:x:61:\n
+              systemd-bus-proxy:x:72:\n
+              systemd-journal-gateway:x:73:\n
+              systemd-journal-remote:x:74:\n
+              systemd-journal-upload:x:75:\n
+              systemd-network:x:76:\n
+              systemd-resolve:x:77:\n
+              systemd-timesync:x:78:\n
+              systemd-coredump:x:79:\n
+              wheel:x:97:\n
+              nogroup:x:99:\n
+              users:x:999:" > /etc/group
+    - touch /var/log/{btmp,lastlog,faillog,wtmp}
+    - chgrp -v utmp /var/log/lastlog
+    - chmod -v 664  /var/log/lastlog
+    - chmod -v 600  /var/log/btmp
+# The elements, each representing one unit to execute
+elements:
+    linux:
+        package: linux
+        commands:
+            preparation:
+                - make mrproper
+            installation:
+                - make INSTALL_HDR_PATH=dest headers_install
+                - find dest/include \( -name .install -o -name ..install.cmd \) -delete
+                - cp -rv dest/include/* /usr/include
+    man-pages:
+        package: man-pages
+        commands:
+            installation:
+                - make install
+    glibc:
+        package: glibc
+        patch: glibc-fhs
+        folder: build
+        commands:
+            setup:
+                - sed -i '/asm.socket.h/a# include <linux/sockios.h>'
+                          sysdeps/unix/sysv/linux/bits/socket.h
+                - case $(uname -m) in
+                    i?86) ln -sfv ld-linux.so.2 /lib/ld-lsb.so.3
+                    ;;
+                    x86_64) ln -sfv ../lib/ld-linux-x86-64.so.2 /lib64;
+                            ln -sfv ../lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3
+                    ;;
+                  esac
+            preparation:
+                - CC="gcc -ffile-prefix-map=/tools=/usr"
+                  ../configure --prefix=/usr
+                               --disable-werror
+                               --enable-kernel=3.2
+                               --enable-stack-protector=strong
+                               --with-headers=/usr/include
+                               libc_cv_slibdir=/lib
+            compilation:
+                - make
+                - case $(uname -m) in
+                    i?86) ln -sfnv $PWD/elf/ld-linux.so.2
+                                   /lib
+                    ;;
+                    x86_64) ln -sfnv $PWD/elf/ld-linux-x86-64.so.2
+                                     /lib
+                    ;;
+                  esac
+            testing:
+                - make check
+            installation:
+                - touch /etc/ld.so.conf
+                - sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
+                - make install
+                - cp -v ../nscd/nscd.conf /etc/nscd.conf
+                - mkdir -pv /var/cache/nscd
+                - install -v -Dm644 ../nscd/nscd.tmpfiles /usr/lib/tmpfiles.d/nscd.conf
+                - install -v -Dm644 ../nscd/nscd.service /lib/systemd/system/nscd.service
+                - mkdir -pv /usr/lib/locale
+                - localedef -i POSIX -f UTF-8 C.UTF-8 2> /dev/null || true
+                - localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
+                - localedef -i de_DE -f ISO-8859-1 de_DE
+                - localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+                - localedef -i de_DE -f UTF-8 de_DE.UTF-8
+                - localedef -i el_GR -f ISO-8859-7 el_GR
+                - localedef -i en_GB -f UTF-8 en_GB.UTF-8
+                - localedef -i en_HK -f ISO-8859-1 en_HK
+                - localedef -i en_PH -f ISO-8859-1 en_PH
+                - localedef -i en_US -f ISO-8859-1 en_US
+                - localedef -i en_US -f UTF-8 en_US.UTF-8
+                - localedef -i es_MX -f ISO-8859-1 es_MX
+                - localedef -i fa_IR -f UTF-8 fa_IR
+                - localedef -i fr_FR -f ISO-8859-1 fr_FR
+                - localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+                - localedef -i fr_FR -f UTF-8 fr_FR.UTF-8
+                - localedef -i it_IT -f ISO-8859-1 it_IT
+                - localedef -i it_IT -f UTF-8 it_IT.UTF-8
+                - localedef -i ja_JP -f EUC-JP ja_JP
+                - localedef -i ja_JP -f SHIFT_JIS ja_JP.SIJS 2> /dev/null || true
+                - localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
+                - localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R
+                - localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
+                - localedef -i tr_TR -f UTF-8 tr_TR.UTF-8
+                - localedef -i zh_CN -f GB18030 zh_CN.GB18030
+                - localedef -i zh_HK -f BIG5-HKSCS zh_HK.BIG5-HKSCS
+            cleanup:
+                - printf "# Begin /etc/nsswitch.conf\n\npasswd:files\ngroup:files\nshadow:files\n\nhosts:files dns\nnetworks:files\n\nprotocols:files\nservices:files\nethers:files\nrpc:files\n\n# End /etc/nsswitch.conf" >> /etc/nsswitch.conf
+                - tar -xf ../../tzdata2019b.tar.gz
+                - mkdir -pv $ZONEINFO/{posix,right}
+                - for tz in etcetera southamerica northamerica europe africa antarctica asia australasia backward pacificnew systemv;
+                  do (
+                    zic -L /dev/null   -d $ZONEINFO       ${tz};
+                    zic -L /dev/null   -d $ZONEINFO/posix ${tz};
+                    zic -L leapseconds -d $ZONEINFO/right ${tz});
+                  done
+                - cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO
+                - zic -d $ZONEINFO -p America/New_York
+#                - ln -sfv /usr/share/zoneinfo/<xxx> /etc/localtime
+                - printf "# Begin /etc/ld.so.conf\n/usr/local/lib\n/opt/lib\n\n# Add an include directory\ninclude /etc/ld.so.conf.d/*.conf" >> /etc/ld.so.conf
+                - mkdir -pv /etc/ld.so.conf.d
+...

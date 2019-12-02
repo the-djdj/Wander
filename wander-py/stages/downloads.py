@@ -39,7 +39,7 @@ class Downloader():
 
 
 from hashlib import md5
-from os import mkdir
+from os import makedirs
 from shutil import copyfile
 from urllib.request import urlretrieve as get
 from util import YAMLObject
@@ -69,7 +69,7 @@ class DownloadList(YAMLObject):
             if not path.exists(directory):
 
                 # And create the directory if it does not
-                mkdir(directory)
+                makedirs(directory)
 
 
     def verify(self):

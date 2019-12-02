@@ -33,6 +33,7 @@ class Output:
     VERIFYING   = B_BLUE    + 'Verifying'
     COPYING     = B_BLUE    + 'Copying'
     EXTRACTING  = B_BLUE    + 'Extracting'
+    PATCHING    = B_BLUE    + 'Patching'
     SETUP       = B_BLUE    + 'Setting up'
     PREPARING   = B_BLUE    + 'Preparing'
     COMPILING   = B_BLUE    + 'Compiling'
@@ -341,13 +342,13 @@ class Logger:
         to a specific file.'''
 
 
-    def __init__(self, stage, name):
+    def __init__(self, wander, stage, name):
         ''' The default constructor. This creates a new logging system with a
             specified stage, used to delineate the logs into different folders,
             and the name of the module, which decides the name of the log
             file.'''
         # Store the filename and folder to write
-        self.folder = path.join('logs', stage, name)
+        self.folder = path.join(wander, 'logs', stage, name)
 
         # Check that the folder to write the logs in exists
         if not path.isdir(self.folder):
@@ -378,3 +379,20 @@ class Logger:
 
             # And note that we've finished this output
             file.write('\n   *****   \n')
+
+
+def docker():
+    ''' A method which checks whether or not we are running in a docker
+        instance. This is important, as we cannot partition or do anything
+        involving disks in a container.'''
+    # Store the command
+    command = '''awk -F/ '$2 == "docker"' /proc/self/cgroup | read; echo $?'''
+
+    # Prepare the subprocess system
+    process = Popen([command], stdout=PIPE, stderr=PIPE, executable='/bin/sh', shell=True)
+
+    # Get the stdout and stderr from the command
+    stdout, stderr = process.communicate()
+
+    # And check if we're in a docker container
+    return str(stdout, 'utf-8', 'replace').rstrip() == '0'

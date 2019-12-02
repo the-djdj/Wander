@@ -10,14 +10,16 @@ class Main:
         wander system.'''
 
     # The application errors for if something goes wrong
-    ERROR_NONE                = 0
-    ERROR_PREREQUISITE        = 1
-    ERROR_PARTITIONS          = 2
-    ERROR_DOWNLOADER          = 3
-    ERROR_PREPARATIONS        = 4
-    ERROR_TEMPORARY_SYSTEM    = 5
-    ERROR_SYSTEM_PREPARATIONS = 6
-    ERROR_BASE_SYSTEM         = 7
+    ERROR_NONE                  = 0
+    ERROR_PREREQUISITE          = 1
+    ERROR_PARTITIONS            = 2
+    ERROR_DOWNLOADER            = 3
+    ERROR_PREPARATIONS          = 4
+    ERROR_TEMPORARY_SYSTEM      = 5
+    ERROR_COMPILER_PREPARATIONS = 6
+    ERROR_COMPILATION_SYSTEM    = 7
+    ERROR_SYSTEM_PREPARATIONS   = 8
+    ERROR_BASE_SYSTEM           = 9
 
 
     def __init__(self, PATH):
@@ -32,8 +34,10 @@ class Main:
         self.downloader    = Downloader(PATH)
         self.preparations  = Preparations(self.commands, PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
         self.temporary     = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.TEMPORARY_SYSTEM)
-        self.system        = Preparations(self.commands, PATH, Preparations.BUILD_SYSTEM)
-        self.base_system   = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.BASE_SYSTEM, self.partitions)
+        self.compiler      = Preparations(self.commands, PATH, Preparations.COMPILATION_SYSTEM)
+        self.compilation   = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.COMPILATION_SYSTEM)
+        self.system        = Preparations(self.commands, PATH, Preparations.BASE_SYSTEM)
+        self.base_system   = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.BASE_SYSTEM)
 
 
     def begin(self):
@@ -48,6 +52,8 @@ class Main:
                    (self.downloader,    Main.ERROR_DOWNLOADER),
                    (self.preparations,  Main.ERROR_PREPARATIONS),
                    (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM),
+                   (self.compiler,      Main.ERROR_COMPILER_PREPARATIONS),
+                   (self.compilation,   Main.ERROR_COMPILATION_SYSTEM),
                    (self.system,        Main.ERROR_SYSTEM_PREPARATIONS),
                    (self.base_system,   Main.ERROR_BASE_SYSTEM)]
 

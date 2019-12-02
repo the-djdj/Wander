@@ -1,43 +1,74 @@
 ---
 # A list of variables that must be set for all elements
 preamble:
-    LC_ALL: POSIX
+    HOME: /root
+    TERM: $TERM
+    PS1: '(wander chroot) \u:\w\$ '
+    PATH: '/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin'
     WANDER: /wander
-    WANDER_TGT: '{arch}-wander-linux-gnu'
-    PATH: /tools/bin:/bin:/usr/bin
 # The user that must run this section
-user: root
+user: chroot
 # The elements, each representing one unit to execute
 elements:
-    fsDir:
-        description: Creating filesystem directories
-        test: 0
-        commands:
-            - mkdir -pv $WANDER/{dev,proc,sys,run}
-    nodes:
-        description: Creating device nodes
-        test: 1
-        commands:
-            - mknod -m 600 $WANDER/dev/console c 5 1
-            - mknod -m 666 $WANDER/dev/null c 1 3
-    dev:
-        description: Mounting and populating /dev
-        test: 0
-        commands:
-            - mount -v --bind /dev $WANDER/dev
-    kernel:
-        description: Mounting virtual kernel file systems
+    linker:
+        description: Reconfiguring linker
         test: 3
         commands:
-            - mount -vt devpts devpts $WANDER/dev/pts -o gid=5,mode=620
-            - mount -vt proc proc $WANDER/proc
-            - mount -vt sysfs sysfs $WANDER/sys
-            - mount -vt tmpfs tmpfs $WANDER/run
-    runShm:
-        description: Creating the /run/shm directory
+            - mv -v /tools/bin/{ld,ld-old}
+            - mv -v /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
+            - mv -v /tools/bin/{ld-new,ld}
+            - ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
+    headers:
+        description: Adjusting GCC and Glibc headers
         test: 0
         commands:
-            - if [ -h $WANDER/dev/shm ]; then
-                mkdir -pv $WANDER/$(readlink $WANDER/dev/shm);
-              fi
+            - gcc -dumpspecs | sed -e 's@/tools@@g'
+                                   -e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}'
+                                   -e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' > `dirname $(gcc --print-libgcc-file-name)`/specs
+    compiler:
+        description: Testing GCC compiler
+        test: 2
+        commands:
+            - echo 'int main(){}' > dummy.c
+            - cc dummy.c -v -Wl,--verbose &> dummy.log
+            - "readelf -l a.out | grep ': /lib'"
+        result:
+            - "[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]"
+            - "[Requesting program interpreter: /lib/ld-linux.so.2]"
+    start:
+        description: Configuring start files
+        test: 0
+        commands:
+            - grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
+        result:
+            - /usr/lib/../lib/crt1.o succeeded\n/usr/lib/../lib/crti.o succeeded\n/usr/lib/../lib/crtn.o succeeded
+    search:
+        description: Ensuring correct header files for compiler
+        test: 0
+        commands:
+            - grep -B1 '^ /usr/include' dummy.log
+        result:
+            - '#include <...> search starts here:\n /usr/include'
+    paths:
+        description: Ensuring that the linker is using the correct search path
+        test: 0
+        commands:
+            - grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+        result:
+            - SEARCH_DIR("/usr/lib")\nSEARCH_DIR("/lib")
+    libc:
+        description: Ensuring that we're using the correct libc
+        test: 0
+        commands:
+            - grep "/lib.*/libc.so.6 " dummy.log
+        result:
+            - attempt to open /lib/libc.so.6 succeeded
+    dynamic:
+        description: Ensuring that GCC is using the correct dynamic linker
+        test: 0
+        commands:
+            - grep found dummy.log
+            - rm -v dummy.c a.out dummy.log
+        result:
+            - found ld-linux-x86-64.so.2 at /lib/ld-linux-x86-64.so.2
 ...

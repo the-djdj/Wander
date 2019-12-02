@@ -1,6 +1,6 @@
 from os import path
 
-from util import Output, YAMLObject
+from util import Output, YAMLObject, docker
 
 
 class Preparations(YAMLObject):
@@ -10,8 +10,9 @@ class Preparations(YAMLObject):
 
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('Preparing host environment...', 'temp')
-    BUILD_SYSTEM     = ('Preparing build environment...', 'base')
+    TEMPORARY_SYSTEM   = ('Preparing host environment...', 'temp')
+    COMPILATION_SYSTEM = ('Preparing compilation environment...', 'compile')
+    BASE_SYSTEM        = ('Preparing build environment...', 'base')
 
 
     def __init__(self, commands, location, stage, partitions = None):
@@ -36,7 +37,7 @@ class Preparations(YAMLObject):
     def verify(self):
         ''' A simple method which ensures that the host system is ready...'''
         # Check that the partition system is defined
-        if self.partitions is not None:
+        if self.partitions is not None and not docker():
 
             # Add the folder location
             if self.environment.get('LOCATION') is None:
@@ -83,6 +84,7 @@ class Preparation:
         self.description = element.get('description')
         self.test        = element.get('test')
         self.commands    = element.get('commands')
+        self.result      = element.get('result')
 
         # Store the system for running commands
         self.parent = parent
@@ -102,16 +104,32 @@ class Preparation:
         for element in range(self.test + 1):
 
             # Execute the commands
-            result = self.parent.run([self.commands[element]], True)[-1]
+            result = self.parent.run([self.commands[element]], self.result is None,
+                            directory = '/')[-1]
 
         # And execute the rest of the commands
         for element in range(self.test + 1, len(self.commands)):
 
             # Execute the final commands
-            self.parent.run([self.commands[element]])
+            self.parent.run([self.commands[element]], directory = '/')
 
         # Check that the output is correct
-        if result.endswith("0"):
+        if self.result is not None:
+
+            # Iterate through each of the acceptable results
+            for possibility in self.result:
+
+                # And return if the output matches
+                if result.strip() in possibility:
+
+                    # Inform the user that things went well
+                    Output.clear()
+                    Output.log(Output.PASSED, self.description)
+
+                    return True
+
+
+        elif result.endswith("0"):
 
             # If the endpoints are the same, things are good
             Output.clear()

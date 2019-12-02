@@ -10,11 +10,12 @@ class BuildSystem(YAMLObject):
         it.'''
 
     # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM = ('Building temporary system...', 'temp')
-    BASE_SYSTEM      = ('Building base system...',      'base')
+    TEMPORARY_SYSTEM   = ('Building temporary system...', 'temp')
+    COMPILATION_SYSTEM = ('Building compilation environment...', 'compile')
+    BASE_SYSTEM        = ('Building base system...',      'base')
 
 
-    def __init__(self, commands, location, downloader, stage, partitions = None):
+    def __init__(self, commands, location, downloader, stage):
         ''' The constructor. This creates the new system for building a set of
             modules used in wander.'''
         # Create the parent object
@@ -90,7 +91,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.stage[1], 'init')
+            logger = Logger(self.parent.environment['WANDER'], self.stage[1], 'init')
 
             # Run the commands
             self.run(self.init,
@@ -120,7 +121,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.stage[1], 'cleanup')
+            logger = Logger(self.parent.environment['WANDER'], self.stage[1], 'cleanup')
 
             # Run the commands
             self.run(self.cleanup,
@@ -154,6 +155,7 @@ class Module:
             built on the host system.'''
         # Store information about the prerequisite
         self.package  = element.get('package')
+        self.patch    = element.get('patch')
         self.modules  = element.get('modules')
         self.folder   = element.get('folder')
         self.commands = element.get('commands')
@@ -170,6 +172,16 @@ class Module:
         self.version     = self.package.get('version')
         self.file        = self.package.get('file').replace('{version}', str(self.version))
         self.extension   = self.package.get('extension')
+
+        # Check if there is a patch to apply
+        if self.patch is not None:
+
+            # Extract information about the patches
+            self.patch = parent.patches.elements[self.patch]
+
+            self.patch_version   = self.patch.get('version')
+            self.patch_file      = self.patch.get('file').replace('{version}', str(self.patch_version))
+            self.patch_extension = self.patch.get('extension')
 
         # Check if we're in chroot
         if self.parent.user != 'chroot':
@@ -189,7 +201,7 @@ class Module:
             self.modules = list()
 
         # Initialise the logger
-        self.logger = Logger(self.parent.stage[1], self.file)
+        self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], self.file)
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
@@ -210,6 +222,7 @@ class Module:
 
         # Collect each of the elements which needs to be built
         elements = [(self.extract,   Output.EXTRACTING),
+                    (self.fix,       Output.PATCHING),
                     (self.setup,     Output.SETUP),
                     (self.prepare,   Output.PREPARING),
                     (self.compile,   Output.COMPILING),
@@ -328,6 +341,35 @@ class Module:
 
         # And return if the directory exists
         return path.isdir(self.target) and result
+
+
+    def fix(self):
+        ''' A simple method which patches the extracted sources so that
+            compilation completes successfully.'''
+        # Check that there is a preparation for this module
+        if self.patch is None:
+
+            # If there's nothing to do, return
+            return True
+
+
+        # Attempt to run all of the commands
+        try:
+
+            # Run the commands
+            self.parent.run(['patch -Np1 -i ../' + self.patch_file + self.patch_extension],
+                    directory = self.target,
+                    logger = self.logger,
+                    phase = 'patch',
+                    executable = self.parent.executable)
+
+            # And return if there are no errors
+            return True
+
+        except CommandException:
+
+            # And return how we did
+            return False
 
 
     def setup(self):
