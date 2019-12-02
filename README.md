@@ -54,6 +54,8 @@ And on Windows systems, the same can be achieved using:
 ```
 The Windows build system requires that a folder called `Wander` be present in the user's home directory. This folder is where Wander Linux will be built so that it can be retrieved later.
 
+The build scripts copy the contents of this repository into the `/root` folder of the image so that the code can be run in that new environment. In order to save having to download the packages anew for every build, we recomment that you copy your sources directory into your local copy of this repository after your first run so that the sources are preserved.
+
 ### Using the build system
 
 Once the build system has been started up, you will be able to choose a Wander version to build, whereafter the system will check that you meet the prerequisites for the build, and find your partition (if you are not running in Docker). This process will take quite a while, and it is advised that you allow it to run through the entire build without stopping. If you do need to stop however, you can skip packages which have already been built by adding `skip: true` underneath the package name in the respective `YAML` file.
