@@ -198,7 +198,7 @@ class Module:
             self.target = path.join('/sources', self.file)
 
             # Initialise the logger
-            self.logger = Logger(self.parent.stage[1], self.file)
+            self.logger = Logger('/', self.parent.stage[1], self.file)
 
         # Check if there are prerequisites
         if self.modules is None:
