@@ -272,6 +272,12 @@ class Module:
         # Open the archive
         with tarfile.open(self.target + self.extension) as archive:
 
+            # Check that there are no left-over sources
+            if path.isdir(self.target):
+
+                # And clear any left-over sources
+                rmtree(self.target)
+
             # Create the directory for the extraction
             mkdir(self.target)
 
