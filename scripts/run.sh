@@ -1,1 +1,1 @@
-docker run --cap-add=SYS_ADMIN -it -v /wander:/wander wander
+docker run --cap-add=SYS_ADMIN --privileged -it -v /wander:/wander wander
