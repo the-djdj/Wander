@@ -112,7 +112,7 @@ class Preparation:
         else:
 
             # Initialise the logger
-            self.logger = Logger('/', self.parent.stage[1], '.')
+            self.logger = Logger('/', self.parent.stage[1])
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)

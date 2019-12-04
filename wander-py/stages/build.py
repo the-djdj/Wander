@@ -91,7 +91,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.environment['WANDER'], self.stage[1], '.')
+            logger = Logger(self.environment['WANDER'], self.stage[1])
 
             # Run the commands
             self.run(self.init,
@@ -121,7 +121,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.environment['WANDER'], self.stage[1], 'cleanup')
+            logger = Logger(self.environment['WANDER'], self.stage[1])
 
             # Run the commands
             self.run(self.cleanup,
