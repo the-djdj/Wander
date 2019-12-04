@@ -91,7 +91,7 @@ class BuildSystem(YAMLObject):
         try:
 
             # Create a logger
-            logger = Logger(self.environment['WANDER'], self.stage[1], 'init')
+            logger = Logger(self.environment['WANDER'], self.stage[1], '.')
 
             # Run the commands
             self.run(self.init,
@@ -120,8 +120,14 @@ class BuildSystem(YAMLObject):
         # And try to clean up the system
         try:
 
-            # Create a logger
-            logger = Logger(self.environment['WANDER'], self.stage[1], 'cleanup')
+            # Create a logger        description: Binutils (Pass 1)
+        package: binutils
+        folder: build
+        skip: true
+        commands:
+            preparation:
+                - ../configure --prefix=/tools
+            logger = Logger(self.environment['WANDER'], self.stage[1], '.')
 
             # Run the commands
             self.run(self.cleanup,
