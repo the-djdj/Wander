@@ -96,7 +96,7 @@ class BuildSystem(YAMLObject):
             # Run the commands
             self.run(self.init,
                     logger = logger,
-                    phase = 'init',
+                    phase = 'initialisation',
                     executable = self.executable)
 
             # And note that we were successful
