@@ -1,4 +1,4 @@
-from os import path
+from os import chroot, path
 
 from util import Output, YAMLObject, docker
 
