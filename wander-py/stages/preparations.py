@@ -30,6 +30,9 @@ class Preparations(YAMLObject):
         # Store the stage that we are in
         self.stage = stage
 
+        # Store the executable
+        self.executable = '/bin/sh'
+
         # Load the elements list
         self.load(path.join(location, self.stage[1], 'preparations.yaml'))
 
@@ -48,6 +51,15 @@ class Preparations(YAMLObject):
 
         # Tell the user what's happening
         Output.header(self.stage[0])
+
+        # Change the root if necessary
+        if self.user == 'chroot':
+
+            # Set our shell
+            self.executable = '/tools/bin/bash'
+
+            # And change our root
+            chroot(self.environment['WANDER'])
 
         # Store whether or not the preparations are valid
         result = True
@@ -71,6 +83,8 @@ class Preparations(YAMLObject):
         return result
 
 
+from util import Logger
+
 
 class Preparation:
     ''' The preparation class, which stores information about a single
@@ -89,6 +103,17 @@ class Preparation:
         # Store the system for running commands
         self.parent = parent
 
+        # Check if we're in chroot
+        if self.parent.user != 'chroot':
+
+            # Initialise the logger
+            self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], '.')
+
+        else:
+
+            # Initialise the logger
+            self.logger = Logger('/', self.parent.stage[1], '.')
+
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
 
@@ -105,7 +130,10 @@ class Preparation:
 
             # Execute the commands
             result = self.parent.run([self.commands[element]], self.result is None,
-                            directory = '/')[-1]
+                            directory = '/',
+                            logger = self.logger,
+                            phase = 'preparation',
+                            executable = self.parent.executable)[-1]
 
         # And execute the rest of the commands
         for element in range(self.test + 1, len(self.commands)):
