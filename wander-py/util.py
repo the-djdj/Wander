@@ -284,7 +284,7 @@ class YAMLObject:
             self.environment[element] = preamble[element]
 
 
-    def run(self, elements, test = False, directory = None, executable='/bin/sh', logger = None, phase = None, root = False):
+    def run(self, elements, test = False, directory = None, executable='/bin/bash', logger = None, phase = None, root = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
