@@ -30,9 +30,6 @@ class Preparations(YAMLObject):
         # Store the stage that we are in
         self.stage = stage
 
-        # Store the executable
-        self.executable = '/bin/sh'
-
         # Load the elements list
         self.load(path.join(location, self.stage[1], 'preparations.yaml'))
 
@@ -54,9 +51,6 @@ class Preparations(YAMLObject):
 
         # Change the root if necessary
         if self.user == 'chroot':
-
-            # Set our shell
-            self.executable = '/tools/bin/bash'
 
             # And change our root
             set_chroot(self.environment['WANDER'])
@@ -132,8 +126,7 @@ class Preparation:
             result = self.parent.run([self.commands[element]], self.result is None,
                             directory = '/',
                             logger = self.logger,
-                            phase = 'preparation',
-                            executable = self.parent.executable)[-1]
+                            phase = 'preparation')[-1]
 
         # And execute the rest of the commands
         for element in range(self.test + 1, len(self.commands)):

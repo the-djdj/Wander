@@ -153,7 +153,7 @@ class Commands:
         self.USERS = USERS
 
 
-    def call(self, command, environment, executable, directory=None, user='default'):
+    def call(self, command, environment, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store information about the user that we'll be running commands as
@@ -175,7 +175,7 @@ class Commands:
                             stdout=PIPE,
                             stderr=STDOUT,
                             cwd=directory,
-                            executable=executable)
+                            executable='bash')
 
         else:
             # Prepare the subprocess system
@@ -183,7 +183,7 @@ class Commands:
                             preexec_fn=self.demote(user.pw_uid, user.pw_gid),
                             stdout=PIPE,
                             stderr=STDOUT,
-                            executable=executable)
+                            executable='bash')
 
         # Get the stdout and stderr from the command
         stdout, stderr = process.communicate(command)
@@ -284,7 +284,7 @@ class YAMLObject:
             self.environment[element] = preamble[element]
 
 
-    def run(self, elements, test = False, directory = None, executable='/bin/bash', logger = None, phase = None, root = False):
+    def run(self, elements, test = False, directory = None, logger = None, phase = None, root = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -299,21 +299,18 @@ class YAMLObject:
             if test:
                 command = self.commands.call(element
                         + '; echo $?', self.environment,
-                        user = user,
-                        executable = executable)
+                        user = user)
 
             # If we have a directory set, run there
             elif directory is not None:
                 command = self.commands.call(element, self.environment,
                         directory = directory,
-                        user = user,
-                        executable = executable)
+                        user = user)
 
             # Otherwise, get the response of the command
             else:
                 command = self.commands.call(element, self.environment,
-                        user = user,
-                        executable = executable)
+                        user = user)
 
             # Check if there is an attached logger
             if logger is not None and phase is not 'unpacking':
@@ -395,7 +392,7 @@ def docker():
     command = '''awk -F/ '$2 == "docker"' /proc/self/cgroup | read; echo $?'''
 
     # Prepare the subprocess system
-    process = Popen([command], stdout=PIPE, stderr=PIPE, executable='/bin/sh', shell=True)
+    process = Popen([command], stdout=PIPE, stderr=PIPE, shell=True)
 
     # Get the stdout and stderr from the command
     stdout, stderr = process.communicate()
