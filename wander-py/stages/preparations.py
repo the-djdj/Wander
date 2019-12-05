@@ -149,10 +149,10 @@ class Preparation:
 
                     return True
 
-
+        # Check that the command exited safely
         elif result.endswith("0"):
 
-            # If the endpoints are the same, things are good
+            # If so, things are good
             Output.clear()
             Output.log(Output.PASSED, self.description)
 
