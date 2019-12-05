@@ -1,6 +1,6 @@
-from os import chroot, path
+from os import path
 
-from util import Output, YAMLObject, docker
+from util import Output, YAMLObject, docker, set_chroot
 
 
 class Preparations(YAMLObject):
@@ -59,7 +59,7 @@ class Preparations(YAMLObject):
             self.executable = '/tools/bin/bash'
 
             # And change our root
-            chroot(self.environment['WANDER'])
+            set_chroot(self.environment['WANDER'])
 
         # Store whether or not the preparations are valid
         result = True

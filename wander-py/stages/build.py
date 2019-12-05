@@ -1,7 +1,7 @@
-from os import chroot, path
+from os import path
 
 from exception import CommandException
-from util import Logger, Output, YAMLObject
+from util import Logger, Output, YAMLObject, set_chroot
 
 
 class BuildSystem(YAMLObject):
@@ -50,8 +50,8 @@ class BuildSystem(YAMLObject):
             # Set our shell
             self.executable = '/tools/bin/bash'
 
-            # And change our root
-            chroot(self.environment['WANDER'])
+            # Change our root
+            set_chroot(self.environment['WANDER'])
 
         # Store whether or not the modules are valid
         result = True

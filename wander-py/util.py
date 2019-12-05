@@ -402,3 +402,25 @@ def docker():
 
     # And check if we're in a docker container
     return str(stdout, 'utf-8', 'replace').rstrip() == '0'
+
+
+# Import the chroot framework
+from os import chroot
+
+# Store the default chroot environment status
+is_chroot = False
+
+def set_chroot(root):
+    ''' A method which enters the chroot environment if it hasn't already been
+        entered, or returns if it has.'''
+    # Activate the chroot variable
+    global is_chroot
+
+    # Check if we are not in chroot
+    if not is_chroot:
+
+        # Note that we are now in chroot
+        is_chroot = True
+
+        # And change our root
+        chroot(root)
