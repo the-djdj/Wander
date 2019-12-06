@@ -141,7 +141,7 @@ class Preparation:
             for possibility in self.result:
 
                 # And return if the output matches
-                if result.strip() in possibility:
+                if possibility.strip() in result.strip():
 
                     # Inform the user that things went well
                     Output.clear()
