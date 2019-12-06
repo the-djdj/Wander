@@ -23,7 +23,7 @@ elements:
         description: Creating tools directory
         test: 0
         commands:
-            - mkdir -v $WANDER/tools
+            - mkdir -pv $WANDER/tools
     toolsLink:
         description: Setting /tools symlink
         test: 0
