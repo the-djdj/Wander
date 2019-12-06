@@ -14,10 +14,10 @@ elements:
         description: Reconfiguring linker
         test: 3
         commands:
-            - test -f /tools/bin/ld-new && mv -v /tools/bin/{ld,ld-old}
-            - test -f /tools/bin/ld-new && mv -v /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
-            - test -f /tools/bin/ld-new && mv -v /tools/bin/{ld-new,ld}
-            - ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
+            - test -f /tools/bin/ld-new                 && mv -v /tools/bin/{ld,ld-old}
+            - test -f /tools/bin/ld-new                 && mv -v /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
+            - test -f /tools/bin/ld-new                 && mv -v /tools/bin/{ld-new,ld}
+            - test -f /tools/x86_64-pc-linux-gnu/bin/ld || ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
     headers:
         description: Adjusting GCC and Glibc headers
         test: 0
