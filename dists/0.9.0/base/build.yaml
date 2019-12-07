@@ -120,4 +120,20 @@ elements:
             installation:
                 - make install
                 - make install-html
+    mpfr:
+        package: mpfr
+        commands:
+            preparation:
+                - ./configure --prefix=/usr
+                              --disable-static
+                              --enable-thread-safe
+                              --docdir=/usr/share/doc/mpfr-4.0.2
+            compilation:
+                - make
+                - make html
+            testing:
+                - make check
+            installation:
+                - make install
+                - make install-html
 ...
