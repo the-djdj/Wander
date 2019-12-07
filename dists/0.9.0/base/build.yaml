@@ -136,4 +136,19 @@ elements:
             installation:
                 - make install
                 - make install-html
+    mpc:
+        package: mpc
+        commands:
+            preparation:
+                - ./configure --prefix=/usr
+                              --disable-static
+                              --docdir=/usr/share/doc/mpc-1.1.0
+            compilation:
+                - make
+                - make html
+            testing:
+                - make check
+            installation:
+                - make install
+                - make install-html
 ...
