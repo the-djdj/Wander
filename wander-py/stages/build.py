@@ -132,6 +132,7 @@ class BuildSystem(YAMLObject):
 
 
 
+import gzip
 from os import listdir, mkdir
 from shutil import move, rmtree
 import tarfile
