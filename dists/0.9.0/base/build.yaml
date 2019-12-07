@@ -80,4 +80,25 @@ elements:
                 - make test
             installation:
                 - make install
+    binutils:
+        package: binutils
+        folder: build
+        commands:
+            setup:
+                - sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
+            preparation:
+                - ../configure --prefix=/usr
+                               --enable-gold
+                               --enable-ld=default
+                               --enable-plugins
+                               --enable-shared
+                               --disable-werror
+                               --enable-64-bit-bfd
+                               --with-system-zlib
+            compilation:
+                - make tooldir=/usr
+            testing:
+                - make -k check
+            installation:
+                - make tooldir=/usr install
 ...
