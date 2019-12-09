@@ -42,6 +42,7 @@ elements:
             - grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
         result:
             - /usr/lib/../lib/crt1.o succeeded\n/usr/lib/../lib/crti.o succeeded\n/usr/lib/../lib/crtn.o succeeded
+            - /usr/lib/crt1.o succeeded\n/usr/lib/crti.o succeeded\n/usr/lib/crtn.o succeeded
     search:
         description: Ensuring correct header files for compiler
         test: 0
@@ -56,6 +57,7 @@ elements:
             - grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
         result:
             - SEARCH_DIR("/usr/lib")\nSEARCH_DIR("/lib")
+            - SEARCH_DIR("/lib")\nSEARCH_DIR("/usr/lib")
     libc:
         description: Ensuring that we're using the correct libc
         test: 0
