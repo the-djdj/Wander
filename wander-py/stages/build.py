@@ -84,8 +84,17 @@ class BuildSystem(YAMLObject):
         # And try to initialise the system
         try:
 
-            # Create a logger
-            logger = Logger(self.environment['WANDER'], self.stage[1])
+            # Check if we're in chroot
+            if self.user != 'chroot':
+
+                # Create the normal logger
+                logger = Logger(self.environment['WANDER'], self.stage[1])
+
+            else:
+
+                # Create the chroot logger
+                logger = Logger('/', self.stage[1])
+
 
             # Run the commands
             self.run(self.init,
@@ -113,8 +122,17 @@ class BuildSystem(YAMLObject):
         # And try to clean up the system
         try:
 
-            # Create a logger
-            logger = Logger(self.environment['WANDER'], self.stage[1])
+            # Check if we're in chroot
+            if self.user != 'chroot':
+
+                # Create the normal logger
+                logger = Logger(self.environment['WANDER'], self.stage[1])
+
+            else:
+
+                # Create the chroot logger
+                logger = Logger('/', self.stage[1])
+                
 
             # Run the commands
             self.run(self.cleanup,
