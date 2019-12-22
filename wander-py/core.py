@@ -5,21 +5,12 @@ from stages.preparations import Preparations
 from stages.prerequisites import Prerequisites
 from util import Output, Commands
 
+from os import path
+from yaml import safe_load as load, YAMLError
+
 class Main:
     ''' The main class. This holds all of the methods used in building the
         wander system.'''
-
-    # The application errors for if something goes wrong
-    ERROR_NONE                  = 0
-    ERROR_PREREQUISITE          = 1
-    ERROR_PARTITIONS            = 2
-    ERROR_DOWNLOADER            = 3
-    ERROR_PREPARATIONS          = 4
-    ERROR_TEMPORARY_SYSTEM      = 5
-    ERROR_COMPILER_PREPARATIONS = 6
-    ERROR_COMPILATION_SYSTEM    = 7
-    ERROR_SYSTEM_PREPARATIONS   = 8
-    ERROR_BASE_SYSTEM           = 9
 
 
     def __init__(self, PATH):
@@ -32,12 +23,52 @@ class Main:
         self.prerequisites = Prerequisites(self.commands, PATH)
         self.partitions    = Partitions()
         self.downloader    = Downloader(PATH)
-        self.preparations  = Preparations(self.commands, PATH, Preparations.TEMPORARY_SYSTEM, self.partitions)
-        self.temporary     = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.TEMPORARY_SYSTEM)
-        self.compiler      = Preparations(self.commands, PATH, Preparations.COMPILATION_SYSTEM)
-        self.compilation   = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.COMPILATION_SYSTEM)
-        self.system        = Preparations(self.commands, PATH, Preparations.BASE_SYSTEM)
-        self.base_system   = BuildSystem(self.commands, PATH, self.downloader, BuildSystem.BASE_SYSTEM)
+
+        # Create the preparations and build systems
+        self.preparations  = list()
+        self.build         = list()
+
+        # Populate the stages environments
+        self.create_stages(PATH)
+
+
+    def create_stages(self, PATH):
+        ''' The system to create all of the preparation and build stages for
+            use in the build.'''
+        # Create a placeholder for elements
+        elements = dict()
+        stages   = dict()
+
+        # Load the YAML file
+        with open(path.join(PATH, '__metadata.yaml'), 'r') as stream:
+
+            # Read from the stream
+            try:
+
+                # Store the file contents
+                elements = load(stream)
+
+                # Get each of the stages
+                stages = elements.get('stages')
+
+                # Iterate through each of the stages
+                for stage in stages:
+
+                    # Extract information about the stage
+                    description = stages[stage].get('description')
+                    folder      = stage
+                    bypass      = stages[stage].get('bypass')
+
+                    # Check if we're meant to bypass this stage
+                    if not bypass:
+
+                        # And append the items to the lists
+                        self.preparations.append(Preparations(self.commands, PATH, (description, folder), self.partitions))
+                        self.build.append(BuildSystem(self.commands, PATH, self.downloader, (description, folder)))
+
+            # If the syntax is improper, indicate as such
+            except YAMLError as error:
+                print(error)
 
 
     def begin(self):
@@ -47,18 +78,19 @@ class Main:
         Output.header('Welcome to Wander!\n')
 
         # Create a list of modules needed to build the system
-        modules = [(self.prerequisites, Main.ERROR_PREREQUISITE),
-                   (self.partitions,    Main.ERROR_PARTITIONS),
-                   (self.downloader,    Main.ERROR_DOWNLOADER),
-                   (self.preparations,  Main.ERROR_PREPARATIONS),
-                   (self.temporary,     Main.ERROR_TEMPORARY_SYSTEM),
-                   (self.compiler,      Main.ERROR_COMPILER_PREPARATIONS),
-                   (self.compilation,   Main.ERROR_COMPILATION_SYSTEM),
-                   (self.system,        Main.ERROR_SYSTEM_PREPARATIONS),
-                   (self.base_system,   Main.ERROR_BASE_SYSTEM)]
+        modules = [self.prerequisites,
+                   self.partitions,
+                   self.downloader]
+
+        # Collect each of our new stages
+        for stage in range(len(self.preparations)):
+
+            # And add them to the list
+            modules.append(self.preparations[stage])
+            modules.append(self.build[stage])
 
         # Iterate through each of the modules, and ensure that they succeed
-        for module, error in modules:
+        for error, module in enumerate(modules):
 
             # Check the prerequisites
             if not module.verify():

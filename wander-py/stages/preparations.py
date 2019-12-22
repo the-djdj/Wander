@@ -9,12 +9,6 @@ class Preparations(YAMLObject):
         list of preparation objects and checks each one.'''
 
 
-    # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM   = ('Preparing host environment...', 'temp')
-    COMPILATION_SYSTEM = ('Preparing compilation environment...', 'compile')
-    BASE_SYSTEM        = ('Preparing build environment...', 'base')
-
-
     def __init__(self, commands, location, stage, partitions = None):
         ''' The constructor. This creates the new system for ensuring that the
             host is prepared for building wander.'''
@@ -47,7 +41,7 @@ class Preparations(YAMLObject):
                 self.environment['LOCATION'] += ':' + self.partitions.path
 
         # Tell the user what's happening
-        Output.header(self.stage[0])
+        Output.header('Preparing {}...'.format(self.stage[0].lower()))
 
         # Change the root if necessary
         if self.user == 'chroot':
@@ -71,7 +65,7 @@ class Preparations(YAMLObject):
         self.commands.update()
 
         # Inform the user of the status
-        Output.footer(result, self.stage[0][0:-3])
+        Output.footer(result, 'Preparing {}'.format(self.stage[0].lower()))
 
         # And return the result
         return result

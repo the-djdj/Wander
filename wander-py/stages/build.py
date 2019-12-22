@@ -9,11 +9,6 @@ class BuildSystem(YAMLObject):
         through each of the modules, compiling, configuring, and installing
         it.'''
 
-    # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM   = ('Building temporary system...', 'temp')
-    COMPILATION_SYSTEM = ('Building compilation environment...', 'compile')
-    BASE_SYSTEM        = ('Building base system...',      'base')
-
 
     def __init__(self, commands, location, downloader, stage):
         ''' The constructor. This creates the new system for building a set of
@@ -39,7 +34,7 @@ class BuildSystem(YAMLObject):
         ''' A simple method which checks that each of the modules has been built
             correctly.'''
         # Tell the user what's happening
-        Output.header(self.stage[0])
+        Output.header('Building {}...'.format(self.stage[0].lower()))
 
         # Change the root if necessary
         if self.user == 'chroot':
@@ -66,7 +61,7 @@ class BuildSystem(YAMLObject):
         result &= self.clean()
 
         # Inform the user of the status
-        Output.footer(result, self.stage[0][0:-3])
+        Output.footer(result, 'Building {}'.format(self.stage[0].lower()))
 
         # And return the result
         return result
@@ -132,7 +127,7 @@ class BuildSystem(YAMLObject):
 
                 # Create the chroot logger
                 logger = Logger('/', self.stage[1])
-                
+
 
             # Run the commands
             self.run(self.cleanup,
