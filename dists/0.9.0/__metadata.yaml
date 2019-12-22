@@ -7,4 +7,15 @@ release: Susan
 version: 0.9.0
 # The status of this build: alpha, beta, release, or deprecated
 status: alpha
+# The different stages to this build process
+stages:
+    temp:
+        description: Temporary build system
+        bypass: false
+    compile:
+        description: Compilation environment
+        bypass: false
+    base:
+        description: Base system
+        bypass: false
 ...
