@@ -1,18 +1,12 @@
 from os import path
 
-from util import Output, YAMLObject, docker
+from util import Output, YAMLObject, docker, set_chroot
 
 
 class Preparations(YAMLObject):
     ''' The class responsible for ensuring that a host is fully prepared to
         build a temporary system with which wander will be built. It holds a
         list of preparation objects and checks each one.'''
-
-
-    # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM   = ('Preparing host environment...', 'temp')
-    COMPILATION_SYSTEM = ('Preparing compilation environment...', 'compile')
-    BASE_SYSTEM        = ('Preparing build environment...', 'base')
 
 
     def __init__(self, commands, location, stage, partitions = None):
@@ -47,7 +41,13 @@ class Preparations(YAMLObject):
                 self.environment['LOCATION'] += ':' + self.partitions.path
 
         # Tell the user what's happening
-        Output.header(self.stage[0])
+        Output.header('Preparing {}...'.format(self.stage[0].lower()))
+
+        # Change the root if necessary
+        if self.user == 'chroot':
+
+            # And change our root
+            set_chroot(self.environment['WANDER'])
 
         # Store whether or not the preparations are valid
         result = True
@@ -65,11 +65,13 @@ class Preparations(YAMLObject):
         self.commands.update()
 
         # Inform the user of the status
-        Output.footer(result, self.stage[0][0:-3])
+        Output.footer(result, 'Preparing {}'.format(self.stage[0].lower()))
 
         # And return the result
         return result
 
+
+from util import Logger
 
 
 class Preparation:
@@ -89,6 +91,17 @@ class Preparation:
         # Store the system for running commands
         self.parent = parent
 
+        # Check if we're in chroot
+        if self.parent.user != 'chroot':
+
+            # Initialise the logger
+            self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], '.')
+
+        else:
+
+            # Initialise the logger
+            self.logger = Logger('/', self.parent.stage[1])
+
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
 
@@ -105,7 +118,9 @@ class Preparation:
 
             # Execute the commands
             result = self.parent.run([self.commands[element]], self.result is None,
-                            directory = '/')[-1]
+                            directory = '/',
+                            logger = self.logger,
+                            phase = 'preparation')[-1]
 
         # And execute the rest of the commands
         for element in range(self.test + 1, len(self.commands)):
@@ -120,7 +135,7 @@ class Preparation:
             for possibility in self.result:
 
                 # And return if the output matches
-                if result.strip() in possibility:
+                if possibility.strip() in result.strip():
 
                     # Inform the user that things went well
                     Output.clear()
@@ -128,10 +143,10 @@ class Preparation:
 
                     return True
 
-
+        # Check that the command exited safely
         elif result.endswith("0"):
 
-            # If the endpoints are the same, things are good
+            # If so, things are good
             Output.clear()
             Output.log(Output.PASSED, self.description)
 

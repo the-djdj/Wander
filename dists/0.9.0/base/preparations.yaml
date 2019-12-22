@@ -14,10 +14,10 @@ elements:
         description: Reconfiguring linker
         test: 3
         commands:
-            - mv -v /tools/bin/{ld,ld-old}
-            - mv -v /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
-            - mv -v /tools/bin/{ld-new,ld}
-            - ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
+            - test -f /tools/bin/ld-new                 && mv -v /tools/bin/{ld,ld-old}
+            - test -f /tools/bin/ld-new                 && mv -v /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
+            - test -f /tools/bin/ld-new                 && mv -v /tools/bin/{ld-new,ld}
+            - test -f /tools/x86_64-pc-linux-gnu/bin/ld || ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
     headers:
         description: Adjusting GCC and Glibc headers
         test: 0
@@ -42,6 +42,7 @@ elements:
             - grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
         result:
             - /usr/lib/../lib/crt1.o succeeded\n/usr/lib/../lib/crti.o succeeded\n/usr/lib/../lib/crtn.o succeeded
+            - /usr/lib/crt1.o succeeded\n/usr/lib/crti.o succeeded\n/usr/lib/crtn.o succeeded
     search:
         description: Ensuring correct header files for compiler
         test: 0
@@ -56,6 +57,7 @@ elements:
             - grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
         result:
             - SEARCH_DIR("/usr/lib")\nSEARCH_DIR("/lib")
+            - SEARCH_DIR("/lib")\nSEARCH_DIR("/usr/lib")
     libc:
         description: Ensuring that we're using the correct libc
         test: 0

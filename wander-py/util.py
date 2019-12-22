@@ -153,7 +153,7 @@ class Commands:
         self.USERS = USERS
 
 
-    def call(self, command, environment, executable, directory=None, user='default'):
+    def call(self, command, environment, directory=None, user='default'):
         ''' The call command. This executes a command on a subprocess and
             returns the output that that command generates.'''
         # Store information about the user that we'll be running commands as
@@ -175,7 +175,7 @@ class Commands:
                             stdout=PIPE,
                             stderr=STDOUT,
                             cwd=directory,
-                            executable=executable)
+                            executable='bash')
 
         else:
             # Prepare the subprocess system
@@ -183,7 +183,7 @@ class Commands:
                             preexec_fn=self.demote(user.pw_uid, user.pw_gid),
                             stdout=PIPE,
                             stderr=STDOUT,
-                            executable=executable)
+                            executable='bash')
 
         # Get the stdout and stderr from the command
         stdout, stderr = process.communicate(command)
@@ -284,7 +284,7 @@ class YAMLObject:
             self.environment[element] = preamble[element]
 
 
-    def run(self, elements, test = False, directory = None, executable='/bin/sh', logger = None, phase = None, root = False):
+    def run(self, elements, test = False, directory = None, logger = None, phase = None, root = False):
         ''' The run method, which runs a list of commands, and returns the
             results.'''
         # Create a list for the result of the commands
@@ -299,21 +299,18 @@ class YAMLObject:
             if test:
                 command = self.commands.call(element
                         + '; echo $?', self.environment,
-                        user = user,
-                        executable = executable)
+                        user = user)
 
             # If we have a directory set, run there
             elif directory is not None:
                 command = self.commands.call(element, self.environment,
                         directory = directory,
-                        user = user,
-                        executable = executable)
+                        user = user)
 
             # Otherwise, get the response of the command
             else:
                 command = self.commands.call(element, self.environment,
-                        user = user,
-                        executable = executable)
+                        user = user)
 
             # Check if there is an attached logger
             if logger is not None and phase is not 'unpacking':
@@ -342,13 +339,19 @@ class Logger:
         to a specific file.'''
 
 
-    def __init__(self, wander, stage, name):
+    def __init__(self, wander, stage, name = None):
         ''' The default constructor. This creates a new logging system with a
             specified stage, used to delineate the logs into different folders,
             and the name of the module, which decides the name of the log
             file.'''
         # Store the filename and folder to write
-        self.folder = path.join(wander, 'logs', stage, name)
+        self.folder = path.join(wander, 'logs', stage)
+
+        # Check if there is a package associated with this logger
+        if name is not None:
+
+            # And add it to the folder
+            self.folder = path.join(self.folder, name)
 
         # Check that the folder to write the logs in exists
         if not path.isdir(self.folder):
@@ -389,10 +392,32 @@ def docker():
     command = '''awk -F/ '$2 == "docker"' /proc/self/cgroup | read; echo $?'''
 
     # Prepare the subprocess system
-    process = Popen([command], stdout=PIPE, stderr=PIPE, executable='/bin/sh', shell=True)
+    process = Popen([command], stdout=PIPE, stderr=PIPE, shell=True)
 
     # Get the stdout and stderr from the command
     stdout, stderr = process.communicate()
 
     # And check if we're in a docker container
     return str(stdout, 'utf-8', 'replace').rstrip() == '0'
+
+
+# Import the chroot framework
+from os import chroot
+
+# Store the default chroot environment status
+is_chroot = False
+
+def set_chroot(root):
+    ''' A method which enters the chroot environment if it hasn't already been
+        entered, or returns if it has.'''
+    # Activate the chroot variable
+    global is_chroot
+
+    # Check if we are not in chroot
+    if not is_chroot:
+
+        # Note that we are now in chroot
+        is_chroot = True
+
+        # And change our root
+        chroot(root)

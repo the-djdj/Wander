@@ -1,6 +1,6 @@
 # Define the docker image
-FROM ubuntu:latest
-MAINTAINER Dan Jenkins (jenkins.daniel.02@gmail.com)
+FROM ubuntu:rolling
+MAINTAINER Dan Jenkins (https://github.com/the-djdj)
 
 # Install all of the needed packages
 RUN apt-get update && apt-get install -y bison              \

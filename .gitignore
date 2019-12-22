@@ -106,3 +106,6 @@ venv.bak/
 # Wander sources directory
 logs
 sources
+
+# Wander script customisations
+scripts

@@ -1,18 +1,13 @@
-from os import chroot, path
+from os import path
 
 from exception import CommandException
-from util import Logger, Output, YAMLObject
+from util import Logger, Output, YAMLObject, set_chroot
 
 
 class BuildSystem(YAMLObject):
     ''' The class responsible for building a portion of the system by iterating
         through each of the modules, compiling, configuring, and installing
         it.'''
-
-    # Variables for the stage that is currently being built
-    TEMPORARY_SYSTEM   = ('Building temporary system...', 'temp')
-    COMPILATION_SYSTEM = ('Building compilation environment...', 'compile')
-    BASE_SYSTEM        = ('Building base system...',      'base')
 
 
     def __init__(self, commands, location, downloader, stage):
@@ -31,9 +26,6 @@ class BuildSystem(YAMLObject):
         # Store the stage that we are in
         self.stage = stage
 
-        # Store the executable
-        self.executable = '/bin/sh'
-
         # Load the elements list
         self.load(path.join(location, self.stage[1], 'build.yaml'))
 
@@ -42,16 +34,13 @@ class BuildSystem(YAMLObject):
         ''' A simple method which checks that each of the modules has been built
             correctly.'''
         # Tell the user what's happening
-        Output.header(self.stage[0])
+        Output.header('Building {}...'.format(self.stage[0].lower()))
 
         # Change the root if necessary
         if self.user == 'chroot':
 
-            # Set our shell
-            self.executable = '/tools/bin/bash'
-
-            # And change our root
-            chroot(self.environment['WANDER'])
+            # Change our root
+            set_chroot(self.environment['WANDER'])
 
         # Store whether or not the modules are valid
         result = True
@@ -72,7 +61,7 @@ class BuildSystem(YAMLObject):
         result &= self.clean()
 
         # Inform the user of the status
-        Output.footer(result, self.stage[0][0:-3])
+        Output.footer(result, 'Building {}'.format(self.stage[0].lower()))
 
         # And return the result
         return result
@@ -90,14 +79,22 @@ class BuildSystem(YAMLObject):
         # And try to initialise the system
         try:
 
-            # Create a logger
-            logger = Logger(self.parent.environment['WANDER'], self.stage[1], 'init')
+            # Check if we're in chroot
+            if self.user != 'chroot':
+
+                # Create the normal logger
+                logger = Logger(self.environment['WANDER'], self.stage[1])
+
+            else:
+
+                # Create the chroot logger
+                logger = Logger('/', self.stage[1])
+
 
             # Run the commands
             self.run(self.init,
                     logger = logger,
-                    phase = 'init',
-                    executable = self.executable)
+                    phase = 'initialisation')
 
             # And note that we were successful
             return True
@@ -120,15 +117,23 @@ class BuildSystem(YAMLObject):
         # And try to clean up the system
         try:
 
-            # Create a logger
-            logger = Logger(self.parent.environment['WANDER'], self.stage[1], 'cleanup')
+            # Check if we're in chroot
+            if self.user != 'chroot':
+
+                # Create the normal logger
+                logger = Logger(self.environment['WANDER'], self.stage[1])
+
+            else:
+
+                # Create the chroot logger
+                logger = Logger('/', self.stage[1])
+
 
             # Run the commands
             self.run(self.cleanup,
                     logger = logger,
                     phase = 'cleanup',
-                    root = True,
-                    executable = self.executable)
+                    root = True)
 
             # And note that we were successful
             return True
@@ -140,6 +145,7 @@ class BuildSystem(YAMLObject):
 
 
 
+import gzip
 from os import listdir, mkdir
 from shutil import move, rmtree
 import tarfile
@@ -189,19 +195,22 @@ class Module:
             # If we're not in chroot, use the full path
             self.target = path.join(self.parent.environment['WANDER'], 'sources', self.file)
 
+            # Initialise the logger
+            self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], self.file)
+
         else:
 
             # Store the root file name
             self.target = path.join('/sources', self.file)
+
+            # Initialise the logger
+            self.logger = Logger('/', self.parent.stage[1], self.file)
 
         # Check if there are prerequisites
         if self.modules is None:
 
             # And make it an empty list
             self.modules = list()
-
-        # Initialise the logger
-        self.logger = Logger(self.parent.environment['WANDER'], self.parent.stage[1], self.file)
 
         # Note that we've started the check
         Output.log(Output.PENDING, self.description)
@@ -268,6 +277,12 @@ class Module:
             be used.'''
         # Open the archive
         with tarfile.open(self.target + self.extension) as archive:
+
+            # Check that there are no left-over sources
+            if path.isdir(self.target):
+
+                # And clear any left-over sources
+                rmtree(self.target)
 
             # Create the directory for the extraction
             mkdir(self.target)
@@ -360,8 +375,7 @@ class Module:
             self.parent.run(['patch -Np1 -i ../' + self.patch_file + self.patch_extension],
                     directory = self.target,
                     logger = self.logger,
-                    phase = 'patch',
-                    executable = self.parent.executable)
+                    phase = 'patch')
 
             # And return if there are no errors
             return True
@@ -389,8 +403,7 @@ class Module:
             self.parent.run(self.commands.get('setup'),
                     directory = self.target,
                     logger = self.logger,
-                    phase = 'setup',
-                    executable = self.parent.executable)
+                    phase = 'setup')
 
             # And return if there are no errors
             return True
@@ -418,8 +431,7 @@ class Module:
             self.parent.run(self.commands.get('preparation'),
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
-                    phase = 'preparation',
-                    executable = self.parent.executable)
+                    phase = 'preparation')
 
             # And return if there are no errors
             return True
@@ -447,8 +459,7 @@ class Module:
             self.parent.run(self.commands.get('compilation'),
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
-                    phase = 'compilation',
-                    executable = self.parent.executable)
+                    phase = 'compilation')
 
             # And return if there are no errors
             return True
@@ -476,8 +487,7 @@ class Module:
             self.parent.run(self.commands.get('configuration'),
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
-                    phase = 'configuration',
-                    executable = self.parent.executable)
+                    phase = 'configuration')
 
             # And return if there are no errors
             return True
@@ -505,8 +515,7 @@ class Module:
             result = self.parent.run(self.commands.get('testing'),
                             directory = path.join(self.target, self.folder),
                             logger = self.logger,
-                            phase = 'testing',
-                            executable = self.parent.executable)
+                            phase = 'testing')
 
             # If nothing went wrong, return True
             return True
@@ -534,8 +543,7 @@ class Module:
             self.parent.run(self.commands.get('installation'),
                     directory = path.join(self.target, self.folder),
                     logger = self.logger,
-                    phase = 'installation',
-                    executable = self.parent.executable)
+                    phase = 'installation')
 
             # And return if there are no errors
             return True
@@ -564,8 +572,7 @@ class Module:
             result = self.parent.run(self.commands.get('validation'),
                             directory = path.join(self.target, self.folder),
                             logger = self.logger,
-                            phase = 'validation',
-                            executable = self.parent.executable)
+                            phase = 'validation')
 
             # Check that we are expecting a result
             if self.result is None:
@@ -603,8 +610,7 @@ class Module:
                 self.parent.run(self.commands.get('cleanup'),
                         directory = path.join(self.target, self.folder),
                         logger = self.logger,
-                        phase = 'cleanup',
-                        executable = self.parent.executable)
+                        phase = 'cleanup')
 
             except CommandException:
 
