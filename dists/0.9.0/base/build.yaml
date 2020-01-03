@@ -13,6 +13,7 @@ user: chroot
 elements:
     zlib:
         package: zlib
+        sbu: 0.1
         commands:
             preparation:
                 - ./configure --prefix=/usr
@@ -27,6 +28,7 @@ elements:
                 - ln -sfv ../../lib/$(readlink /usr/lib/libz.so) /usr/lib/libz.so
     file:
         package: file
+        sbu: 0.1
         commands:
             preparation:
                 - ./configure --prefix=/usr
@@ -38,6 +40,7 @@ elements:
                 - make install
     readline:
         package: readline
+        sbu: 0.1
         commands:
             setup:
                 - sed -i '/MV.*old/d' Makefile.in
@@ -58,6 +61,7 @@ elements:
                 - install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.0
     m4:
         package: m4
+        sbu: 0.4
         commands:
             preparation:
                 - sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -71,6 +75,7 @@ elements:
                 - make install
     bc:
         package: bc
+        sbu: 0.1
         commands:
             preparation:
                 - PREFIX=/usr CC=gcc CFLAGS="-std=c99" ./configure.sh -G -O3
@@ -82,6 +87,7 @@ elements:
                 - make install
     binutils:
         package: binutils
+        sbu: 7.4
         folder: build
         commands:
             setup:
@@ -103,6 +109,7 @@ elements:
                 - make tooldir=/usr install
     gmp:
         package: gmp
+        sbu: 1.2
         commands:
             preparation:
                 - ./configure --prefix=/usr
@@ -120,6 +127,7 @@ elements:
                 - make install-html
     mpfr:
         package: mpfr
+        sbu: 0.9
         commands:
             preparation:
                 - ./configure --prefix=/usr
@@ -136,6 +144,7 @@ elements:
                 - make install-html
     mpc:
         package: mpc
+        sbu: 0.3
         commands:
             preparation:
                 - ./configure --prefix=/usr
@@ -151,6 +160,7 @@ elements:
                 - make install-html
     shadow:
         package: shadow
+        sbu: 0.2
         commands:
             setup:
                 - sed -i 's/groups$(EXEEXT) //' src/Makefile.in
@@ -174,6 +184,7 @@ elements:
                 - grpconv
     gcc:
         package: gcc
+        sbu: 95.0
         folder: build
         commands:
             setup:

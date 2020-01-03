@@ -12,6 +12,7 @@ elements:
     binutils_1:
         description: Binutils (Pass 1)
         package: binutils
+        sbu: 1.0
         folder: build
         commands:
             preparation:
@@ -32,6 +33,7 @@ elements:
     gcc_1:
         description: GCC (Pass 1)
         package: gcc
+        sbu: 12.0
         modules:
             - mpfr
             - gmp
@@ -79,6 +81,7 @@ elements:
                 - make install
     linux:
         package: linux
+        sbu: 0.1
         commands:
             preparation:
                 - make mrproper
@@ -87,6 +90,7 @@ elements:
                 - cp -rv dest/include/* /tools/include
     glibc:
         package: glibc
+        sbu: 4.8
         folder: build
         commands:
             preparation:
@@ -111,6 +115,7 @@ elements:
     libstdc++:
         description: Libstdc++ (from GCC)
         package: gcc
+        sbu: 0.5
         folder: build
         commands:
             preparation:
@@ -128,6 +133,7 @@ elements:
     binutils_2:
         description: Binutils (Pass 2)
         package: binutils
+        sbu: 1.1
         folder: build
         commands:
             preparation:
@@ -149,6 +155,7 @@ elements:
     gcc_2:
         description: GCC (Pass 2)
         package: gcc
+        sbu: 15
         modules:
             - mpfr
             - gmp
@@ -200,6 +207,7 @@ elements:
             - "[Requesting program interpreter: /tools/lib/ld-linux.so.2]"
     tcl:
         package: tcl
+        sbu: 0.9
         folder: unix
         commands:
             preparation:
@@ -215,6 +223,7 @@ elements:
                 - ln -sv tclsh8.6 /tools/bin/tclsh
     expect:
         package: expect
+        sbu: 0.1
         commands:
             preparation:
                 - cp -v configure{,.orig}
@@ -230,6 +239,7 @@ elements:
                 - make SCRIPTS="" install
     dejagnu:
         package: dejagnu
+        sbu: 0.1
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -239,6 +249,7 @@ elements:
                 - make check
     m4:
         package: m4
+        sbu: 0.4
         commands:
             preparation:
                 - sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -252,6 +263,7 @@ elements:
                 - make install
     ncurses:
         package: ncurses
+        sbu: 0.6
         commands:
             preparation:
                 - sed -i s/mawk// configure
@@ -268,6 +280,7 @@ elements:
                 - ln -s libncursesw.so /tools/lib/libncurses.so
     bash:
         package: bash
+        sbu: 0.4
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -281,6 +294,7 @@ elements:
                 - ln -sv bash /tools/bin/sh
     bison:
         package: bison
+        sbu: 0.3
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -292,6 +306,7 @@ elements:
                 - make install
     bzip2:
         package: bzip2
+        sbu: 0.1
         commands:
             compilation:
                 - make
@@ -299,6 +314,7 @@ elements:
                 - make PREFIX=/tools install
     coreutils:
         package: coreutils
+        sbu: 0.8
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -311,6 +327,7 @@ elements:
                 - make install
     diffutils:
         package: diffutils
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -322,6 +339,7 @@ elements:
                 - make install
     file:
         package: file
+        sbu: 0.1
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -333,6 +351,7 @@ elements:
                 - make install
     findutils:
         package: findutils
+        sbu: 0.3
         commands:
             preparation:
                 - sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
@@ -347,6 +366,7 @@ elements:
                 - make install
     gawk:
         package: gawk
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -358,6 +378,7 @@ elements:
                 - make install
     gettext:
         package: gettext
+        sbu: 1.8
         commands:
             preparation:
                 - ./configure --disable-shared
@@ -367,6 +388,7 @@ elements:
                 - cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /tools/bin
     grep:
         package: grep
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -378,6 +400,7 @@ elements:
                 - make install
     gzip:
         package: gzip
+        sbu: 0.1
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -389,6 +412,7 @@ elements:
                 - make install
     make:
         package: make
+        sbu: 0.1
         commands:
             preparation:
                 - sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
@@ -402,6 +426,7 @@ elements:
                 - make install
     patch:
         package: patch
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -413,6 +438,7 @@ elements:
                 - make install
     perl:
         package: perl
+        sbu: 1.6
         commands:
             preparation:
                 - sh Configure -des
@@ -428,6 +454,7 @@ elements:
                 - cp -Rv lib/* /tools/lib/perl5/5.30.0
     python:
         package: python
+        sbu: 1.4
         commands:
             preparation:
                 - sed -i '/def add_multiarch_paths/a \        return' setup.py
@@ -439,6 +466,7 @@ elements:
                 - make install
     sed:
         package: sed
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -450,6 +478,7 @@ elements:
                 - make install
     tar:
         package: tar
+        sbu: 0.3
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -461,6 +490,7 @@ elements:
                 - make install
     texinfo:
         package: texinfo
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -472,6 +502,7 @@ elements:
                 - make install
     util-linux:
         package: util-linux
+        sbu: 1.0
         commands:
             preparation:
                 - ./configure --prefix=/tools
@@ -486,6 +517,7 @@ elements:
                 - make install
     xz:
         package: xz-utils
+        sbu: 0.2
         commands:
             preparation:
                 - ./configure --prefix=/tools

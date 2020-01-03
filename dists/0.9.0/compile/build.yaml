@@ -88,6 +88,7 @@ init:
 elements:
     linux:
         package: linux
+        sbu: 0.1
         commands:
             preparation:
                 - make mrproper
@@ -97,12 +98,14 @@ elements:
                 - cp -rv dest/include/* /usr/include
     man-pages:
         package: man-pages
+        sbu: 0.1
         commands:
             installation:
                 - make install
     glibc:
         package: glibc
         patch: glibc-fhs
+        sbu: 21.0
         folder: build
         commands:
             setup:
