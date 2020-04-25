@@ -2,6 +2,9 @@
 FROM ubuntu:rolling
 MAINTAINER Dan Jenkins (https://github.com/the-djdj)
 
+# Allow for a seamless installation
+ENV DEBIAN_FRONTEND=noninteractive 
+
 # Install all of the needed packages
 RUN apt-get update && apt-get install -y bison              \
                                          build-essential    \
