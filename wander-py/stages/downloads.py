@@ -152,11 +152,15 @@ class DownloadList(YAMLObject):
         return path.isfile(self.source + self.extension)
 
 
-    def checksum(self):
+    def checksum(self, source = None):
         ''' A simple method which checks if the downloaded file has the correct
             checksum and was not tampered with on the download.'''
+        # If source is not defined, use the local source
+        if not source:
+            source = self.source
+
         # Open the file to verify it
-        with open(self.source + self.extension, 'rb') as file:
+        with open(source + self.extension, 'rb') as file:
 
             # Generate the MD5 has
             hash = md5()
