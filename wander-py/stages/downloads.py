@@ -41,6 +41,7 @@ class Downloader():
 from hashlib import md5
 from os import makedirs
 from shutil import copyfile
+from urllib.error import HTTPError
 from urllib.request import urlretrieve as get
 from util import YAMLObject
 
@@ -129,8 +130,13 @@ class DownloadList(YAMLObject):
         # Check that the file doesn't exist
         if not path.isfile(self.source + self.extension):
 
-            # Download the file
-            get(self.url, self.source + self.extension)
+            try:
+                # Download the file
+                get(self.url, self.source + self.extension)
+
+            # This is thrown if something goes wrong with the download
+            except HTTPError:
+                pass
 
         # And return if the file exists
         return path.isfile(self.source + self.extension)
