@@ -102,6 +102,9 @@ class DownloadList(YAMLObject):
             # Notify the user of what's happening
             Output.log(Output.PENDING, self.description)
 
+            # Presume that each stage will run successfully
+            success = True
+
             # Iterate through each of the phases
             for element, stage in elements:
 
@@ -109,12 +112,19 @@ class DownloadList(YAMLObject):
                 Output.clear()
                 Output.log(stage, self.description)
 
+                # Add the result to our success variable
+                success &= element()
+
                 # Add the result to our results variable
-                result &= element()
+                result &= success
+
+                # And stop if there is an error
+                if not success:
+                    break
 
             # At this point, we're pretty much finished
             Output.clear()
-            Output.log(Output.PASSED if result else Output.FAILED, self.description)
+            Output.log(Output.PASSED if success else Output.FAILED, self.description)
 
             # Add the final line of output
             print('')
