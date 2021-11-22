@@ -133,7 +133,7 @@ class Commands:
             try:
 
                 # Check for special users
-                if user is 'chroot' or user is 'default':
+                if user == 'chroot' or user == 'default':
 
                     USERS[user] = getpwnam(getuser())
 
@@ -263,7 +263,7 @@ class YAMLObject:
         self.environment = dict()
 
         # Check whether or not we should populate the environment
-        if self.user is not 'wander' and self.user is not 'chroot':
+        if self.user != 'wander' and self.user != 'chroot':
 
             # And duplicate the environment
             self.environment = environ.copy()
@@ -313,7 +313,7 @@ class YAMLObject:
                         user = user)
 
             # Check if there is an attached logger
-            if logger is not None and phase is not 'unpacking':
+            if logger is not None and phase != 'unpacking':
 
                 # And write the output to the logger
                 logger.log(phase, element, command)
