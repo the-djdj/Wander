@@ -3,6 +3,8 @@ FROM ubuntu:rolling
 MAINTAINER Dan Jenkins (https://github.com/the-djdj)
 
 # Install all of the needed packages
+ARG DEBIAN_FRONTEND="noninteractive"
+ARG TZ="Europe/London"
 RUN apt-get update && apt-get install -y bison              \
                                          build-essential    \
                                          gawk               \
