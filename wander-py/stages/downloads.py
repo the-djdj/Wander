@@ -39,7 +39,7 @@ class Downloader():
 
 
 from hashlib import md5
-from os import makedirs
+from os import makedirs, remove as deletefile
 from shutil import copyfile
 from urllib.error import HTTPError
 from urllib.request import urlretrieve as get
@@ -77,7 +77,8 @@ class DownloadList(YAMLObject):
         ''' The method which iterates through each item in the list and performs
             the appropriate actions.'''
         # Collect each of the elements which needs to be built
-        elements = [(self.download,  Output.DOWNLOADING),
+        elements = [(self.scan,      Output.SCANNING),
+                    (self.download,  Output.DOWNLOADING),
                     (self.checksum,  Output.VERIFYING),
                     (self.copy,      Output.COPYING)]
 
@@ -131,6 +132,37 @@ class DownloadList(YAMLObject):
 
         # And return how we did
         return result
+
+
+    def scan(self):
+        ''' A simple method which checks if the archive exists in the target
+            directory but not the sources directory, and if so, copies it over
+            so that we have a copy.'''
+        # Check that only the target copy of the file exists
+        if not path.isfile(self.source + self.extension) and path.isfile(self.target + self.extension):
+
+            # Check that the target version of the file matches our checksum
+            if self.checksum(self.target):
+
+                # Copy the file over
+                copyfile(self.target + self.extension, self.source + self.extension)
+
+                # And return if the file exists
+                return path.isfile(self.source + self.extension)
+
+            # Otherwise we have a bad checksum, so delete the file
+            else:
+
+                # Delete the bad file
+                deletefile(self.target + self.extension)
+
+                # And return if the file does not exist
+                return not path.isfile(self.target + self.extension)
+
+
+        # Either a source file exists or a target one does not, so return
+        return True
+
 
 
     def download(self):
