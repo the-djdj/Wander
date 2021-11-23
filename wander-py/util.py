@@ -29,6 +29,7 @@ class Output:
     # The status that an output has
     PENDING     = B_BLACK   + 'Pending'
     SKIPPED     = B_MAGENTA + 'Skipped'
+    SCANNING    = B_BLUE    + 'Scanning'
     DOWNLOADING = B_BLUE    + 'Downloading'
     VERIFYING   = B_BLUE    + 'Verifying'
     COPYING     = B_BLUE    + 'Copying'
