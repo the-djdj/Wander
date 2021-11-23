@@ -93,7 +93,7 @@ class DownloadList(YAMLObject):
             self.description = self.elements[element].get('description') + ' ' + str(self.version)
             self.file        = self.elements[element].get('file').replace('{version}', str(self.version))
             self.extension   = self.elements[element].get('extension')
-            self.url         = path.join(self.elements[element].get('url').replace('{version}', str(self.version)), self.file + self.extension)
+            self.url         = path.join(self.elements[element].get('url').replace('{version}', str(self.version)).replace('{version_}', str(self.version).replace('.', '_')), self.file + self.extension)
             self.md5         = self.elements[element].get('md5')
 
             # Store the root file name
