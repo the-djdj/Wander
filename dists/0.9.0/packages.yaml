@@ -123,7 +123,7 @@ elements:
         version: 2.2.7
         file: expat-{version}
         extension: .tar.xz
-        url: https://prdownloads.sourceforge.net/expat/
+        url: https://github.com/libexpat/libexpat/releases/download/R_{version_}/
         md5: 3659bc0938db78815b5f5a9c24d732aa
     expect:
         description: Expect
@@ -340,7 +340,7 @@ elements:
         version: 5.02
         file: man-pages-{version}
         extension: .tar.xz
-        url: https://www.kernel.org/pub/linux/docs/man-pages/
+        url: https://www.kernel.org/pub/linux/docs/man-pages/Archive/
         md5: 136e5e3380963571a079693d8ae38f52
     meson:
         description: Meson
