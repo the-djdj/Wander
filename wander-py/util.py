@@ -78,7 +78,7 @@ class Output:
     def log(status, data):
         ''' The method which logs an item to the output. This adds the item
             with a designated status.'''
-        print('\r' + Output.RESET + ' * [' + status + Output.RESET + '] '
+        print('\r' + Output.RESET + ' • [' + status + Output.RESET + '] '
                 + Output.D_WHITE + data, end='')
 
 
