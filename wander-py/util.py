@@ -389,17 +389,19 @@ def docker():
     ''' A method which checks whether or not we are running in a docker
         instance. This is important, as we cannot partition or do anything
         involving disks in a container.'''
-    # Store the command
-    command = '''awk -F/ '$2 == "docker"' /proc/self/cgroup | read; echo $?'''
+    # Open the cgroup file to see what's heppening
+    with open('/proc/self/cgroup', 'r') as proc:
+        
+        for line in proc:
+            # Separate all of the process fields
+            fields = line.strip().split('/')
 
-    # Prepare the subprocess system
-    process = Popen([command], stdout=PIPE, stderr=PIPE, shell=True)
+            # If the docker entry is found we're in a docker environment
+            if 'docker' in fields:
+                return True
 
-    # Get the stdout and stderr from the command
-    stdout, stderr = process.communicate()
-
-    # And check if we're in a docker container
-    return str(stdout, 'utf-8', 'replace').rstrip() == '0'
+    # If docker is not found we are not in a docker environment
+    return False
 
 
 # Import the chroot framework
